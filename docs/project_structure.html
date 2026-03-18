@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Estructura de Directorios y Dependencias</title>
+    <style>
+        :root {
+            --brand-color: #5BA095;
+            --brand-light: #e6f0ee;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--brand-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--brand-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+            margin-top: 0;
+            color: #0f172a;
+        }
+
+        .tree {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: "Courier New", Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .tree .comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .tree .folder {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .dependency-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .dependency-item {
+            background: var(--brand-light);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--brand-color);
+        }
+
+        .dependency-name {
+            font-weight: bold;
+            color: #0f172a;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dependency-desc {
+            font-size: 0.9rem;
+            color: #475569;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Stocker - Arquitectura de Código</h1>
+        <p class="subtitle">Guía de directorios, responsabilidades y librerías clave instaladas en el ecosistema.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>Estructura General del Repositorio</h2>
+        <div class="tree">
+/
+├── <span class="folder">backend/</span>              <span class="comment"># Código fuente y configuraciones de la API Python</span>
+├── <span class="folder">frontend/</span>             <span class="comment"># Código fuente de React (Interfaz de usuario)</span>
+├── <span class="folder">docker/</span>               <span class="comment"># Archivos de orquestación (docker-compose.yml y envs)</span>
+├── <span class="folder">docs/</span>                 <span class="comment"># Manuales HTML (Contenedores, Arquitectura y Getting Started)</span>
+└── README.md             <span class="comment"># Instrucciones de inicio rápido</span>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>1. Backend (API en FastAPI)</h2>
+        <p>El backend sigue una arquitectura basada en capas (Rutas -> Schemas -> Operaciones -> Modelos) para separar claramente la recepción de datos de la escritura en base de datos.</p>
+        
+        <div class="tree">
+<span class="folder">backend/</span>
+├── <span class="folder">alembic/</span>            <span class="comment"># Contiene el historial de migraciones ('versions/') generado por Alembic</span>
+├── alembic.ini         <span class="comment"># Configuración maestra de Alembic y conexión a DB</span>
+├── <span class="folder">app/</span>
+│   ├── <span class="folder">api/</span>            <span class="comment"># Endpoints URL ('/api/products', '/api/users'). El puente HTTP con el frontend</span>
+│   ├── <span class="folder">crud/</span>           <span class="comment"># Funciones lógicas limpias de Base de Datos ('get_user', 'create_product')</span>
+│   ├── models.py       <span class="comment"># El 'ADN' de tus tablas SQL. Define Clases usando SQLModel (fusión de Pydantic+SQLAlchemy)</span>
+│   ├── database.py     <span class="comment"># Creación de la sesión ('Session') hacia PostgreSQL para inyectar en las rutas</span>
+│   └── main.py         <span class="comment"># Punto de arranque de Uvicorn, engloba los Routers y la política de seguridad CORS</span>
+└── requirements.txt    <span class="comment"># Listado absoluto de librerías para que Docker las instale</span>
+        </div>
+
+        <h3>📚 Dependencias Clave (requirements.txt)</h3>
+        <div class="dependency-list">
+            <div class="dependency-item">
+                <div class="dependency-name">fastapi</div>
+                <p class="dependency-desc">Framework moderno de alto rendimiento para APIs. Genera la documentación interactiva (Swagger) sola.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">uvicorn</div>
+                <p class="dependency-desc">El servidor web ASGI que expone la FastAPI al mundo y permite la recarga en vivo de tus cambios (-reload).</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">sqlmodel</div>
+                <p class="dependency-desc">Biblioteca moderna que fusiona Pydantic y SQLAlchemy. Permite definir validaciones de API y Modelos Base de Datos en la misma Clase en `models.py`, evitando repetir el código 2 veces.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">alembic</div>
+                <p class="dependency-desc">Herramienta oficial de migraciones para SQLAlchemy. Vigila tus "models.py" y autogenera tablas nuevas sin perder tu información cuando el proyecto crece.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">psycopg2-binary</div>
+                <p class="dependency-desc">El driver o "traductor" de bajo nivel que permite que Python y PostgreSQL hablen entre sí sin latencia.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">pydantic</div>
+                <p class="dependency-desc">Capa de validación estricta de variables en Python (Rechaza strings si pides enteros, oculta contraseñas al enviar JSONs...)</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">pydantic-settings</div>
+                <p class="dependency-desc">Gestor avanzado de variables de entorno. Transforma las variables de `docker-compose` en variables tipadas y validadas seguras para Python.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">python-dotenv</div>
+                <p class="dependency-desc">Librería para leer archivos estáticos `.env` físicos si no se usa Docker.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>2. Frontend (React + Vite)</h2>
+        <p>El frontend se erige sobre React 18 pero empaquetado por Vite, garantizando arranques en milisegundos en desarrollo.</p>
+        
+        <div class="tree">
+<span class="folder">frontend/</span>
+├── <span class="folder">src/</span>
+│   ├── <span class="folder">assets/</span>         <span class="comment"># Imágenes estáticas y logo base</span>
+│   ├── <span class="folder">components/</span>     <span class="comment"># Componentes reusables (Layouts globales, Navbar, Footer, Sidebar, Inputs)</span>
+│   ├── <span class="folder">pages/</span>          <span class="comment"># Vistas completas a las que el usuario accede vía URL ('Home', 'Login', 'Dashboard')</span>
+│   ├── App.tsx         <span class="comment"># Componente Orquestador de URLs (React Router) inyecta las páginas en pantalla principal</span>
+│   ├── index.css       <span class="comment"># Inyección de instrucciones de TailwindCSS a todo el proyecto</span>
+│   └── main.tsx        <span class="comment"># Punto de arranque donde React se inserta en el div '#root' del index.html</span>
+├── index.html          <span class="comment"># Única página HTML real que viaja al navegador (SPA)</span>
+├── vite.config.ts      <span class="comment"># Configuración del servidor de desarrollo NodeJS/Vite</span>
+└── package.json        <span class="comment"># Manifiesto de dependencias que se leen en 'npm install'</span>
+        </div>
+
+        <h3>📚 Dependencias Clave (package.json)</h3>
+        <div class="dependency-list">
+            <div class="dependency-item">
+                <div class="dependency-name">react & react-dom</div>
+                <p class="dependency-desc">La librería fundamental del proyecto. Gestiona variables de estado y vuelve a pintar la web sin necesidad de recargarla (useEffect, useState).</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">react-router-dom</div>
+                <p class="dependency-desc">Habilita la navegación por pestañas invisibles. Cuando visitas "/admin", cambia los componentes en pantalla sin refrescar remotamente el navegador.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">axios</div>
+                <p class="dependency-desc">Cliente HTTP moderno usado para hacer llamadas (GET, POST, PUT) a la API de FastAPI. Sustituye al <code>fetch()</code> nativo por mayor comodidad e interceptores.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">framer-motion</div>
+                <p class="dependency-desc">Librería de animación fluida para React. Se encarga de las transiciones suaves, apariciones de la interfaz y efectos premium de la aplicación.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">tailwindcss</div>
+                <p class="dependency-desc">Framework de clases CSS atómicas (dev-dependency). Permite darle estilo a tu app directamente en la etiqueta del componente (ej: <code>className="bg-blue-500 rounded"</code>).</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">lucide-react</div>
+                <p class="dependency-desc">Colección de iconos modernos en vectores importables directamente como componentes estandar (ej: <code>&lt;Menu /&gt;</code>).</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">typescript</div>
+                <p class="dependency-desc">Superconjunto de Javascript (dev-dependency). Añade un sistema de tipado estricto e inteligente para auto-completar el código y prevenir errores que solo saltearían en producción antes de guardarlos.</p>
+            </div>
+            <div class="dependency-item">
+                <div class="dependency-name">vite</div>
+                <p class="dependency-desc">Motor que sirve los archivos y empaqueta el producto final en <code>/dist</code> cuando está listo para despliegue en la vida real.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

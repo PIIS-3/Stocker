@@ -1,0 +1,25 @@
+# Backend Docker ignores
+# Evita copiar archivos cacheados e innecesarios al contenedor Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Entornos virtuales locales
+env/
+venv/
+.venv/
+
+# Secretos
+.env
+.env.*
+
+# GIT
+.git
+.gitignore
+
+# Configuración IDE y SO
+.vscode/
+.idea/
+.DS_Store

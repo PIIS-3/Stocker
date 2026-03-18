@@ -1,0 +1,22 @@
+# Frontend Docker ignores
+# Evita copiar carpetas masivas de dependencias del host al Image Build context.
+node_modules/
+dist/
+dist-ssr/
+build/
+
+# Entornos host
+.env
+.env.*
+*.local
+
+# IDEs
+.vscode/
+.idea/
+
+# Git
+.git
+.gitignore
+
+# OS
+.DS_Store
