@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Documentación de Contenedores Docker</title>
+    <style>
+        :root {
+            --brand-color: #5BA095;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--brand-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+        }
+
+        .architecture-overview {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .container-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--brand-color);
+        }
+
+        .container-title {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background-color: #e2e8f0;
+            color: #475569;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .file-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .file-name {
+            font-family: monospace;
+            font-weight: 600;
+            color: #0f172a;
+            background: #e2e8f0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 1rem;
+            min-width: 180px;
+        }
+
+        .file-desc {
+            margin: 0;
+            color: #475569;
+        }
+
+        code {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #ef4444;
+        }
+
+        .network-section {
+            background: #1e293b;
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 3rem;
+        }
+
+        .network-title {
+            color: #38bdf8;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Stocker - Arquitectura Docker</h1>
+        <p class="subtitle">Documentación técnica de la orquestación de contenedores en desarrollo local.</p>
+    </header>
+
+    <section class="architecture-overview">
+        <h2>Resumen del Sistema</h2>
+        <p>El proyecto Stocker está separado en una arquitectura de microservicios de tres capas orquestados mediante <code>docker-compose</code>. Esto permite que el Frontend, la API Backend y la Base de Datos corran en entornos aislados pero comunicados a través de una red virtual interna de Docker.</p>
+        
+        <h3>Orquestador Principal</h3>
+        <ul class="file-list">
+            <li class="file-item">
+                <div class="file-name">docker/docker-compose.yml</div>
+                <p class="file-desc">El archivo maestro que define la orquestación. Levanta los 3 contenedores (<code>stocker_web</code>, <code>stocker_api</code>, <code>stocker_db</code>), crea la red interna, mapea los volúmenes para el <em>Hot-Reloading</em> de código y expone los puertos locales necesarios (5173, 8000, 5432).</p>
+            </li>
+            <li class="file-item">
+                <div class="file-name">docker/.env.example</div>
+                <p class="file-desc">Plantilla de las variables de entorno operativas necesarias para inyectar configuración tanto a la base de datos (credenciales) como a la API y el Frontend.</p>
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Containers (Servicios)</h2>
+
+        <!-- Database Container -->
+        <div class="container-card">
+            <h3 class="container-title">📁 Database <span class="badge">stocker_db (postgres:16-alpine)</span></h3>
+            <p>Contenedor de almacenamiento persistente corriendo PostgreSQL V16. Ahora se arranca completamente en blanco para entregar el control de arquitecturas a código Python (Alembic). Los datos de validación inicial deben cargarse de forma manual con <code>seed.sql</code> tras el arranque.</p>
+            
+            <h4>Archivos de Configuración e Inicialización:</h4>
+            <ul class="file-list">
+                <li class="file-item">
+                    <div class="file-name">docker-compose.yml <i>(Config)</i></div>
+                    <p class="file-desc">Define el entorno limpio, mapeando el volumen etiquetado <code>postgres_data</code> para que, aunque se destruya el contenedor, los datos persistan de forma segura en disco físico local.</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Backend Container -->
+        <div class="container-card">
+            <h3 class="container-title">⚙️ Backend API <span class="badge">stocker_api (python:3.12-slim)</span></h3>
+            <p>Servidor RESTful moderno escrito en FastAPI usando Uvicorn y conectado a la BD PostgreSQL a través de la arquitectura unificada de <strong>SQLModel</strong>.</p>
+            
+            <h4>Archivos de Construcción y Migraciones:</h4>
+            <ul class="file-list">
+                <li class="file-item">
+                    <div class="file-name">backend/Dockerfile</div>
+                    <p class="file-desc">Script de construcción para la moderna imagen de Python 3.12. Instala dependencias del sistema operativo nativas (como <code>gcc</code> y <code>libpq-dev</code>) para compilar los drivers internos de PostgreSQL y habilita el pip local.</p>
+                </li>
+                <li class="file-item">
+                    <div class="file-name">alembic.ini & alembic/</div>
+                    <p class="file-desc">Gestor de migraciones autónomo. Docker ejecuta el mapeo en vivo <code>alembic upgrade head</code> antes de arrancar la API. Alembic se encarga de crear las tablas de SQLModel sobre Postgres la primera vez que arranca.</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Frontend Container -->
+        <div class="container-card">
+            <h3 class="container-title">💻 Frontend <span class="badge">stocker_web (node:25-alpine)</span></h3>
+            <p>Aplicación SPA generada en React con TypeScript gestionada dinámicamente in-memory por ViteJS bajo Node 25.</p>
+            
+            <h4>Archivos de Construcción:</h4>
+            <ul class="file-list">
+                <li class="file-item">
+                    <div class="file-name">frontend/Dockerfile</div>
+                    <p class="file-desc">Imagen Node optimizada. Lanza <code>npm install --legacy-peer-deps</code> en Build, y levanta el servidor de ViteJS exponiéndolo fuera del contenedor permitiendo <em>Hot-Reloading</em> instantáneo.</p>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="network-section">
+        <h2 class="network-title">Comandos de Interacción Centrales</h2>
+        <p>Para encender o recargar todo el sistema usando estos archivos de configuración, desde la raíz del proyecto ejecutamos:</p>
+        <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>cd docker
+docker compose down          # Apaga los contendores actuales si existiesen
+docker compose up --build -d # (Re)Compila usando los Dockerfiles listados e inicia</code></pre>
+    </section>
+</div>
+
+</body>
+</html>

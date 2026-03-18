@@ -1,0 +1,92 @@
+name: stocker
+services:
+  # ------------------------------------
+  # 1. CONTENEDOR DE BASE DE DATOS
+  # ------------------------------------
+  db:
+    image: stocker_db
+    # Usamos la versión 16 de PostgreSQL sobre Alpine (ligera y estable)
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM postgres:16-alpine3.23
+    container_name: stocker_db
+    # Reinicia el contenedor automáticamente si falla o se reinicia el host
+    restart: always
+    environment:
+      # Variables de entorno para la base de datos
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-stocker}
+    ports:
+      - "5432:5432" # Expuesto a la máquina local para debug
+    volumes:
+      # Mantiene los datos persistentes aunque se borre el contenedor
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # Verifica que la base de datos esté lista y responda
+      test: ["CMD-SHELL", "pg_isready -U postgres -d stocker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ------------------------------------
+  # 2. CONTENEDOR DE BACKEND (FastAPI)
+  # ------------------------------------
+  backend:
+    image: stocker_api
+    # Construye la imagen desde el Dockerfile en la carpeta backend
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: stocker_api
+    stdin_open: true # Para debuggear con teclado
+    tty: true # Para ver logs con colores
+    depends_on:
+      db:
+        condition: service_healthy # Espera hasta que la DB responda
+    ports:
+      - "${API_PORT:-8000}:8000" # Expuesto a la máquina local para debug
+    environment:
+      # Variables de entorno para la base de datos
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_SERVER=db  # Nombre del servicio de base de datos en este archivo
+      - POSTGRES_PORT=5432
+    volumes:
+      # Mapeamos el código de backend actual al contenedor para hot replacement
+      - ../backend:/app
+    # Ejecuta las migraciones de Alembic y luego inicia el servidor FastAPI en modo desarrollo
+    command: >
+      bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  # ------------------------------------
+  # 3. CONTENEDOR DE FRONTEND (React)
+  # ------------------------------------
+  frontend:
+    image: stocker_web
+    # Construye la imagen desde el Dockerfile en la carpeta frontend
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      # Pasamos la URL base de FastAPI al build de frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    container_name: stocker_web
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173" # Expuesto a la máquina local para debug
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Frecuente para que el Hot Reload (Vite) en Docker funcione perfecto en local
+      - NODE_ENV=development # Entorno de desarrollo para mostrar logs y errores en consola
+    stdin_open: true # Para debuggear con teclado
+    tty: true # Para ver logs con colores
+    volumes:
+      # Mapear el código de frontend actual al contenedor para hot replacement
+      - ../frontend:/app
+      # Impedir que los modulos de la maquina host machaquen los del contenedor
+      - node_modules:/app/node_modules
+
+volumes:
+  postgres_data:
+  node_modules:
