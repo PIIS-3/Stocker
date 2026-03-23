@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Guía de Estilos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #5BA095;
+            --brand-light: #7fc4b7;
+            --brand-dark: #427c73;
+            --brand-bg: #e6f0ee;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        header h1 { color: var(--brand); font-size: 2.5rem; margin-bottom: 0.5rem; }
+        header p { color: #64748b; font-size: 1.2rem; }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--brand);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: #0f172a;
+        }
+
+        h3 { color: #1e293b; margin: 1.5rem 0 0.75rem; }
+
+        /* Swatch Grid */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .swatch {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .swatch-color { height: 80px; }
+        .swatch-info { padding: 0.75rem; font-size: 0.85rem; }
+        .swatch-info strong { display: block; margin-bottom: 2px; color: #0f172a; }
+
+        /* Typography specimens */
+        .type-row {
+            display: flex;
+            align-items: baseline;
+            gap: 1.5rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .type-label { min-width: 140px; font-size: 0.8rem; color: #94a3b8; font-weight: 500; }
+
+        /* Demo Buttons */
+        .btn-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 0.75rem 1.5rem; border-radius: 12px;
+            font-weight: 600; font-size: 0.95rem; border: none;
+            cursor: pointer; transition: all 0.2s; font-family: inherit;
+        }
+        .btn-primary { background: var(--brand); color: #fff; box-shadow: 0 4px 14px rgba(91,160,149,0.3); }
+        .btn-primary:hover { background: var(--brand-dark); transform: translateY(-2px); }
+        .btn-outline { background: transparent; color: var(--brand); border: 2px solid var(--brand); }
+        .btn-outline:hover { background: var(--brand-bg); }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-ghost { background: transparent; color: #64748b; }
+        .btn-ghost:hover { background: #f1f5f9; color: #334155; }
+
+        /* Demo Inputs */
+        .input-demo { max-width: 380px; margin-top: 1rem; }
+        .input-demo label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 4px; }
+        .input-demo input {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid #e5e7eb;
+            border-radius: 12px; font-size: 0.875rem; font-family: inherit;
+            transition: all 0.2s; outline: none;
+        }
+        .input-demo input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--brand); }
+
+        /* Demo Cards */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 1rem; }
+        .demo-card {
+            background: #f9fafb; border-radius: 16px; padding: 1.5rem;
+            border: 1px solid #f3f4f6; transition: all 0.3s;
+        }
+        .demo-card:hover { background: #fff; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); transform: translateY(-4px); }
+        .card-icon {
+            width: 48px; height: 48px; border-radius: 12px; background: #fff;
+            border: 1px solid #f3f4f6; display: flex; align-items: center;
+            justify-content: center; margin-bottom: 1rem; font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+        .demo-card:hover .card-icon { background: var(--brand-bg); transform: scale(1.1); }
+        .demo-card h4 { font-size: 1.05rem; color: #111827; margin-bottom: 0.5rem; }
+        .demo-card p { font-size: 0.875rem; color: #6b7280; line-height: 1.5; }
+
+        /* Glass demo */
+        .glass-demo {
+            position: relative; border-radius: 16px; height: 220px;
+            background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 1rem; overflow: hidden;
+        }
+        .glass-demo .circle1,
+        .glass-demo .circle2 { position: absolute; border-radius: 50%; }
+        .glass-demo .circle1 { width: 200px; height: 200px; background: rgba(255,255,255,0.15); top: -50px; left: -30px; }
+        .glass-demo .circle2 { width: 150px; height: 150px; background: rgba(255,255,255,0.1); bottom: -40px; right: -20px; }
+        .glass-box {
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-radius: 16px; padding: 1.5rem 2rem;
+            color: #1f2937; font-weight: 600; position: relative; z-index: 1;
+        }
+
+        /* Sidebar demo */
+        .sidebar-demo {
+            display: flex; border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border-color); margin-top: 1rem; height: 280px;
+        }
+        .sidebar-mock {
+            width: 220px; background: #fff; border-right: 1px solid #f3f4f6;
+            padding: 1rem 0.75rem; display: flex; flex-direction: column; gap: 4px;
+            flex-shrink: 0;
+        }
+        .sidebar-item {
+            padding: 0.6rem 0.9rem; border-radius: 10px; font-size: 0.85rem;
+            color: #6b7280; display: flex; align-items: center; gap: 8px;
+        }
+        .sidebar-item.active { background: rgba(91,160,149,0.1); color: var(--brand); font-weight: 600; }
+        .sidebar-item .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+        .sidebar-item.active .dot { opacity: 1; }
+        .sidebar-content { flex: 1; background: #f9fafb; padding: 1.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+
+        /* Code block in docs */
+        pre {
+            background: #1e293b; color: #38bdf8; padding: 1rem;
+            border-radius: 6px; overflow-x: auto; font-family: monospace;
+            border: 1px solid #334155; font-size: 0.85rem; margin-top: 0.75rem;
+        }
+        code {
+            font-family: monospace; background: #e2e8f0;
+            padding: 0.15rem 0.4rem; border-radius: 4px; color: #ef4444; font-size: 0.85rem;
+        }
+        pre code { background: none; color: inherit; padding: 0; }
+
+        /* Spacing reference */
+        .spacing-row { display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0; }
+        .spacing-bar { height: 20px; background: var(--brand); border-radius: 4px; opacity: 0.7; }
+        .spacing-label { font-size: 0.8rem; color: #94a3b8; min-width: 80px; }
+
+        /* Alert boxes */
+        .alert { padding: 1rem 1.25rem; border-radius: 8px; margin-top: 0.75rem; font-size: 0.9rem; border-left: 4px solid; }
+        .alert-info { background: #eff6ff; border-color: #3b82f6; color: #1e40af; }
+        .alert-warn { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+        .alert-ok { background: #f0fdf4; border-color: #22c55e; color: #166534; }
+        .alert-err { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+
+        /* Nav items list */
+        .token-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        .token-table th { text-align: left; padding: 0.5rem; border-bottom: 2px solid var(--border-color); color: #64748b; font-weight: 600; }
+        .token-table td { padding: 0.5rem; border-bottom: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🎨 Guía de Estilos — Stocker</h1>
+        <p>Referencia visual del sistema de diseño utilizado en la aplicación frontend (React + Tailwind CSS).</p>
+    </header>
+
+    <!-- ─── 1. COLORES ─── -->
+    <div class="section-card">
+        <h2>1. Paleta de Colores</h2>
+        <p>Los colores de marca se definen en <code>tailwind.config.js</code> y se utilizan mediante las clases <code>bg-brand</code>, <code>text-brand</code>, etc.</p>
+        <div class="color-grid">
+            <div class="swatch">
+                <div class="swatch-color" style="background:#5BA095"></div>
+                <div class="swatch-info"><strong>Brand (Default)</strong>#5BA095 · <code>bg-brand</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#7fc4b7"></div>
+                <div class="swatch-info"><strong>Brand Light</strong>#7fc4b7 · <code>bg-brand-light</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#427c73"></div>
+                <div class="swatch-info"><strong>Brand Dark</strong>#427c73 · <code>bg-brand-dark</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#f9fafb"></div>
+                <div class="swatch-info"><strong>Background</strong>#f9fafb · <code>bg-gray-50</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#1f2937"></div>
+                <div class="swatch-info"><strong>Texto Principal</strong>#1f2937 · <code>text-gray-800</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#6b7280"></div>
+                <div class="swatch-info"><strong>Texto Secundario</strong>#6b7280 · <code>text-gray-500</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#111827; display:flex; align-items:center; justify-content:center; color:#e2e8f0; font-size:0.8rem;">"></div>
+                <div class="swatch-info"><strong>Footer BG</strong>#111827 · <code>bg-gray-900</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#ef4444"></div>
+                <div class="swatch-info"><strong>Peligro / Error</strong>#ef4444 · <code>text-red-500</code></div>
+            </div>
+        </div>
+
+        <h3>Uso de Opacidades de Marca</h3>
+        <p>Se utilizan variantes con opacidad para fondos sutiles:</p>
+        <div class="color-grid" style="margin-top: 0.5rem;">
+            <div class="swatch">
+                <div class="swatch-color" style="background:rgba(91,160,149,0.05)"></div>
+                <div class="swatch-info"><strong>brand/5</strong><code>bg-brand/5</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:rgba(91,160,149,0.1)"></div>
+                <div class="swatch-info"><strong>brand/10</strong><code>bg-brand/10</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:rgba(91,160,149,0.2)"></div>
+                <div class="swatch-info"><strong>brand/20</strong><code>bg-brand/20</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:rgba(91,160,149,0.3)"></div>
+                <div class="swatch-info"><strong>brand/30 (sombras)</strong><code>shadow-brand/30</code></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── 2. TIPOGRAFÍA ─── -->
+    <div class="section-card">
+        <h2>2. Tipografía</h2>
+        <p>Fuente principal: <strong>Inter</strong> (Google Fonts), importada en <code>index.css</code> y configurada en Tailwind (<code>font-sans</code>).</p>
+
+        <div style="margin-top: 1rem;">
+            <div class="type-row">
+                <span class="type-label">Hero (h1)</span>
+                <span style="font-size:3rem; font-weight:700; color:#111827; line-height:1.1; letter-spacing:-0.025em;">Texto Principal</span>
+            </div>
+            <div class="type-row">
+                <span class="type-label">Sección (h2)</span>
+                <span style="font-size:2rem; font-weight:700; color:#111827; letter-spacing:-0.025em;">Título de Sección</span>
+            </div>
+            <div class="type-row">
+                <span class="type-label">Tarjeta (h3)</span>
+                <span style="font-size:1.25rem; font-weight:700; color:#111827;">Título de Tarjeta</span>
+            </div>
+            <div class="type-row">
+                <span class="type-label">Body (lg)</span>
+                <span style="font-size:1.125rem; color:#4b5563;">Texto de cuerpo grande, para descripciones destacadas.</span>
+            </div>
+            <div class="type-row">
+                <span class="type-label">Body (base)</span>
+                <span style="font-size:1rem; color:#4b5563;">Texto de cuerpo estándar para contenido general.</span>
+            </div>
+            <div class="type-row">
+                <span class="type-label">Small / Labels</span>
+                <span style="font-size:0.875rem; color:#6b7280;">Etiquetas, textos auxiliares y captions.</span>
+            </div>
+        </div>
+
+        <h3>Pesos utilizados</h3>
+        <table class="token-table">
+            <thead><tr><th>Peso</th><th>Clase Tailwind</th><th>Uso</th></tr></thead>
+            <tbody>
+                <tr><td><span style="font-weight:300">Light (300)</span></td><td><code>font-light</code></td><td>Texto decorativo</td></tr>
+                <tr><td><span style="font-weight:400">Regular (400)</span></td><td><code>font-normal</code></td><td>Cuerpo de texto</td></tr>
+                <tr><td><span style="font-weight:500">Medium (500)</span></td><td><code>font-medium</code></td><td>Labels, enlaces, nav</td></tr>
+                <tr><td><span style="font-weight:600">Semibold (600)</span></td><td><code>font-semibold</code></td><td>Botones, items activos sidebar</td></tr>
+                <tr><td><span style="font-weight:700">Bold (700)</span></td><td><code>font-bold</code></td><td>Títulos, logo, estadísticas</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ─── 3. BOTONES ─── -->
+    <div class="section-card">
+        <h2>3. Botones</h2>
+        <p>Bordes redondeados de 12px (<code>rounded-xl</code>). El primario proyecta sombra de marca <code>shadow-brand/30</code>.</p>
+        <div class="btn-row">
+            <button class="btn btn-primary">Primario</button>
+            <button class="btn btn-outline">Outline</button>
+            <button class="btn btn-danger">Peligro</button>
+            <button class="btn btn-ghost">Ghost</button>
+        </div>
+        <h3>Código Tailwind (Primario)</h3>
+        <pre><code>className="bg-brand text-white px-8 py-4 rounded-xl font-semibold
+  hover:bg-brand-dark transition-all transform hover:-translate-y-1
+  shadow-xl shadow-brand/30"</code></pre>
+    </div>
+
+    <!-- ─── 4. FORMULARIOS ─── -->
+    <div class="section-card">
+        <h2>4. Campos de Formulario</h2>
+        <p>Inputs con bordes redondeados de 12px, foco con anillo de color marca (<code>focus:ring-brand</code>).</p>
+        <div class="input-demo">
+            <label>Nombre de usuario</label>
+            <input type="text" placeholder="Ej. alopez">
+        </div>
+        <h3>Código Tailwind</h3>
+        <pre><code>className="appearance-none block w-full px-4 py-3
+  border border-gray-200 rounded-xl shadow-sm placeholder-gray-400
+  focus:outline-none focus:ring-2 focus:ring-brand
+  focus:border-transparent sm:text-sm transition-all"</code></pre>
+    </div>
+
+    <!-- ─── 5. TARJETAS ─── -->
+    <div class="section-card">
+        <h2>5. Tarjetas (Cards)</h2>
+        <p>Las tarjetas de la landing usan <code>rounded-2xl</code>, efecto hover con elevación y sombra. Pasa el ratón para ver el efecto:</p>
+        <div class="card-grid">
+            <div class="demo-card">
+                <div class="card-icon">📦</div>
+                <h4>Control de inventario</h4>
+                <p>Visualiza niveles de stock en tiempo real con algoritmos predictivos.</p>
+            </div>
+            <div class="demo-card">
+                <div class="card-icon">📋</div>
+                <h4>Gestión de lotes</h4>
+                <p>Organiza productos por lotes, caducidad y ubicación.</p>
+            </div>
+            <div class="demo-card">
+                <div class="card-icon">⚠️</div>
+                <h4>Trazabilidad de fallos</h4>
+                <p>Detecta incidencias y rastrea el origen de mermas.</p>
+            </div>
+        </div>
+        <h3>Clases Clave</h3>
+        <pre><code>className="bg-gray-50 rounded-2xl p-8
+  hover:bg-white hover:shadow-xl hover:-translate-y-2
+  transition-all duration-300 border border-gray-100 group"</code></pre>
+    </div>
+
+    <!-- ─── 6. GLASSMORPHISM ─── -->
+    <div class="section-card">
+        <h2>6. Efecto Glass (Glassmorphism)</h2>
+        <p>Clase utilitaria <code>.glass</code> definida en <code>index.css</code>. Se usa en la Navbar al hacer scroll y en elementos flotantes del Hero.</p>
+        <div class="glass-demo">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="glass-box">Componente con efecto Glass ✨</div>
+        </div>
+        <h3>Definición CSS</h3>
+        <pre><code>.glass {
+  background-color: rgb(255 255 255 / 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+              0 4px 6px -4px rgb(0 0 0 / 0.1);
+}</code></pre>
+    </div>
+
+    <!-- ─── 7. SIDEBAR ─── -->
+    <div class="section-card">
+        <h2>7. Navegación Sidebar (Admin)</h2>
+        <p>Panel lateral de 256px, items con <code>rounded-xl</code>. El item activo usa fondo <code>bg-brand/10</code> y texto <code>text-brand</code>.</p>
+        <div class="sidebar-demo">
+            <div class="sidebar-mock">
+                <div class="sidebar-item active"><span class="dot"></span> Dashboard</div>
+                <div class="sidebar-item"><span class="dot"></span> Productos</div>
+                <div class="sidebar-item"><span class="dot"></span> Categorías</div>
+                <div class="sidebar-item"><span class="dot"></span> Tiendas</div>
+                <div class="sidebar-item"><span class="dot"></span> Usuarios</div>
+            </div>
+            <div class="sidebar-content">← Panel de contenido principal</div>
+        </div>
+    </div>
+
+    <!-- ─── 8. ALERTAS ─── -->
+    <div class="section-card">
+        <h2>8. Alertas y Cajas de Aviso</h2>
+        <div class="alert alert-info"><strong>ℹ️ Información:</strong> Mensaje informativo general.</div>
+        <div class="alert alert-warn"><strong>⚠️ Aviso:</strong> Algo requiere atención especial.</div>
+        <div class="alert alert-ok"><strong>✅ Éxito:</strong> Operación completada correctamente.</div>
+        <div class="alert alert-err"><strong>❌ Error:</strong> Algo ha salido mal.</div>
+    </div>
+
+    <!-- ─── 9. ESPACIADO Y RADIOS ─── -->
+    <div class="section-card">
+        <h2>9. Espaciado y Border Radius</h2>
+        <h3>Radios de borde más usados</h3>
+        <table class="token-table">
+            <thead><tr><th>Token</th><th>Valor</th><th>Uso común</th></tr></thead>
+            <tbody>
+                <tr><td><code>rounded</code></td><td>4px</td><td>Badges, código inline</td></tr>
+                <tr><td><code>rounded-lg</code></td><td>8px</td><td>Botones navbar</td></tr>
+                <tr><td><code>rounded-xl</code></td><td>12px</td><td>Inputs, sidebar items, botones</td></tr>
+                <tr><td><code>rounded-2xl</code></td><td>16px</td><td>Tarjetas, paneles principales</td></tr>
+                <tr><td><code>rounded-full</code></td><td>9999px</td><td>Avatares, badges circulares</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Espaciado frecuente (padding / gap)</h3>
+        <div style="margin-top: 0.5rem;">
+            <div class="spacing-row"><span class="spacing-label">4px (p-1)</span><div class="spacing-bar" style="width:16px"></div></div>
+            <div class="spacing-row"><span class="spacing-label">8px (p-2)</span><div class="spacing-bar" style="width:32px"></div></div>
+            <div class="spacing-row"><span class="spacing-label">16px (p-4)</span><div class="spacing-bar" style="width:64px"></div></div>
+            <div class="spacing-row"><span class="spacing-label">24px (p-6)</span><div class="spacing-bar" style="width:96px"></div></div>
+            <div class="spacing-row"><span class="spacing-label">32px (p-8)</span><div class="spacing-bar" style="width:128px"></div></div>
+            <div class="spacing-row"><span class="spacing-label">48px (p-12)</span><div class="spacing-bar" style="width:192px"></div></div>
+        </div>
+    </div>
+
+    <!-- ─── 10. ANIMACIONES ─── -->
+    <div class="section-card">
+        <h2>10. Animaciones (Framer Motion)</h2>
+        <p>Se usa <code>framer-motion</code> para transiciones de entrada y micro-animaciones.</p>
+        <table class="token-table">
+            <thead><tr><th>Patrón</th><th>Propiedades</th><th>Uso</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Fade Up</strong></td>
+                    <td><code>initial={{ opacity: 0, y: 20 }}</code><br><code>animate={{ opacity: 1, y: 0 }}</code></td>
+                    <td>Títulos, textos, badges del Hero</td>
+                </tr>
+                <tr>
+                    <td><strong>Scale In</strong></td>
+                    <td><code>initial={{ opacity: 0, scale: 0.95 }}</code><br><code>animate={{ opacity: 1, scale: 1 }}</code></td>
+                    <td>Formulario de Login</td>
+                </tr>
+                <tr>
+                    <td><strong>Scroll Reveal</strong></td>
+                    <td><code>whileInView={{ opacity: 1, y: 0 }}</code><br><code>viewport={{ once: true }}</code></td>
+                    <td>Tarjetas de Features</td>
+                </tr>
+                <tr>
+                    <td><strong>Flotante</strong></td>
+                    <td><code>animate={{ y: [-10, 10, -10] }}</code><br><code>repeat: Infinity</code></td>
+                    <td>Elementos decorativos del Hero</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ─── 11. TOKENS TAILWIND ─── -->
+    <div class="section-card">
+        <h2>11. Resumen de Tokens Personalizados</h2>
+        <p>Definidos en <code>tailwind.config.js</code>:</p>
+        <pre><code>// tailwind.config.js → theme.extend
+colors: {
+  brand: {
+    light:   '#7fc4b7',
+    DEFAULT: '#5BA095',
+    dark:    '#427c73',
+  }
+},
+fontFamily: {
+  sans: ['Inter', 'system-ui', 'sans-serif'],
+}</code></pre>
+
+        <h3>Utilidad personalizada (index.css)</h3>
+        <pre><code>@layer utilities {
+  .glass {
+    background-color: rgb(255 255 255 / 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+                0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+}</code></pre>
+    </div>
+
+</div>
+
+</body>
+</html>
