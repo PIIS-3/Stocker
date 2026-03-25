@@ -41,3 +41,14 @@ El equipo de ingeniería mantiene un **Hub Central de Documentación** alojado d
 
 ---
 *Diseñado para la fluidez en logística y operaciones.*
+
+
+## Reinicio de contenedores
+
+Si necesitas actualizar los contenedores tras un cambio en el código o la configuración, ejecuta desde la carpeta `docker`:
+```bash
+docker compose down
+docker compose up --build -d
+```
+
+Esto detiene los contenedores, reconstruye las imágenes con los últimos cambios y los levanta de nuevo. Los datos de la base de datos se mantienen salvo que añadas la flag `-v`, que elimina los volúmenes.
