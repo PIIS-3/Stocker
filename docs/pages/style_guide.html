@@ -5,58 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stocker - Guía de Estilos</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
     <style>
-        :root {
-            --brand: #5BA095;
-            --brand-light: #7fc4b7;
-            --brand-dark: #427c73;
-            --brand-bg: #e6f0ee;
-            --bg-color: #f8fafc;
-            --text-color: #334155;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-        }
-
-        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
-
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        header h1 { color: var(--brand); font-size: 2.5rem; margin-bottom: 0.5rem; }
-        header p { color: #64748b; font-size: 1.2rem; }
-
-        .section-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            border-bottom: 2px solid var(--brand);
-            padding-bottom: 0.5rem;
-            display: inline-block;
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            color: #0f172a;
-        }
-
-        h3 { color: #1e293b; margin: 1.5rem 0 0.75rem; }
 
         /* Swatch Grid */
         .color-grid {
@@ -197,6 +147,10 @@
 </head>
 <body>
 
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
 <div class="container">
     <header>
         <h1>🎨 Guía de Estilos — Stocker</h1>
@@ -213,13 +167,46 @@
                 <div class="swatch-info"><strong>Brand (Default)</strong>#5BA095 · <code>bg-brand</code></div>
             </div>
             <div class="swatch">
-                <div class="swatch-color" style="background:#7fc4b7"></div>
-                <div class="swatch-info"><strong>Brand Light</strong>#7fc4b7 · <code>bg-brand-light</code></div>
+                <div class="swatch-color" style="background:#eef8f6"></div>
+                <div class="swatch-info"><strong>Brand 50</strong>#eef8f6 · <code>bg-brand-50</code></div>
             </div>
             <div class="swatch">
-                <div class="swatch-color" style="background:#427c73"></div>
-                <div class="swatch-info"><strong>Brand Dark</strong>#427c73 · <code>bg-brand-dark</code></div>
+                <div class="swatch-color" style="background:#d5ede8"></div>
+                <div class="swatch-info"><strong>Brand 100</strong>#d5ede8 · <code>bg-brand-100</code></div>
             </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#aedbd4"></div>
+                <div class="swatch-info"><strong>Brand 200</strong>#aedbd4 · <code>bg-brand-200</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#7fc4b7"></div>
+                <div class="swatch-info"><strong>Brand 300 / Light</strong>#7fc4b7 · <code>bg-brand-300</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#5BA095"></div>
+                <div class="swatch-info"><strong>Brand 400</strong>#5BA095 · <code>bg-brand-400</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#4a8a80"></div>
+                <div class="swatch-info"><strong>Brand 500</strong>#4a8a80 · <code>bg-brand-500</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#3b6f67"></div>
+                <div class="swatch-info"><strong>Brand 600</strong>#3b6f67 · <code>bg-brand-600</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#335a53"></div>
+                <div class="swatch-info"><strong>Brand 700 / Dark</strong>#335a53 · <code>bg-brand-700</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#2c4944"></div>
+                <div class="swatch-info"><strong>Brand 800</strong>#2c4944 · <code>bg-brand-800</code></div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#273d3a"></div>
+                <div class="swatch-info"><strong>Brand 900</strong>#273d3a · <code>bg-brand-900</code></div>
+            </div>
+
             <div class="swatch">
                 <div class="swatch-color" style="background:#f9fafb"></div>
                 <div class="swatch-info"><strong>Background</strong>#f9fafb · <code>bg-gray-50</code></div>
@@ -233,7 +220,7 @@
                 <div class="swatch-info"><strong>Texto Secundario</strong>#6b7280 · <code>text-gray-500</code></div>
             </div>
             <div class="swatch">
-                <div class="swatch-color" style="background:#111827; display:flex; align-items:center; justify-content:center; color:#e2e8f0; font-size:0.8rem;">"></div>
+                <div class="swatch-color" style="background:#111827"></div>
                 <div class="swatch-info"><strong>Footer BG</strong>#111827 · <code>bg-gray-900</code></div>
             </div>
             <div class="swatch">

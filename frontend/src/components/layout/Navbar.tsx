@@ -25,20 +25,20 @@ export function Navbar() {
           <span className="text-xl font-bold text-gray-800">Stocker</span>
         </Link>
 
-        {/* Desktop Menu */}
+        {/* Menú de escritorio */}
         <div className="hidden md:flex items-center gap-8">
           <Link to="/login" className="bg-brand text-white px-5 py-2 rounded-lg font-medium hover:bg-brand-dark transition-all shadow-md shadow-brand/30">
             Iniciar sesión
           </Link>
         </div>
 
-        {/* Mobile Menu Toggle */}
+        {/* Botón menú móvil */}
         <button className="md:hidden text-gray-800" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Menú móvil desplegable */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl py-4 px-6 flex flex-col gap-4">
           <Link to="/login" className="bg-brand text-white px-5 py-2 rounded-lg font-medium w-full mt-2 text-center" onClick={() => setIsMenuOpen(false)}>

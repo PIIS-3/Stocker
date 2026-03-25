@@ -1,8 +1,28 @@
 import { Plus, Edit2, Trash2, Search, Image as ImageIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+interface ProductItem {
+  id: number;
+  sku: string;
+  name: string;
+  brand: string;
+  category: string;
+  price: number;
+  status: string;
+}
+
+interface ApiProduct {
+  id_product: number;
+  sku: string;
+  product_name: string;
+  brand: string | null;
+  category: { category_name: string } | null;
+  fixed_selling_price: number;
+  status: string;
+}
+
 export default function ProductsList() {
-  const [products, setProducts] = useState<any[]>([
+  const [products, setProducts] = useState<ProductItem[]>([
     { id: 1, sku: 'SKU-ELEC-001', name: 'Smartphone Pro X', brand: 'TechNova', category: 'Electrónica', price: 899.99, status: 'Active' },
     { id: 2, sku: 'SKU-ELEC-002', name: 'Auriculares Inalámbricos', brand: 'SoundWave', category: 'Electrónica', price: 129.50, status: 'Active' },
     { id: 3, sku: 'SKU-ROPA-001', name: 'Camiseta Running Dry', brand: 'FastTrack', category: 'Ropa Deportiva', price: 29.90, status: 'Active' },
@@ -14,11 +34,9 @@ export default function ProductsList() {
     fetch('http://localhost:8000/api/products')
       .then(res => res.json())
       .then(data => {
-        console.log("🚀 Datos reales desde PostgreSQL/FastAPI (localhost:8000):", data);
-        
         // Si la BD devolvió algo, machacamos los datos de prueba harcodeados
         if (data && data.length > 0) {
-          const formattedData = data.map((item: any) => ({
+          const formattedData = data.map((item: ApiProduct) => ({
             id: item.id_product,
             sku: item.sku,
             name: item.product_name,

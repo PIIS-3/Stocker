@@ -1,4 +1,4 @@
-# Logica y caches de Python
+# Lógica y cachés de Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -7,7 +7,7 @@ env/
 .venv/
 alembic.ini
 
-# Entornos virtuales Node
+# Dependencias y builds de Node
 node_modules/
 dist/
 dist-ssr/
@@ -15,10 +15,11 @@ build/
 
 # Variables de entorno y secretos
 .env
-# .env.*
+.env.*
+!.env.example
 *.local
 
-# Configuración de IDEs
+# Configuración de editores e IDEs
 .idea/
 .vscode/
 *.swp
@@ -28,7 +29,7 @@ build/
 .DS_Store
 Thumbs.db
 
-# Logs y bases de datos locales sqlite (si las hubiera)
+# Logs y bases de datos SQLite locales (si las hubiera)
 logs/
 *.log
 *.sqlite3

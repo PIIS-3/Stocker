@@ -1,0 +1,6 @@
+# ── REGLA GLOBAL ───────────────────────────────────────────
+# Como todos revisan todo, cualquier código modificado en el
+# repositorio pedirá automáticamente la revisión de estas personas
+# en el Pull Request. Mínimo 1 aprobación necesaria (configurable en GitHub/GitLab).
+
+*       @vinanrra @aiuoki @franarxs @wejhvabewjty

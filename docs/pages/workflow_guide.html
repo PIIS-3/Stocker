@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Flujo de Trabajo (Git + Jira)</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>🔄 Flujo de Trabajo (Jira y Git)</h1>
+        <p>Reglas obligatorias de equipo sobre cómo gestionar tareas, ramas y despliegues.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>1. Gestión de Tareas (Jira)</h2>
+        <p>Todo el desarrollo en Stocker está gobernado por <strong>Jira</strong>. No se debe escribir código fuente sin que exista una tarea (issue) o subtarea asignada en el tablero activo.</p>
+        
+        <div class="step-card">
+            <h3>🔹 Integración Jira - Git</h3>
+            <ol>
+                <li>Al asignarte una tarea o subtarea en Jira, usa la integración nativa para hacer clic en <strong>"Crear Rama"</strong> (Create Branch) directamente desde el panel de Jira.</li>
+                <li>En la ventana emergente, selecciona el repositorio (<em>Stocker</em>) y la rama base (<em>main</em>). <strong>Importante:</strong> Como Jira genera el nombre automáticamente (ej. <code>P3-165-FRONT...</code>), <strong>debes teclear manualmente</strong> el prefijo <code>feature/</code>, <code>bugfix/</code> o <code>hotfix/</code> justo delante del texto generado antes de crear la rama.</li>
+                <li>Desarrolla en local dentro de esa rama.</li>
+                <li><strong>Confirmación (Commit):</strong> Todo commit DEBE contener la clave de Jira al inicio y seguir la convención del proyecto. 
+                    <br><br>📝 <em>Ejemplo:</em> <br>
+                    <code style="background:#f1f5f9; padding:0.4rem; border-radius:4px; display:inline-block; margin: 0.5rem 0; color:#0f172a;">git commit -m "P3-165 [FRONT] Inicializar proyecto React con Vite y Tailwind"</code>
+                </li>
+                <li>Desde el mismo ticket de Jira (o GitHub/GitLab), genera el <strong>Pull Request (PR)</strong> cuando hayas terminado.</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>2. Protección de la Rama Principal (main)</h2>
+        <p>Para asegurar que Stocker nunca se rompe ("Merge Hell" o código no testeable), <strong>la rama <code>main</code> está bloqueada.</strong></p>
+
+        <div class="alert alert-err">
+            <strong>❌ Prohibido (Direct Push):</strong><br>
+            Nunca debes ejecutar <code>git push origin main</code> ni programar directamente sobre esa rama.
+        </div>
+
+        <h3>Pasos para Administradores: Cómo configurar esta regla en GitHub</h3>
+        <p>El administrador del repositorio debe seguir estos pasos exactos una sola vez para blindar el proyecto:</p>
+        <ol>
+            <li>Ve a la pestaña <strong>Settings</strong> del repositorio en GitHub.</li>
+            <li>En el menú lateral izquierdo, haz clic en <strong>Branches</strong>.</li>
+            <li>Dentro de "Branch protection rules", pulsa el botón <strong>Add branch protection rule</strong>.</li>
+            <li>Para el patrón del nombre de la rama (<em>Branch name pattern</em>), escribe: <code>main</code></li>
+            <li>Marca la casilla <strong>Require a pull request before merging</strong>.</li>
+            <li>Asegúrate de marcar <strong>Require approvals</strong> (mínimo 1).</li>
+            <li>Es <strong>CRÍTICO</strong> marcar la casilla secundaria: <strong>Require review from Code Owners</strong>. Esto activará nuestro archivo <code>.github/CODEOWNERS</code>.</li>
+            <li>Haz clic en el botón verde inferior <strong>Create</strong>.</li>
+        </ol>
+    </div>
+
+    <div class="section-card">
+        <h2>3. CODEOWNERS (Propietarios de Código)</h2>
+        <p>Hemos implementado el archivo <code>.github/CODEOWNERS</code> en la raíz del repositorio. Este archivo actúa como un algoritmo de automatización silencioso:</p>
+
+        <pre><code>*   @vinanrra @aiuoki @franarxs @wejhvabewjty</code></pre>
+
+        <p><strong>¿Qué provoca esto?</strong></p>
+        <ul>
+            <li>Cuando cualquier miembro del equipo abra un Pull Request desde Jira, <strong>las plataformas detectarán automáticamente</strong> que estas 4 personas son propietarias de código.</li>
+            <li>Se les añadirá al instante a la lista de "Reviewers" sin que tú tengas que agregarlos a mano.</li>
+            <li>Cualquiera de los 4 puede aprobar (Approve) el Pull Request, permitiendo al autor fusionar el botón "Merge to main".</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>

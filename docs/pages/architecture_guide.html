@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Arquitectura Global</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .arch-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 12px;
+        }
+        .arch-layer {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--brand-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .arch-layer::after {
+            content: "↓";
+            position: absolute;
+            bottom: -1.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            color: #94a3b8;
+            font-weight: bold;
+        }
+        .arch-layer:last-child::after { display: none; }
+        .layer-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .tech-tag {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>🏛️ Arquitectura Global del Sistema</h1>
+        <p>Por qué hemos separado la aplicación en micro-capas y cómo fluyen los datos desde la Pantalla hasta el Disco Duro.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>El Flujo de Vida de un Dato (Data Flow)</h2>
+        <p>Cuando un usuario guarda un producto en el navegador, la petición atraviesa 5 capas estrictas. Esta separación nos permite aislar responsabilidades (<em>Separation of Concerns</em>), facilitando el testing y evitando el "Código Espagueti".</p>
+
+        <div class="arch-flow">
+            <div class="arch-layer" style="border-left-color: #3b82f6;">
+                <div class="layer-title">1. Capa de Interfaz (Vistas React) <span class="tech-tag">Frontend | JSX</span></div>
+                <p><strong>Dónde:</strong> <code>frontend/src/pages/</code> y <code>components/</code></p>
+                <p>Las vistas no saben <em>cómo</em> se guardan los datos. Solo recolectan el estado de los inputs (ej. con `useState`) y renderizan el diseño Tailwind. Delegan la responsabilidad llamando a un Servicio estático al hacer submit.</p>
+            </div>
+
+            <div class="arch-layer" style="border-left-color: #06b6d4;">
+                <div class="layer-title">2. Capa de Servicios Locales <span class="tech-tag">Frontend | Axios</span></div>
+                <p><strong>Dónde:</strong> <code>frontend/src/services/</code></p>
+                <p>Módulos como <code>products.service.ts</code> encapsulan las llamadas Axios <code>api.post()</code>. Son el único puente que conoce la IP o la URL del Backend. Gracias a la instancia central en <code>api.ts</code>, inyectan automáticamente el Token de Autorización.</p>
+            </div>
+
+            <div class="arch-layer" style="border-left-color: #10b981;">
+                <div class="layer-title">3. Enrutadores y Endpoints HTTP <span class="tech-tag">Backend | FastAPI</span></div>
+                <p><strong>Dónde:</strong> <code>backend/app/api/endpoints/</code> y <code>router.py</code></p>
+                <p>Son los "Guardias de Seguridad". Reciben el JSON del frontend, y usando <em>Pydantic</em> (Modelos Create/Response), validan estrictamente que contenga los campos correctos. Si el JSON está mal, lanzan un Error 422 Automático. Si está bien, delegan la lógica a la capa CRUD.</p>
+            </div>
+
+            <div class="arch-layer" style="border-left-color: #f59e0b;">
+                <div class="layer-title">4. Capa Lógica CRUD <span class="tech-tag">Backend | Python Puro</span></div>
+                <p><strong>Dónde:</strong> <code>backend/app/crud/</code></p>
+                <p>Funciones aisladas que contienen la "Lógica de Negocio". Transforman los datos, calculan totales, gestionan stock y deciden cómo interactuar con los Modelos SQL. <strong>Nunca</strong> saben que son parte de una API, no manejan <code>Requests</code> HTTP, solo puras variables Python. Son la capa más fácil de testear (Pruebas Unitarias).</p>
+            </div>
+
+            <div class="arch-layer" style="border-left-color: #ef4444;">
+                <div class="layer-title">5. Capa de Modelos (ORM) <span class="tech-tag">Backend | SQLModel / Postgres</span></div>
+                <p><strong>Dónde:</strong> <code>backend/app/models/</code> y <code>database.py</code></p>
+                <p>Traducen las Clases Python que recibió el CRUD en verdaderas sentencias SQL instanciando la Sesión segura y forzando los Commits en el motor PostgreSQL remoto.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
