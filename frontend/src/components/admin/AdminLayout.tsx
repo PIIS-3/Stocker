@@ -4,12 +4,12 @@ import { Sidebar } from './Sidebar';
 export function AdminLayout() {
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden">
-      {/* Sidebar Navigation */}
+      {/* Barra lateral de navegación */}
       <Sidebar />
 
-      {/* Main Content Area */}
+      {/* Área de contenido principal */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Topbar */}
+        {/* Barra superior */}
         <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-end px-8 shadow-sm z-10 w-full">
            <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity">
               <div className="text-right hidden md:block">
@@ -22,7 +22,7 @@ export function AdminLayout() {
            </div>
         </header>
 
-        {/* Scrollable Workspace */}
+        {/* Zona de trabajo con scroll */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <Outlet />
         </main>

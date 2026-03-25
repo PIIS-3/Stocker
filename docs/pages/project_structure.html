@@ -4,66 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stocker - Estructura de Directorios y Dependencias</title>
+    <link rel="stylesheet" href="../styles.css">
     <style>
-        :root {
-            --brand-color: #5BA095;
-            --brand-light: #e6f0ee;
-            --bg-color: #f8fafc;
-            --text-color: #334155;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        h1 {
-            color: var(--brand-color);
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: #64748b;
-            font-size: 1.2rem;
-        }
-
-        .section-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        h2 {
-            border-bottom: 2px solid var(--brand-color);
-            padding-bottom: 0.5rem;
-            display: inline-block;
-            margin-top: 0;
-            color: #0f172a;
-        }
-
         .tree {
             background-color: #1e293b;
             color: #e2e8f0;
@@ -75,46 +17,21 @@
             line-height: 1.5;
             margin-bottom: 1.5rem;
         }
-
-        .tree .comment {
-            color: #94a3b8;
-            font-style: italic;
-        }
+        .tree .comment { color: #94a3b8; font-style: italic; }
+        .tree .folder { color: #38bdf8; font-weight: bold; }
+        .tree .file { color: #e2e8f0; }
         
-        .tree .folder {
-            color: #38bdf8;
-            font-weight: bold;
-        }
-
-        .dependency-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .dependency-item {
-            background: var(--brand-light);
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--brand-color);
-        }
-
-        .dependency-name {
-            font-weight: bold;
-            color: #0f172a;
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .dependency-desc {
-            font-size: 0.9rem;
-            color: #475569;
-            margin: 0;
-        }
+        .dependency-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .dependency-item { background: var(--brand-bg); padding: 1rem 1.5rem; border-radius: 8px; border-left: 4px solid var(--brand); }
+        .dependency-name { font-weight: bold; color: #0f172a; font-size: 1.1rem; margin-bottom: 0.25rem; }
+        .dependency-desc { font-size: 0.9rem; color: #475569; margin: 0; }
     </style>
 </head>
 <body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
 
 <div class="container">
     <header>
@@ -129,7 +46,8 @@
 ├── <span class="folder">backend/</span>              <span class="comment"># Código fuente y configuraciones de la API Python</span>
 ├── <span class="folder">frontend/</span>             <span class="comment"># Código fuente de React (Interfaz de usuario)</span>
 ├── <span class="folder">docker/</span>               <span class="comment"># Archivos de orquestación (docker-compose.yml y envs)</span>
-├── <span class="folder">docs/</span>                 <span class="comment"># Manuales HTML (Contenedores, Arquitectura y Getting Started)</span>
+├── <span class="folder">docs/</span>                 <span class="comment"># Manuales HTML (Stocker Documentation)</span>
+├── .editorconfig         <span class="comment"># Estilos universales para editores e IDEs del equipo</span>
 └── README.md             <span class="comment"># Instrucciones de inicio rápido</span>
         </div>
     </div>
@@ -141,13 +59,13 @@
         <div class="tree">
 <span class="folder">backend/</span>
 ├── <span class="folder">alembic/</span>            <span class="comment"># Contiene el historial de migraciones ('versions/') generado por Alembic</span>
-├── alembic.ini         <span class="comment"># Configuración maestra de Alembic y conexión a DB</span>
+├── alembic.ini         <span class="comment"># Configuración de Alembic y conexión a DB</span>
 ├── <span class="folder">app/</span>
-│   ├── <span class="folder">api/</span>            <span class="comment"># Endpoints URL ('/api/products', '/api/users'). El puente HTTP con el frontend</span>
+│   ├── <span class="folder">api/</span>            <span class="comment"># Endpoints URL. Incluye /endpoints/* y el router.py centralizado</span>
 │   ├── <span class="folder">crud/</span>           <span class="comment"># Funciones lógicas limpias de Base de Datos ('get_user', 'create_product')</span>
-│   ├── models.py       <span class="comment"># El 'ADN' de tus tablas SQL. Define Clases usando SQLModel (fusión de Pydantic+SQLAlchemy)</span>
-│   ├── database.py     <span class="comment"># Creación de la sesión ('Session') hacia PostgreSQL para inyectar en las rutas</span>
-│   └── main.py         <span class="comment"># Punto de arranque de Uvicorn, engloba los Routers y la política de seguridad CORS</span>
+│   ├── <span class="folder">models/</span>         <span class="comment"># El 'ADN' de tus tablas SQL. Defines Clases usando SQLModel (un archivo por entidad)</span>
+│   ├── database.py     <span class="comment"># Creación de la sesión ('Session') hacia PostgreSQL (con pool_pre_ping)</span>
+│   └── main.py         <span class="comment"># Punto de arranque de Uvicorn, engloba el Router centralizado y CORS</span>
 └── requirements.txt    <span class="comment"># Listado absoluto de librerías para que Docker las instale</span>
         </div>
 
@@ -196,12 +114,15 @@
 <span class="folder">frontend/</span>
 ├── <span class="folder">src/</span>
 │   ├── <span class="folder">assets/</span>         <span class="comment"># Imágenes estáticas y logo base</span>
-│   ├── <span class="folder">components/</span>     <span class="comment"># Componentes reusables (Layouts globales, Navbar, Footer, Sidebar, Inputs)</span>
+│   ├── <span class="folder">components/</span>     <span class="comment"># Componentes reusables (Layouts globales, Navbar, Footer, Sidebar)</span>
 │   ├── <span class="folder">pages/</span>          <span class="comment"># Vistas completas a las que el usuario accede vía URL ('Home', 'Login', 'Dashboard')</span>
-│   ├── App.tsx         <span class="comment"># Componente Orquestador de URLs (React Router) inyecta las páginas en pantalla principal</span>
+│   ├── <span class="folder">services/</span>       <span class="comment"># Lógica de llamadas a la API (api.ts base y servicios CRUD puntuales)</span>
+│   ├── <span class="folder">hooks/</span>          <span class="comment"># Hooks custom de React (estado y lógica compleja reutilizable)</span>
+│   ├── App.tsx         <span class="comment"># Componente Orquestador de URLs (React Router) inyecta layouts</span>
 │   ├── index.css       <span class="comment"># Inyección de instrucciones de TailwindCSS a todo el proyecto</span>
-│   └── main.tsx        <span class="comment"># Punto de arranque donde React se inserta en el div '#root' del index.html</span>
-├── index.html          <span class="comment"># Única página HTML real que viaja al navegador (SPA)</span>
+│   └── main.tsx        <span class="comment"># Punto de arranque donde React se inserta en el div '#root'</span>
+├── .prettierrc         <span class="comment"># Configuración de estandarizado automático de formato de código al guardar</span>
+├── eslint.config.js    <span class="comment"># Reglas de estandarización lógica de JS/TS (evita conflictos de equipo)</span>
 ├── vite.config.ts      <span class="comment"># Configuración del servidor de desarrollo NodeJS/Vite</span>
 └── package.json        <span class="comment"># Manifiesto de dependencias que se leen en 'npm install'</span>
         </div>

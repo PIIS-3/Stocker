@@ -6,18 +6,21 @@ Stocker es una plataforma full-stack moderna diseñada para el control de invent
 
 El proyecto está construido bajo una red orquestada de **Microservicios Docker**:
 
-- **Frontend:** React 18, ViteJS 8, TailwindCSS y Framer Motion (Ejecutándose sobre contenedor `stocker_web` Node V25).
+- **Frontend:** React 18, ViteJS, TailwindCSS, Axios (Ejecutándose sobre contenedor `stocker_web` Node V25).
 - **Backend:** FastAPI, Uvicorn, SQLModel (Pydantic + SQLAlchemy) y Alembic (Ejecutándose sobre contenedor `stocker_api` Python 3.12).
 - **Base de Datos:** PostgreSQL 16 (Ejecutándose sobre contenedor `stocker_db` Alpine).
 
-## 🚀 Despliegue en Desarrollo (Local)
+---
+
+## 🚀 Despliegue Rápido en Desarrollo (Local)
 
 El proyecto utiliza Docker Compose para aislar dependencias sin ensuciar tu sistema operativo anfitrión. 
 
-### 1. Iniciar el entorno desde cero
-Sitúate en la raíz del proyecto y corre el comando Compose. Esto descargará, instalará y preparará todo tu ecosistema.
+### 1. Iniciar el entorno
+Sitúate en la raíz del proyecto, copia las variables de entorno oficiales y corre el comando Compose. Esto descargará, instalará y preparará todo tu ecosistema.
 ```bash
 cd docker
+cp .env.example .env
 docker compose up --build -d
 ```
 * **Panel Frontend React:** [http://localhost:5173](http://localhost:5173)
@@ -25,26 +28,16 @@ docker compose up --build -d
 * **Documentación SWAGGER Interactiva:** [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### 2. Poblar la Base de Datos Inicial (Seeding)
-Cuando levantas el proyecto por primera vez, PostgreSQL estara vacío. Alembic (gestor de migraciones) generará las tablas automáticas los primeros 10 segundos, pero debes inyectar los datos mock manualmente para habilitar el sistema.
+Cuando levantas el proyecto por primera vez, PostgreSQL estara vacío. Alembic generará las tablas automáticas los primeros 10 segundos, pero debes inyectar los datos básicos mock manualmente para habilitar el sistema.
 ```bash
-cd docker
 docker exec -i stocker_db psql -U postgres -d stocker < ../database/seed.sql
 ```
 
-## 📖 Documentación Ampliada
+## 📖 Documentación Ampliada para Desarrolladores
 
-Puedes encontrar toda la documentación oficial visual en HTML pre-compilado en la carpeta `/docs`. Abre cualquier archivo con doble click en tu navegador favorito:
+El equipo de ingeniería mantiene un **Hub Central de Documentación** alojado directamente en el código fuente. Contiene toda la información vital sobre flujos de trabajo (Jira), convenciones de equipo, guías de estilo, explicaciones de arquitectura y reglas de Git.
 
-- **`docs/getting_started.html`**:  Manual de Operaciones completo (Cómo borrar cachés, migrar modelos y gestionar los contenedores diarios).
-- **`docs/project_structure.html`**: Árbol de directorios detallado y explicación sobre qué rol cumple cada librería instalada.
-- **`docs/containers.html`**: Guía técnica DevOps sobre cómo se intercomunican los contenedores de red a red.
-
-## 💾 Cambios Estructurales (Alembic)
-Si añades/eliminas tablas de `backend/app/models.py`, actualiza la base de datos disparando sobre el contenedor `stocker_api`:
-```bash
-docker exec stocker_api alembic revision --autogenerate -m "Tu mensaje descriptivo"
-docker exec stocker_api alembic upgrade head
-```
+👉 **Abre el archivo [`docs/index.html`](docs/index.html) en tu navegador local para acceder al portal interactivo interno.**
 
 ---
-*Diseñado con 🤍 para la fluidez en logística y operaciones.*
+*Diseñado para la fluidez en logística y operaciones.*

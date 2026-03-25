@@ -4,87 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stocker - Guía de Operaciones (Getting Started)</title>
-    <style>
-        :root {
-            --brand-color: #5BA095;
-            --bg-color: #f8fafc;
-            --text-color: #334155;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        h1 {
-            color: var(--brand-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .step-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-left: 5px solid var(--brand-color);
-        }
-
-        h3 {
-            margin-top: 0;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        pre {
-            background: #1e293b;
-            color: #38bdf8;
-            padding: 1rem;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-family: monospace;
-            border: 1px solid #334155;
-        }
-
-        code {
-            font-family: monospace;
-            background: #e2e8f0;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            color: #ef4444;
-        }
-
-        .warning-box {
-            background-color: #fffbeb;
-            border-left: 5px solid #f59e0b;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 4px;
-        }
-    </style>
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
 
 <div class="container">
     <header>
@@ -98,8 +24,10 @@
 
     <!-- STARTUP -->
     <div class="step-card">
-        <h3>1. Encender el Proyecto (Arranque Limpio)</h3>
-        <p>Este comando construye las imágenes (Frontend en Node 25, Backend en Python 3.12 y Database en Postgres 16) y lanza los tres contenedores en segundo plano <code>-d</code>.</p>
+        <h3>1. Preparar y Encender el Proyecto</h3>
+        <p>Primero, crea un archivo <code style="color:var(--text-color)">.env</code> copiando el de ejemplo dentro del directorio <code>/docker</code>:</p>
+        <pre><code>cp .env.example .env</code></pre>
+        <p>Luego, este comando construye las imágenes (Frontend en Node 25, Backend en Python 3.12 y Database en Postgres 16) y lanza los tres contenedores en segundo plano <code>-d</code>.</p>
         <pre><code>docker compose up --build -d</code></pre>
         <p>Una vez completado, las herramientas estarán en:</p>
         <ul>
@@ -119,7 +47,7 @@
     <!-- MIGRATIONS -->
     <div class="step-card">
         <h3>3. Realizar cambios en la Base de Datos (Migraciones)</h3>
-        <p>Si alteras el archivo <code>models.py</code> de Python para añadir o quitar columnas, debes ordenarle a Alembic que compare el modelo nuevo con el antiguo de Postgres y genere el script de actualización.</p>
+        <p>Si alteras algún archivo dentro del paquete <code>models/</code> de Python para añadir o quitar columnas, debes ordenarle a Alembic que compare el modelo nuevo con el antiguo de Postgres y genere el script de actualización.</p>
         <ol>
             <li>Genera la captura autogenerada:<br>
                 <code>docker exec stocker_api alembic revision --autogenerate -m "He añadido una columna de Stock"</code>

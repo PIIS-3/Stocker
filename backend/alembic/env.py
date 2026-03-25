@@ -5,47 +5,40 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+# Objeto de configuración de Alembic — proporciona acceso a los
+# valores del archivo .ini que se está utilizando.
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+# Configurar los loggers de Python usando el archivo .ini.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 import os
 import sys
 
-# Añadir el directorio /app al path de python para que Alembic pueda importar 'app.models'
+# Añadir el directorio raíz del backend al path de Python para que
+# Alembic pueda importar el paquete 'app' y sus modelos correctamente.
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.core.config import settings
 from sqlmodel import SQLModel
-import app.models  # Asegurarnos de que los modelos se registran en SQLModel.metadata
+import app.models  # noqa: F401 – Importación necesaria para que SQLModel registre los modelos en metadata
 
-# add your model's MetaData object here
-# for 'autogenerate' support
+# Metadata de los modelos — Alembic la usa para detectar cambios
+# en el esquema y generar migraciones automáticas (autogenerate).
 target_metadata = SQLModel.metadata
 
-# Override the database url con la variable de entorno de docker-compose
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+# Sobreescribimos la URL de conexión del .ini con la que viene de
+# las variables de entorno (settings), para que sea consistente con
+# la configuración del docker-compose o del .env local.
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
+    """Ejecutar migraciones en modo 'offline'.
 
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
+    Configura el contexto solo con la URL, sin crear un motor.
+    Útil para generar scripts SQL sin conexión a la base de datos.
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -60,11 +53,10 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+    """Ejecutar migraciones en modo 'online'.
 
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
+    Crea un motor de base de datos y ejecuta las migraciones
+    directamente contra la base de datos conectada.
     """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),

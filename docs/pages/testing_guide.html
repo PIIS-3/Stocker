@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Estrategia de Testing</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .test-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .test-box h3 { margin-top: 0; }
+        .feature-coming {
+            opacity: 0.7;
+            pointer-events: none;
+            position: relative;
+        }
+        .feature-coming::before {
+            content: "PRÓXIMAMENTE (FASE 6)";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-10deg);
+            background: var(--brand-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container feature-coming">
+    <header>
+        <h1>🧪 Guía y Estrategia de Testing (TDD)</h1>
+        <p>Documento de planificación sobre cómo aseguraremos la calidad del software (Próxima Fase de Desarrollo).</p>
+    </header>
+
+    <div class="section-card">
+        <h2>Backend (Pytest + FastAPI.TestClient)</h2>
+        <p>Gracias a la separación de la Lógica CRUD, probar el backend será extremadamente modular.</p>
+
+        <div class="test-box">
+            <h3>1. Pruebas Unitarias (CRUD)</h3>
+            <p><strong>Herramienta:</strong> <code>pytest</code></p>
+            <p>Se crearán funciones <code>test_create_product()</code> en la carpeta <code>backend/tests/crud/</code>. Mockearemos (fingiremos) la Sesión de Base de Datos para probar la lógica sin afectar al disco duro.</p>
+        </div>
+
+        <div class="test-box">
+            <h3>2. Pruebas de Integración (API Endpoints)</h3>
+            <p><strong>Herramienta:</strong> <code>TestClient</code> de FastAPI</p>
+            <p>Lanzaremos peticiones HTTP falsas a <code>/api/products</code> y comprobaremos si nos devuelve Pydantic Validation Errors (Error 422) al enviar JSON corruptos o códigos 200 cuando es correcto.</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Frontend (Vitest + React Testing Library)</h2>
+        <p>Vite ya incluye el entorno nativo de Vitest (mucho más rápido que el antiguo Jest).</p>
+
+        <div class="test-box">
+            <h3>1. Unit Tests de Componentes Visuales</h3>
+            <p>Comprobaremos que componentes aislados (como el <code>Navbar</code>) renderizan correctamente si le inyectamos Props como "Usuario Logeado".</p>
+        </div>
+
+        <div class="test-box">
+            <h3>2. Mocks de Interceptores Axios</h3>
+            <p>Simularemos respuestas de red en la capa <code>services/</code> para comprobar cómo reaccionan las pantallas a un Error de Red (500 Server Error) de manera segura.</p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

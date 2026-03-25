@@ -1,25 +1,26 @@
-# Backend Docker ignores
-# Evita copiar archivos cacheados e innecesarios al contenedor Python
+# Ignorados de Docker para el backend
+# Evita copiar archivos cacheados e innecesarios al contexto de build del contenedor Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
 
-# Entornos virtuales locales
+# Entornos virtuales locales (no se deben copiar al contenedor)
 env/
 venv/
 .venv/
 
-# Secretos
+# Variables de entorno y secretos (se inyectan en runtime, no en build)
 .env
 .env.*
+!.env.example
 
-# GIT
+# Historial de Git (innecesario dentro del contenedor)
 .git
 .gitignore
 
-# Configuración IDE y SO
+# Configuración de editores y sistema operativo
 .vscode/
 .idea/
 .DS_Store

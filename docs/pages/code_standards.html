@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Estándares de Código</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .rule-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .rule-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .rule-code {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .code-bad { border-top: 3px solid #ef4444; }
+        .code-bad::before { content: "❌ Incorrecto"; display: block; color: #ef4444; font-weight: bold; margin-bottom: 0.5rem; }
+        .code-good { border-top: 3px solid #22c55e; }
+        .code-good::before { content: "✅ Correcto"; display: block; color: #22c55e; font-weight: bold; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>📖 Guía de Estándares de Código</h1>
+        <p>Esta guía define las reglas de formato estático y las convenciones establecidas para evitar conflictos de equipo.</p>
+    </header>
+
+    <div class="alert alert-info">
+        <strong>Preparación del Entorno (VS Code):</strong> Es obligatorio instalar las extensiones <b>EditorConfig</b>, <b>Prettier</b> y <b>ESLint</b>, y tener activado <em>"Format on Save"</em> en los ajustes.
+    </div>
+
+    <div class="section-card">
+        <h2>1. Herramientas de Estandarización</h2>
+        
+        <div class="rule-card">
+            <div class="rule-title">⚙️ EditorConfig (Aplica a todo el repositorio)</div>
+            <p>Se encarga de homogeneizar el formato más básico a nivel de editor, sin importar si usas VS Code, WebStorm o PyCharm.</p>
+            <ul>
+                <li><strong>Finales de línea:</strong> LF (formato Unix). Bloquea que un desarrollador de Windows introduzca finales de línea CRLF que rompen scripts de bash y causan falsos difs en Git.</li>
+                <li><strong>Indentación:</strong> 4 espacios estrictos para Python (PEP 8), 2 espacios para Frontend y config files.</li>
+                <li><strong>Automático:</strong> Recorta espacios vacíos al final de las líneas de código y añade una nueva línea en blanco al final de cada archivo.</li>
+            </ul>
+        </div>
+
+        <div class="rule-card">
+            <div class="rule-title">✨ Prettier (Solo Frontend)</div>
+            <p>Se enfoca ciegamente en el envoltorio visual del código: longitud de líneas, comillas, etc.</p>
+            <ul>
+                <li><strong>Comillas simples:</strong> Forzadas en JS/TS en lugar de dobles (excepto en JSX/HTML).</li>
+                <li><strong>Punto y coma (;):</strong> Obligatorios en sentencias.</li>
+                <li><strong>Ancho máximo:</strong> El código no debe superar los 100 caracteres antes de saltar la línea automáticamente.</li>
+            </ul>
+        </div>
+
+        <div class="rule-card">
+            <div class="rule-title">🚨 ESLint (Solo Frontend)</div>
+            <p>Revisa la _lógica_ y avisa de malas prácticas o errores de TypeScript.</p>
+            <ul>
+                <li><strong>Eliminación de `console.log`:</strong> Lanza advertencias (amarillo) si olvidas un <code>console.log</code>. <br><em>Excepción:</em> Si es necesario (como el logger global de la API), usar `// eslint-disable-next-line no-console`.</li>
+                <li><strong>Imports de Tipos:</strong> Obliga a usar <code>import type</code> cuando solo importas interfaces TypeScript, para que Vite las purgue mejor al construir.</li>
+                <li><strong>Variables no usadas:</strong> Lanza un aviso si declaras algo y nunca lo usas. Si es intencionado, predícelo con guión bajo (ej: <code>_req</code> o <code>_res</code>).</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>2. Reglas de Documentación</h2>
+        <p>Una base de código mantenible se autodescribe, pero requiere claridad humana para las decisiones inusuales.</p>
+
+        <div class="rule-card">
+            <div class="rule-title">💬 Idioma de los Comentarios</div>
+            <p>A diferencia del código (que va siempre cifrado en inglés), <strong>el 100% de los comentarios de equipo deben ir en Español</strong>.</p>
+            
+            <div class="rule-code">
+                <div class="code-bad">
+<pre><code>// Disable user input if loading occurs
+if (isLoading) { ... }</code></pre>
+                </div>
+                <div class="code-good">
+<pre><code>// Deshabilita el input del usuario mientras la llamada a la API está en curso
+if (isLoading) { ... }</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="rule-card">
+            <div class="rule-title">🤔 Comentarios Descriptivos (El Porqué)</div>
+            <p>El código explica <em>qué</em> pasa, pero el comentario debe explicar el <em>por qué</em> (motivos de negocio, riesgos técnicos, arquitecturas).</p>
+            
+            <div class="rule-code">
+                <div class="code-bad">
+<pre><code># Configura el echo a True
+engine = create_engine(db_url, echo=True)</code></pre>
+                </div>
+                <div class="code-good">
+<pre><code># echo=True le indica a SQLAlchemy que imprima 
+# en consola las consultas SQL puras. 
+# Activarlo solo para depuración en desarrollo local.
+engine = create_engine(db_url, echo=True)</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>3. Nombrado de Variables (Naming Conventions)</h2>
+        <p>Seguir el estándar histórico de los respectivos lenguajes.</p>
+
+        <div class="rule-card">
+            <div class="rule-title">🐍 Backend (Python)</div>
+            <ul>
+                <li><strong>Variables y funciones:</strong> <code>snake_case</code> (ej: <code>user_name</code>, <code>get_product()</code>)</li>
+                <li><strong>Clases (Modelos):</strong> <code>PascalCase</code> (ej: <code>ProductTemplate</code>, <code>EmployeeBase</code>)</li>
+                <li><strong>Constantes:</strong> <code>UPPER_SNAKE_CASE</code> (ej: <code>MAX_RETRIES = 3</code>)</li>
+            </ul>
+        </div>
+
+        <div class="rule-card">
+            <div class="rule-title">⚛️ Frontend (React/TypeScript)</div>
+            <ul>
+                <li><strong>Variables y funciones:</strong> <code>camelCase</code> (ej: <code>userName</code>, <code>handleSubmit()</code>)</li>
+                <li><strong>Componentes React:</strong> <code>PascalCase</code> (ej: <code>ProductsList()</code>, <code>AdminLayout()</code>)</li>
+                <li><strong>Interfaces de TypeScript:</strong> <code>PascalCase</code> (ej: <code>ApiProduct</code>)</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Centro de Documentación</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .hub-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            border-top: 4px solid var(--border-color);
+        }
+        .hub-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .hub-card.primary { border-top-color: var(--brand-color); }
+        .hub-card.secondary { border-top-color: #38bdf8; }
+        .hub-card.tertiary { border-top-color: #a855f7; }
+        .hub-card.quaternary { border-top-color: #22c55e; }
+
+        .hub-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .hub-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+        .hub-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📚 Hub de Documentación</h1>
+        <p>Centro de conocimiento oficial del proyecto Stocker. Diseñado para ser leído de arriba a abajo por nuevos miembros del equipo.</p>
+    </header>
+
+    <h2>🚀 1. Primeros Pasos y Operaciones</h2>
+    <div class="hub-grid" style="margin-bottom: 3rem;">
+        <a href="pages/getting_started.html" class="hub-card primary">
+            <div class="hub-icon">🌱</div>
+            <div class="hub-title">Getting Started</div>
+            <div class="hub-desc">Aprende a instalar las dependencias locales, arrancar Docker, ejecutar Alembic y poblar PostgreSQL por primera vez.</div>
+        </a>
+        <a href="pages/workflow_guide.html" class="hub-card primary">
+            <div class="hub-icon">🔄</div>
+            <div class="hub-title">Flujo Jira y Git</div>
+            <div class="hub-desc">Políticas obligatorias de Pull Requests, convenciones de commit (tickets Jira), CODEOWNERS y protección de la rama `main`.</div>
+        </a>
+        <a href="pages/containers.html" class="hub-card primary">
+            <div class="hub-icon">🐳</div>
+            <div class="hub-title">Contenedores Docker</div>
+            <div class="hub-desc">Topología de red. Detalles técnicos sobre cómo la API, el Frontend y PostgreSQL se descubren localmente.</div>
+        </a>
+    </div>
+
+    <h2>🏗️ 2. Arquitectura de Código</h2>
+    <div class="hub-grid" style="margin-bottom: 3rem;">
+        <a href="pages/architecture_guide.html" class="hub-card secondary">
+            <div class="hub-icon">🏛️</div>
+            <div class="hub-title">Arquitectura Global</div>
+            <div class="hub-desc">Diagrama mental de las capas: Routers, CRUD, Servicios Axios y Layouts. El viaje de los datos desde la UI a SQL.</div>
+        </a>
+        <a href="pages/project_structure.html" class="hub-card secondary">
+            <div class="hub-icon">📂</div>
+            <div class="hub-title">Estructura de Carpetas</div>
+            <div class="hub-desc">Mapa del árbol completo del repositorio y explicaciones sobre qué rol cumple cada librería clave del ecosistema.</div>
+        </a>
+        <a href="pages/crud_guide.html" class="hub-card secondary">
+            <div class="hub-icon">🛠️</div>
+            <div class="hub-title">Guía de Desarrollo CRUD</div>
+            <div class="hub-desc">Tutorial paso a paso construyendo un módulo completo desde la Base de Datos hasta la Interfaz Visual React.</div>
+        </a>
+    </div>
+
+    <h2>🧪 3. Estandarización y Calidad</h2>
+    <div class="hub-grid">
+        <a href="pages/testing_guide.html" class="hub-card quaternary">
+            <div class="hub-icon">🧪</div>
+            <div class="hub-title">Guía de Testing (TDD)</div>
+            <div class="hub-desc">Estrategias, planeación y ejemplos teóricos sobre QA automatizado mediante FastAPI TestClient y Vitest.</div>
+        </a>
+        <a href="pages/style_guide.html" class="hub-card tertiary">
+            <div class="hub-icon">🖌️</div>
+            <div class="hub-title">Guía de Estilos UI</div>
+            <div class="hub-desc">Estándares visuales Tailwind. Paleta brand oficial 50-900, espaciados, tipografía y diseño de interacciones.</div>
+        </a>
+        <a href="pages/code_standards.html" class="hub-card tertiary">
+            <div class="hub-icon">📜</div>
+            <div class="hub-title">Estándares de Código</div>
+            <div class="hub-desc">Reglas estrictas de linters compartidos: usos obligados de EditorConfig, Prettier, ESLint y reglas para comentarios.</div>
+        </a>
+    </div>
+
+    <footer style="margin-top: 4rem; text-align: center; color: #94a3b8; font-size: 0.85rem;">
+        Stocker Internal Wiki &copy; 2026. Mantenido por el equipo de ingeniería.
+    </footer>
+</div>
+
+</body>
+</html>

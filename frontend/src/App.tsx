@@ -1,6 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Navbar } from './components/layout/Navbar';
-import { Footer } from './components/layout/Footer';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { PublicLayout } from './components/layout/PublicLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Contact from './pages/Contact';
@@ -19,24 +18,16 @@ function App() {
     <Router>
       <div className="font-sans antialiased text-gray-900 bg-gray-50 flex flex-col min-h-screen">
         <Routes>
-          {/* Main Public Routes Layout */}
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <div className="flex-grow w-full">
-                <Home />
-              </div>
-              <Footer />
-            </>
-          } />
-          
-          {/* Other Public Layouts */}
-          <Route path="/login" element={<><Navbar /><div className="flex-grow w-full"><Login /></div><Footer /></>} />
-          <Route path="/contacto" element={<><Navbar /><div className="flex-grow w-full"><Contact /></div><Footer /></>} />
-          <Route path="/privacidad" element={<><Navbar /><div className="flex-grow w-full"><Privacy /></div><Footer /></>} />
-          <Route path="/terminos" element={<><Navbar /><div className="flex-grow w-full"><Terms /></div><Footer /></>} />
+          {/* Rutas públicas — comparten Navbar y Footer a través de PublicLayout */}
+          <Route element={<PublicLayout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="contacto" element={<Contact />} />
+            <Route path="privacidad" element={<Privacy />} />
+            <Route path="terminos" element={<Terms />} />
+          </Route>
 
-          {/* Admin Routes with nested layout */}
+          {/* Rutas del panel de administración — layout con Sidebar */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="products" element={<ProductsList />} />
@@ -44,10 +35,13 @@ function App() {
             <Route path="stores" element={<StoresList />} />
             <Route path="users" element={<UsersList />} />
           </Route>
+
+          {/* Ruta comodín — redirige rutas desconocidas al inicio */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
