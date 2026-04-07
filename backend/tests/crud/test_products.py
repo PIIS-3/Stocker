@@ -31,7 +31,7 @@ def test_get_product_templates(session: Session):
 
     # 3. Probar la función CRUD
     products = get_product_templates(session)
-    
+
     assert len(products) == 2
     assert products[0].product_name == "Smartphone X"
     assert products[1].sku == "SKU002"
