@@ -7,7 +7,7 @@
 from .enums import StatusEnum, RoleEnum
 
 # ── Categoría ────────────────────────────────────────────────────────
-from .category import CategoryBase, Category
+from .category import CategoryBase, Category, CategoryResponse
 
 # ── Producto ─────────────────────────────────────────────────────────
 from .product import ProductTemplateBase, ProductTemplate, ProductTemplateResponse
@@ -28,6 +28,7 @@ __all__ = [
     # Categoría
     "CategoryBase",
     "Category",
+    "CategoryResponse",
     # Producto
     "ProductTemplateBase",
     "ProductTemplate",
