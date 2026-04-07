@@ -13,7 +13,7 @@ from .category import CategoryBase, Category
 from .product import ProductTemplateBase, ProductTemplate, ProductTemplateResponse
 
 # ── Tienda ───────────────────────────────────────────────────────────
-from .store import StoreBase, Store
+from .store import StoreBase, Store, StoreCreate, StoreUpdate, StoreResponse
 
 # ── Rol ──────────────────────────────────────────────────────────────
 from .role import RoleBase, Role
@@ -35,6 +35,9 @@ __all__ = [
     # Tienda
     "StoreBase",
     "Store",
+    "StoreCreate",
+    "StoreUpdate",
+    "StoreResponse",
     # Rol
     "RoleBase",
     "Role",
