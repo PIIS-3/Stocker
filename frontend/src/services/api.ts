@@ -25,9 +25,14 @@ api.interceptors.request.use(
       console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
     }
 
-    // Futuro: adjuntar token de autenticación aquí
+    // adjuntar token de autenticación aquí
     // const token = localStorage.getItem('token');
     // if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    const token = localStorage.getItem('stocker_access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
     return config;
   },
@@ -44,8 +49,12 @@ api.interceptors.response.use(
       const { status } = error.response;
 
       if (status === 401) {
-        // Futuro: redirigir a login o limpiar sesión
         console.warn('[API] No autorizado — 401');
+        localStorage.removeItem('stocker_access_token');
+
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
       }
 
       if (status >= 500) {

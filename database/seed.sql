@@ -22,22 +22,22 @@ INSERT INTO category (category_name, description, status) VALUES
 ON CONFLICT (category_name) DO NOTHING;
 
 -- 4. USUARIOS (Admin, Manager y Staff)
--- Password: 'admin123' (hash simulado para pruebas)
+-- Password de prueba: 'admin123' (hasheada con Argon2)
 INSERT INTO employee (first_name, last_name, username, hashed_password, role_id, store_id, status) VALUES 
 (
-  'Admin', 'Sistema', 'superadmin', '$2b$12$N9uXZeB9lP...mockedhash',
+  'Admin', 'Sistema', 'superadmin', '$argon2id$v=19$m=65536,t=3,p=4$Hz33vNxAOrEonJ5S8qY3Ew$vmGJaWcij8ytidYDL9eh5mONl++iWTJHZcauvFIIA2A',
   (SELECT id_role FROM role WHERE role_name = 'SuperAdmin' LIMIT 1),
   (SELECT id_store FROM store LIMIT 1),
   'Active'
 ),
 (
-  'Ana', 'Gerente', 'manager_madrid', '$2b$12$N9uXZeB9lP...mockedhash',
+  'Ana', 'Gerente', 'manager_madrid', '$argon2id$v=19$m=65536,t=3,p=4$Hz33vNxAOrEonJ5S8qY3Ew$vmGJaWcij8ytidYDL9eh5mONl++iWTJHZcauvFIIA2A',
   (SELECT id_role FROM role WHERE role_name = 'Manager' LIMIT 1),
   (SELECT id_store FROM store WHERE store_name = 'Tienda Central Madrid' LIMIT 1),
   'Active'
 ),
 (
-  'Carlos', 'Operario', 'worker_1', '$2b$12$N9uXZeB9lP...mockedhash',
+  'Carlos', 'Operario', 'staff_madrid', '$argon2id$v=19$m=65536,t=3,p=4$Hz33vNxAOrEonJ5S8qY3Ew$vmGJaWcij8ytidYDL9eh5mONl++iWTJHZcauvFIIA2A',
   (SELECT id_role FROM role WHERE role_name = 'Staff' LIMIT 1),
   (SELECT id_store FROM store WHERE store_name = 'Tienda Central Madrid' LIMIT 1),
   'Active'
