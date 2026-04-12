@@ -57,7 +57,7 @@ export function CategoryForm({ isOpen, onClose, mode = 'create' }: CategoryFormP
           <select
             id="category-status"
             className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-700 bg-white"
-            defaultValue={isEdit ? 'Active' : 'Active'}
+            defaultValue="Active"
           >
             <option value="Active">Activa</option>
             <option value="Inactive">Inactiva</option>

@@ -42,8 +42,7 @@ export function Modal({ isOpen, onClose, title, subtitle, children, size = 'md' 
 
       {/* Panel */}
       <div
-        className={`relative w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden
-          animate-[fadeSlideIn_0.2s_ease-out]`}
+        className={`relative w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden`}
         style={{ animation: 'fadeSlideIn 0.2s ease-out' }}
       >
         {/* Header */}
@@ -54,6 +53,7 @@ export function Modal({ isOpen, onClose, title, subtitle, children, size = 'md' 
           </div>
           <button
             onClick={onClose}
+            aria-label="Cerrar"
             className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors ml-4 flex-shrink-0"
           >
             <X size={18} />
