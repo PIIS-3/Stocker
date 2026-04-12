@@ -1,6 +1,8 @@
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import { Button, StatusBadge } from '../../components/atoms';
 import { PageHeader, SearchInput, ActionButtons } from '../../components/molecules';
+import { StoreForm } from '../../components/organisms/StoreForm';
 
 export default function StoresList() {
   const stores = [
@@ -9,13 +11,16 @@ export default function StoresList() {
     { id: 3, name: 'Valencia Playa', address: 'Avenida Neptuno 3, Valencia', status: 'Inactive' },
   ];
 
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <PageHeader
         title="Tiendas Físicas"
         subtitle="Gestión de sucursales y puntos de venta."
         action={
-          <Button icon={<Plus size={20} />}>
+          <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
             Nueva Tienda
           </Button>
         }
@@ -46,7 +51,7 @@ export default function StoresList() {
                     <StatusBadge status={store.status} />
                   </td>
                   <td className="p-4">
-                    <ActionButtons />
+                    <ActionButtons onEdit={() => setIsEditOpen(true)} />
                   </td>
                 </tr>
               ))}
@@ -54,6 +59,10 @@ export default function StoresList() {
           </table>
         </div>
       </div>
+
+      {/* Modales */}
+      <StoreForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
+      <StoreForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
     </div>
   );
 }

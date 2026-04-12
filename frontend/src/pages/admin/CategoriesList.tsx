@@ -1,6 +1,8 @@
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import { Button, StatusBadge } from '../../components/atoms';
 import { PageHeader, SearchInput, ActionButtons } from '../../components/molecules';
+import { CategoryForm } from '../../components/organisms/CategoryForm';
 
 export default function CategoriesList() {
   const categories = [
@@ -10,13 +12,16 @@ export default function CategoriesList() {
     { id: 4, name: 'Alimentación', description: 'Productos no perecederos', status: 'Active' },
   ];
 
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <PageHeader
         title="Categorías"
         subtitle="Clasificación para el catálogo de productos."
         action={
-          <Button icon={<Plus size={20} />}>
+          <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
             Crear Categoría
           </Button>
         }
@@ -47,7 +52,7 @@ export default function CategoriesList() {
                     <StatusBadge status={category.status} activeLabel="Activa" inactiveLabel="Inactiva" />
                   </td>
                   <td className="p-4">
-                    <ActionButtons />
+                    <ActionButtons onEdit={() => setIsEditOpen(true)} />
                   </td>
                 </tr>
               ))}
@@ -55,6 +60,10 @@ export default function CategoriesList() {
           </table>
         </div>
       </div>
+
+      {/* Modales */}
+      <CategoryForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
+      <CategoryForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
     </div>
   );
 }

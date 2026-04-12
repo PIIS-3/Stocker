@@ -2,6 +2,7 @@ import { Plus, Image as ImageIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button, StatusBadge } from '../../components/atoms';
 import { PageHeader, SearchInput, ActionButtons } from '../../components/molecules';
+import { ProductForm } from '../../components/organisms/ProductForm';
 
 interface ProductItem {
   id: number;
@@ -31,6 +32,9 @@ export default function ProductsList() {
     { id: 4, sku: 'SKU-HOG-001', name: 'Lámpara de Escritorio LED', brand: 'Lumina', category: 'Hogar', price: 45.00, status: 'Inactive' },
   ]);
 
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   // Hacer la petición a FastAPI cuando se monta el componente
   useEffect(() => {
     fetch('http://localhost:8000/api/products')
@@ -59,7 +63,7 @@ export default function ProductsList() {
         title="Catálogo de Productos"
         subtitle="Gestión de plantillas maestras y referencias SKU."
         action={
-          <Button icon={<Plus size={20} />}>
+          <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
             Nuevo Producto
           </Button>
         }
@@ -113,7 +117,7 @@ export default function ProductsList() {
                     <StatusBadge status={product.status} />
                   </td>
                   <td className="p-4">
-                    <ActionButtons />
+                    <ActionButtons onEdit={() => setIsEditOpen(true)} />
                   </td>
                 </tr>
               ))}
@@ -121,6 +125,10 @@ export default function ProductsList() {
           </table>
         </div>
       </div>
+
+      {/* Modales */}
+      <ProductForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
+      <ProductForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
     </div>
   );
 }

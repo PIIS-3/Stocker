@@ -1,6 +1,8 @@
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import { Button, StatusBadge, RoleBadge } from '../../components/atoms';
 import { PageHeader, SearchInput, ActionButtons } from '../../components/molecules';
+import { UserForm } from '../../components/organisms/UserForm';
 
 export default function UsersList() {
   const users = [
@@ -10,13 +12,16 @@ export default function UsersList() {
     { id: 4, name: 'Miguel Torres', username: 'mtorres', role: 'Worker', store: 'Valencia Playa', status: 'Inactive' },
   ];
 
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <PageHeader
         title="Empleados"
         subtitle="Gestión de usuarios y accesos al sistema."
         action={
-          <Button icon={<Plus size={20} />}>
+          <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
             Nuevo Empleado
           </Button>
         }
@@ -62,7 +67,7 @@ export default function UsersList() {
                     <StatusBadge status={user.status} />
                   </td>
                   <td className="p-4">
-                    <ActionButtons />
+                    <ActionButtons onEdit={() => setIsEditOpen(true)} />
                   </td>
                 </tr>
               ))}
@@ -70,6 +75,10 @@ export default function UsersList() {
           </table>
         </div>
       </div>
+
+      {/* Modales */}
+      <UserForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
+      <UserForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
     </div>
   );
 }

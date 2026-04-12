@@ -4,3 +4,7 @@ export { Sidebar } from './Sidebar';
 export { AdminHeader } from './AdminHeader';
 export { Hero } from './Hero';
 export { Features } from './Features';
+export { ProductForm } from './ProductForm';
+export { CategoryForm } from './CategoryForm';
+export { StoreForm } from './StoreForm';
+export { UserForm } from './UserForm';
