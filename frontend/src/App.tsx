@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { PublicLayout } from './components/layout/PublicLayout';
+import { PublicLayout } from './components/templates';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 
-import { AdminLayout } from './components/admin/AdminLayout';
+import { AdminLayout } from './components/templates';
 import Dashboard from './pages/admin/Dashboard';
 import StoresList from './pages/admin/StoresList';
 import UsersList from './pages/admin/UsersList';

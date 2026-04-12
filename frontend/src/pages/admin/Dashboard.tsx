@@ -1,4 +1,5 @@
 import { Package, Store, Users, AlertCircle } from 'lucide-react';
+import { PageHeader, StatCard } from '../../components/molecules';
 
 export default function Dashboard() {
   const stats = [
@@ -10,26 +11,15 @@ export default function Dashboard() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Vista General</h1>
-        <p className="text-gray-500 mt-1">Bienvenido al panel de control central de Stocker.</p>
-      </div>
+      <PageHeader
+        title="Vista General"
+        subtitle="Bienvenido al panel de control central de Stocker."
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, i) => {
-          const Icon = stat.icon;
-          return (
-            <div key={i} className={`bg-white rounded-2xl p-6 border ${stat.border} border-opacity-50 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1 duration-200`}>
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${stat.color}`}>
-                <Icon size={26} strokeWidth={2.5} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
-                <h3 className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</h3>
-              </div>
-            </div>
-          );
-        })}
+        {stats.map((stat, i) => (
+          <StatCard key={i} {...stat} />
+        ))}
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 line-clamp-4">

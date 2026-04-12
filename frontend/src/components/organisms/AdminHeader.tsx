@@ -1,0 +1,15 @@
+export function AdminHeader() {
+  return (
+    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-end px-8 shadow-sm z-10 w-full">
+      <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity">
+        <div className="text-right hidden md:block">
+          <p className="text-sm font-semibold text-gray-800">Administrador Central</p>
+          <p className="text-xs text-brand">DB_Admin</p>
+        </div>
+        <div className="h-10 w-10 bg-brand/10 rounded-full flex items-center justify-center text-brand font-bold border border-brand/20 shadow-inner">
+          AC
+        </div>
+      </div>
+    </header>
+  );
+}
