@@ -1,14 +1,20 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
+  :root {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
   body {
+    @apply bg-surface-base text-ink-base font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: #1f2937; /* text-gray-800 */
-    background-color: #f9fafb; /* bg-gray-50 */
-    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  #root {
+    @apply min-h-screen;
   }
 }
 

@@ -28,10 +28,44 @@ docker compose up --build -d
 * **Documentación SWAGGER Interactiva:** [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### 2. Poblar la Base de Datos Inicial (Seeding)
-Cuando levantas el proyecto por primera vez, PostgreSQL estara vacío. Alembic generará las tablas automáticas los primeros 10 segundos, pero debes inyectar los datos básicos mock manualmente para habilitar el sistema.
+Cuando levantas el proyecto por primera vez, PostgreSQL estara vacío. Alembic generará las tablas automáticas los primeros 10 segundos. Luego ejecuta el seeder del backend (idempotente) para cargar categorías y productos de prueba.
 ```bash
-docker exec -i stocker_db psql -U postgres -d stocker < ../database/seed.sql
+make seed
 ```
+
+Equivalente directo (sin Makefile):
+```bash
+docker exec stocker_api python -m app.seed
+```
+
+Si necesitas la ruta SQL clásica, sigue disponible como alternativa:
+```bash
+make seed-sql
+```
+
+### 3. Comandos Makefile para el equipo
+Ejecuta estos comandos desde la raíz del repositorio.
+
+| Comando | Qué hace |
+|---|---|
+| `make up` | Inicializa entorno Docker (crea `.env` si no existe), construye imágenes y levanta servicios. |
+| `make down` | Detiene los contenedores del entorno local. |
+| `make restart` | Reinicia todo el stack con reconstrucción de imágenes. |
+| `make seed` | Ejecuta el seeder Python idempotente del backend. |
+| `make seed-sql` | Ejecuta el seeding SQL legacy directo sobre PostgreSQL. |
+
+### 4. Parámetros de entorno para desarrollo
+Estos parámetros se gestionan en `docker/.env` (puedes partir desde `docker/.env.example`):
+
+| Variable | Default | Uso |
+|---|---|---|
+| `POSTGRES_USER` | `postgres` | Usuario de base de datos. |
+| `POSTGRES_PASSWORD` | `postgres` | Password de base de datos. |
+| `POSTGRES_DB` | `stocker` | Nombre de base de datos. |
+| `API_PORT` | `8000` | Puerto expuesto de la API en local. |
+| `FRONTEND_PORT` | `5173` | Puerto expuesto del frontend en local. |
+| `FRONTEND_URL` | `http://localhost:5173` | Origen permitido por CORS para backend. |
+| `VITE_API_URL` | `http://localhost:8000` | URL base de API usada por frontend. |
 
 ## 📖 Documentación Ampliada para Desarrolladores
 

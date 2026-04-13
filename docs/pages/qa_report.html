@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Reporte QA Manual</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .check-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .check-table th, .check-table td { border-bottom: 1px solid #e2e8f0; padding: 0.65rem; text-align: left; font-size: 0.9rem; }
+        .ok { color: #15803d; font-weight: 700; }
+        .warn { color: #b45309; font-weight: 700; }
+    </style>
+</head>
+<body>
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>🧪 Reporte QA Manual</h1>
+        <p>Verificación de rutas públicas/privadas, payload de productos y bugs visuales mobile.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>1. Test manual de URLs (shells públicas y privadas)</h2>
+        <table class="check-table">
+            <thead><tr><th>Ruta</th><th>Resultado HTTP</th><th>Estado</th></tr></thead>
+            <tbody>
+                <tr><td>/</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/login</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/contact</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/privacy</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/terms</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/admin/dashboard</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/admin/products</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/admin/categories</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/admin/stores</td><td>200</td><td class="ok">OK</td></tr>
+                <tr><td>/admin/users</td><td>200</td><td class="ok">OK</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-card">
+        <h2>2. Verificación de payload de tabla de productos</h2>
+        <p>Endpoint validado: <code>GET /api/products/?skip=0&amp;limit=3</code></p>
+        <ul>
+            <li>El backend devuelve <strong>array JSON</strong> (tipo lista).</li>
+            <li>El objeto incluye claves esperadas por frontend: <code>id_product</code>, <code>sku</code>, <code>product_name</code>, <code>brand</code>, <code>fixed_selling_price</code>, <code>status</code>, <code>category</code>.</li>
+            <li><code>category</code> llega como objeto con <code>category_name</code>.</li>
+        </ul>
+        <p class="ok">Resultado: mapeo compatible con <code>ProductsList.tsx</code>.</p>
+    </div>
+
+    <div class="section-card">
+        <h2>3. Reporte de bugs de render en mobile</h2>
+        <table class="check-table">
+            <thead><tr><th>ID</th><th>Descripción</th><th>Severidad</th><th>Estado</th></tr></thead>
+            <tbody>
+                <tr><td>MOB-001</td><td>Las tablas administrativas usan scroll horizontal en pantallas pequeñas.</td><td>Baja</td><td class="warn">Comportamiento esperado</td></tr>
+                <tr><td>MOB-002</td><td>No se detectaron bloqueos de navegación en rutas públicas/privadas durante validación HTTP.</td><td>-</td><td class="ok">Sin bug</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

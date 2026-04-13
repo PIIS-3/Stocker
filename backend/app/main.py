@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from .core.config import settings
 from .api.router import api_router
+from .database import engine
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -37,5 +39,25 @@ def read_root():
 
 @app.get("/health", tags=["General"])
 def health_check():
-    """Comprobación de salud — útil para monitorización y balanceadores de carga."""
-    return {"status": "ok", "version": settings.VERSION}
+    """Comprobación de salud de API y conectividad con la base de datos."""
+    try:
+        with engine.connect() as connection:
+            connection.exec_driver_sql("SELECT 1")
+
+        return {
+            "status": "ok",
+            "api": "up",
+            "database": "up",
+            "version": settings.VERSION,
+        }
+    except Exception as exc:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "status": "degraded",
+                "api": "up",
+                "database": "down",
+                "version": settings.VERSION,
+                "error": str(exc),
+            },
+        )

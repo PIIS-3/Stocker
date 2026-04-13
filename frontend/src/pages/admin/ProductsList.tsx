@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button, StatusBadge } from '../../components/atoms';
 import { PageHeader, SearchInput, ActionButtons } from '../../components/molecules';
 import { ProductForm } from '../../components/organisms/ProductForm';
+import { productsService } from '../../services/products.service';
 
 interface ProductItem {
   id: number;
@@ -14,47 +15,40 @@ interface ProductItem {
   status: string;
 }
 
-interface ApiProduct {
-  id_product: number;
-  sku: string;
-  product_name: string;
-  brand: string | null;
-  category: { category_name: string } | null;
-  fixed_selling_price: number;
-  status: string;
-}
-
 export default function ProductsList() {
-  const [products, setProducts] = useState<ProductItem[]>([
-    { id: 1, sku: 'SKU-ELEC-001', name: 'Smartphone Pro X', brand: 'TechNova', category: 'Electrónica', price: 899.99, status: 'Active' },
-    { id: 2, sku: 'SKU-ELEC-002', name: 'Auriculares Inalámbricos', brand: 'SoundWave', category: 'Electrónica', price: 129.50, status: 'Active' },
-    { id: 3, sku: 'SKU-ROPA-001', name: 'Camiseta Running Dry', brand: 'FastTrack', category: 'Ropa Deportiva', price: 29.90, status: 'Active' },
-    { id: 4, sku: 'SKU-HOG-001', name: 'Lámpara de Escritorio LED', brand: 'Lumina', category: 'Hogar', price: 45.00, status: 'Inactive' },
-  ]);
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  // Hacer la petición a FastAPI cuando se monta el componente
+  const loadProducts = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const data = await productsService.getProducts();
+      const formattedData: ProductItem[] = data.map((item) => ({
+        id: item.id_product,
+        sku: item.sku,
+        name: item.product_name,
+        brand: item.brand || 'N/A',
+        category: item.category?.category_name || 'Sin Categoría',
+        price: item.fixed_selling_price,
+        status: item.status,
+      }));
+
+      setProducts(formattedData);
+    } catch {
+      setErrorMessage('No se pudieron cargar los productos. Reintenta en unos segundos.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch('http://localhost:8000/api/products')
-      .then(res => res.json())
-      .then(data => {
-        // Si la BD devolvió algo, machacamos los datos de prueba harcodeados
-        if (data && data.length > 0) {
-          const formattedData = data.map((item: ApiProduct) => ({
-            id: item.id_product,
-            sku: item.sku,
-            name: item.product_name,
-            brand: item.brand || 'N/A',
-            category: item.category?.category_name || 'Sin Categoría',
-            price: item.fixed_selling_price,
-            status: item.status
-          }));
-          setProducts(formattedData);
-        }
-      })
-      .catch(err => console.error("Error conectando con la API:", err));
+    loadProducts();
   }, []);
 
   return (
@@ -75,17 +69,35 @@ export default function ProductsList() {
             placeholder="Buscar por Nombre, SKU o Marca..."
             className="w-full md:w-80"
           />
-          <div className="flex gap-2">
-            <select className="px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-600 bg-white">
-              <option>Todas las categorías</option>
-              <option>Electrónica</option>
-              <option>Ropa Deportiva</option>
-              <option>Hogar</option>
-            </select>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">
+              {isLoading ? 'Cargando...' : `${products.length} productos`}
+            </span>
+            <button
+              type="button"
+              onClick={loadProducts}
+              className="px-3 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Actualizar
+            </button>
           </div>
         </div>
+
+        {errorMessage && (
+          <div className="mx-4 mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 flex items-center justify-between gap-3">
+            <span>{errorMessage}</span>
+            <button
+              type="button"
+              onClick={loadProducts}
+              className="px-3 py-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[860px] text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-500 text-sm">
                 <th className="p-4 font-medium border-b border-gray-100 w-16">Img</th>
@@ -99,6 +111,22 @@ export default function ProductsList() {
               </tr>
             </thead>
             <tbody className="text-gray-700 text-sm">
+              {isLoading && (
+                <tr>
+                  <td colSpan={8} className="p-8 text-center text-gray-500">
+                    Cargando productos...
+                  </td>
+                </tr>
+              )}
+
+              {!isLoading && !errorMessage && products.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="p-8 text-center text-gray-500">
+                    No hay productos para mostrar.
+                  </td>
+                </tr>
+              )}
+
               {products.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none">
                   <td className="p-4">
@@ -123,6 +151,10 @@ export default function ProductsList() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="px-4 py-3 border-t border-gray-100 text-xs text-gray-500 bg-gray-50/70">
+          Vista optimizada para escritorio y scroll horizontal en pantallas pequeñas.
         </div>
       </div>
 

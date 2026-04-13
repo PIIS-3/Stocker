@@ -1,12 +1,15 @@
 import axios from 'axios';
 
+const rawApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
+const normalizedApiBaseUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
+
 // ── Instancia base de Axios ─────────────────────────────────────────
 // Centraliza la configuración de las peticiones HTTP a la API.
 // Todos los servicios deben usar esta instancia en lugar de axios directamente.
 const api = axios.create({
   // La URL base se lee de la variable de entorno VITE_API_URL.
-  // Si no existe (desarrollo local), usa el backend en localhost:8000.
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
+  // Si la variable no incluye /api, se añade automáticamente.
+  baseURL: normalizedApiBaseUrl,
   // Tiempo máximo de espera (en ms) antes de cancelar la petición.
   timeout: 10_000,
   headers: {

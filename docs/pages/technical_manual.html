@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Manual Técnico API y Frontend</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .step { background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid var(--brand); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+        .step h3 { margin-top: 0; }
+        .small { font-size: 0.9rem; color: #64748b; }
+    </style>
+</head>
+<body>
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>📘 Manual Técnico</h1>
+        <p>Arquitectura de la API y conexión de servicios del Frontend con el backend FastAPI.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>1. Arquitectura API (Backend)</h2>
+        <div class="step">
+            <h3>1.1 Entrada HTTP</h3>
+            <p>FastAPI inicializa la aplicación en <code>backend/app/main.py</code> e incluye el router principal de API.</p>
+        </div>
+        <div class="step">
+            <h3>1.2 Router principal</h3>
+            <p>El router maestro en <code>backend/app/api/router.py</code> publica rutas bajo <code>/api</code> y delega por recurso (actualmente productos).</p>
+        </div>
+        <div class="step">
+            <h3>1.3 Endpoints de productos</h3>
+            <p>Endpoints actuales:</p>
+            <ul>
+                <li><code>GET /api/products/</code>: listado paginado con <code>skip</code> y <code>limit</code>.</li>
+                <li><code>GET /api/products/{product_id}</code>: detalle por ID con 404 si no existe.</li>
+            </ul>
+            <p class="small">La respuesta está validada por <code>response_model</code> con esquemas SQLModel/Pydantic.</p>
+        </div>
+        <div class="step">
+            <h3>1.4 Capa CRUD y DB Session</h3>
+            <p>La lógica de consulta vive en <code>backend/app/crud/products.py</code> y usa <code>Session</code> de SQLModel definida en <code>backend/app/database.py</code>.</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>2. Conexión de servicios Frontend</h2>
+        <div class="step">
+            <h3>2.1 Instancia Axios central</h3>
+            <p><code>frontend/src/services/api.ts</code> define base URL, timeout e interceptores. La URL se normaliza para apuntar siempre a <code>/api</code>.</p>
+        </div>
+        <div class="step">
+            <h3>2.2 Servicio de productos tipado</h3>
+            <p><code>frontend/src/services/products.service.ts</code> implementa:</p>
+            <ul>
+                <li><code>getProducts(skip, limit)</code></li>
+                <li><code>getProductById(productId)</code></li>
+            </ul>
+            <p class="small">El contrato tipado de respuesta es <code>ProductApi</code>.</p>
+        </div>
+        <div class="step">
+            <h3>2.3 Consumo en vista administrativa</h3>
+            <p><code>frontend/src/pages/admin/ProductsList.tsx</code> consume el servicio con <code>useEffect</code> y maneja <code>isLoading</code>, <code>errorMessage</code> y render de tabla.</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>3. Flujo extremo a extremo</h2>
+        <p>1) Vista React ejecuta <code>productsService.getProducts()</code> → 2) Axios llama <code>/api/products/</code> → 3) FastAPI valida y delega a CRUD → 4) CRUD consulta SQLModel Session → 5) FastAPI responde JSON validado → 6) Frontend mapea y renderiza tabla.</p>
+    </div>
+</div>
+</body>
+</html>

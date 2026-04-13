@@ -157,10 +157,45 @@
         <p>Referencia visual del sistema de diseño utilizado en la aplicación frontend (React + Tailwind CSS).</p>
     </header>
 
+        <!-- ─── 0. CONFIGURACIÓN EN CÓDIGO ─── -->
+        <div class="section-card">
+                <h2>0. Configuración del Sistema de Diseño en Código</h2>
+                <p>La base del sistema de diseño está implementada en tres archivos del frontend y versionada en el repositorio:</p>
+                <ul>
+                        <li><code>frontend/tailwind.config.js</code>: tokens de color, tipografía y espaciado.</li>
+                        <li><code>frontend/postcss.config.js</code>: pipeline Tailwind + Autoprefixer.</li>
+                        <li><code>frontend/src/index.css</code>: directivas Tailwind y estilos base globales.</li>
+                </ul>
+
+                <h3>Estado actual de la implementación</h3>
+                <div class="alert alert-ok"><strong>✅ Correcto:</strong> Tailwind está conectado a Vite, PostCSS está activo y los tokens del sistema se consumen desde clases utilitarias.</div>
+
+                <h3>Fragmentos de referencia</h3>
+                <pre><code>// frontend/postcss.config.js
+export default {
+    plugins: {
+        tailwindcss: {},
+        autoprefixer: {},
+    },
+}</code></pre>
+
+                <pre><code>/* frontend/src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-surface-base text-ink-base font-sans;
+    }
+}</code></pre>
+        </div>
+
     <!-- ─── 1. COLORES ─── -->
     <div class="section-card">
         <h2>1. Paleta de Colores</h2>
         <p>Los colores de marca se definen en <code>tailwind.config.js</code> y se utilizan mediante las clases <code>bg-brand</code>, <code>text-brand</code>, etc.</p>
+                <div class="alert alert-info"><strong>Definición de paleta y estados:</strong> El sistema incluye colores <b>Primarios</b> (<code>brand</code>), <b>Secundarios</b> (<code>secondary</code>), <b>Neutros</b> (<code>neutral</code>, <code>surface</code>, <code>ink</code>) y de <b>Estado</b> (<code>success</code>, <code>warning</code>, <code>error</code>).</div>
         <div class="color-grid">
             <div class="swatch">
                 <div class="swatch-color" style="background:#5BA095"></div>
@@ -229,6 +264,20 @@
             </div>
         </div>
 
+        <h3>Paleta Secundaria, Neutros y Estados</h3>
+        <table class="token-table">
+            <thead><tr><th>Categoría</th><th>Token Tailwind</th><th>Valor</th><th>Uso recomendado</th></tr></thead>
+            <tbody>
+                <tr><td>Secundario</td><td><code>secondary-500</code></td><td>#0ea5e9</td><td>Acciones secundarias, enlaces destacados</td></tr>
+                <tr><td>Neutro base</td><td><code>neutral-500</code></td><td>#6b7280</td><td>Texto secundario y labels</td></tr>
+                <tr><td>Superficie</td><td><code>surface-base</code></td><td>#f9fafb</td><td>Fondo global de la app</td></tr>
+                <tr><td>Tinta</td><td><code>ink-base</code></td><td>#1f2937</td><td>Texto principal</td></tr>
+                <tr><td>Success</td><td><code>success-500</code></td><td>#22c55e</td><td>Confirmaciones y estados positivos</td></tr>
+                <tr><td>Warning</td><td><code>warning-500</code></td><td>#f59e0b</td><td>Avisos y acciones preventivas</td></tr>
+                <tr><td>Error</td><td><code>error-500</code></td><td>#ef4444</td><td>Errores, validaciones fallidas y acciones destructivas</td></tr>
+            </tbody>
+        </table>
+
         <h3>Uso de Opacidades de Marca</h3>
         <p>Se utilizan variantes con opacidad para fondos sutiles:</p>
         <div class="color-grid" style="margin-top: 0.5rem;">
@@ -254,7 +303,8 @@
     <!-- ─── 2. TIPOGRAFÍA ─── -->
     <div class="section-card">
         <h2>2. Tipografía</h2>
-        <p>Fuente principal: <strong>Inter</strong> (Google Fonts), importada en <code>index.css</code> y configurada en Tailwind (<code>font-sans</code>).</p>
+        <p>Fuente principal: <strong>Inter</strong> (Google Fonts), cargada por Vite y configurada en Tailwind con <code>font-sans</code>.</p>
+        <div class="alert alert-info"><strong>Jerarquía tipográfica:</strong> además de la escala estándar de Tailwind, se definieron tokens semánticos en <code>tailwind.config.js</code>: <code>text-display</code>, <code>text-h1</code>, <code>text-h2</code>, <code>text-h3</code>, <code>text-bodylg</code>, <code>text-body</code>, <code>text-label</code>, <code>text-caption</code>.</div>
 
         <div style="margin-top: 1rem;">
             <div class="type-row">
@@ -294,6 +344,37 @@
                 <tr><td><span style="font-weight:700">Bold (700)</span></td><td><code>font-bold</code></td><td>Títulos, logo, estadísticas</td></tr>
             </tbody>
         </table>
+
+        <h3>Escala semántica recomendada</h3>
+        <table class="token-table">
+            <thead><tr><th>Nivel</th><th>Clase Tailwind</th><th>Tamaño aprox.</th><th>Uso</th></tr></thead>
+            <tbody>
+                <tr><td>Display</td><td><code>text-display</code></td><td>60px</td><td>Mensajes hero y titulares de landing</td></tr>
+                <tr><td>Heading 1</td><td><code>text-h1</code></td><td>48px</td><td>Título principal de página</td></tr>
+                <tr><td>Heading 2</td><td><code>text-h2</code></td><td>32px</td><td>Secciones principales</td></tr>
+                <tr><td>Heading 3</td><td><code>text-h3</code></td><td>24px</td><td>Subsecciones y títulos de bloque</td></tr>
+                <tr><td>Body Large</td><td><code>text-bodylg</code></td><td>18px</td><td>Descripciones destacadas</td></tr>
+                <tr><td>Body</td><td><code>text-body</code></td><td>16px</td><td>Texto general</td></tr>
+                <tr><td>Label</td><td><code>text-label</code></td><td>14px</td><td>Etiquetas de formulario y navegación</td></tr>
+                <tr><td>Caption</td><td><code>text-caption</code></td><td>12px</td><td>Notas auxiliares y metadata</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ─── 2.1. ORGANIZACIÓN DOCUMENTAL ─── -->
+    <div class="section-card">
+        <h2>2.1 Organización y Documentación de la Guía de Estilos</h2>
+        <p>La guía está estructurada para consulta técnica rápida y mantenimiento continuo del sistema visual.</p>
+        <table class="token-table">
+            <thead><tr><th>Bloque</th><th>Contenido</th><th>Objetivo técnico</th></tr></thead>
+            <tbody>
+                <tr><td>Configuración en código</td><td>Archivos base Tailwind, PostCSS e index.css</td><td>Verificar wiring del sistema</td></tr>
+                <tr><td>Paleta y estados</td><td>Tokens primarios/secundarios/neutros/estado</td><td>Mantener consistencia visual y semántica</td></tr>
+                <tr><td>Tipografía</td><td>Fuente, pesos y escala semántica</td><td>Garantizar jerarquía legible</td></tr>
+                <tr><td>Componentes base</td><td>Botones, inputs, cards, alertas</td><td>Acelerar implementación UI reutilizable</td></tr>
+            </tbody>
+        </table>
+        <div class="alert alert-warn"><strong>Mantenimiento:</strong> cuando se agregue un token nuevo en <code>tailwind.config.js</code>, actualizar esta guía en el mismo PR.</div>
     </div>
 
     <!-- ─── 3. BOTONES ─── -->

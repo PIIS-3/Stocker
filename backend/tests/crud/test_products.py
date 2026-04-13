@@ -1,7 +1,7 @@
 from sqlmodel import Session
 from app.models.product import ProductTemplate
 from app.models.category import Category
-from app.crud.products import get_product_templates
+from app.crud.products import get_product_templates, get_products, get_product_by_id
 
 def test_get_product_templates(session: Session):
     # 1. Crear una categoría necesaria para el ProductTemplate
@@ -31,7 +31,33 @@ def test_get_product_templates(session: Session):
 
     # 3. Probar la función CRUD
     products = get_product_templates(session)
-    
+
     assert len(products) == 2
     assert products[0].product_name == "Smartphone X"
     assert products[1].sku == "SKU002"
+
+
+def test_get_products_and_get_product_by_id(session: Session):
+    category = Category(category_name="Hogar", description="Productos del hogar")
+    session.add(category)
+    session.commit()
+    session.refresh(category)
+
+    product = ProductTemplate(
+        sku="SKU100",
+        product_name="Aspiradora",
+        brand="Dyson",
+        fixed_selling_price=399.99,
+        category_id=category.id_category,
+    )
+    session.add(product)
+    session.commit()
+    session.refresh(product)
+
+    products = get_products(session)
+    found = get_product_by_id(session, product_id=product.id_product)
+
+    assert any(item.id_product == product.id_product for item in products)
+    assert found is not None
+    assert found.id_product == product.id_product
+    assert found.product_name == "Aspiradora"

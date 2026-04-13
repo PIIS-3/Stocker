@@ -1,9 +1,9 @@
 :root {
   --brand-color: #5BA095;
   --brand: #5BA095;
-  --brand-light: #7fc4b7;
-  --brand-dark: #427c73;
-  --brand-bg: #e6f0ee;
+  --brand-light: #d5ede8;
+  --brand-dark: #3b6f67;
+  --brand-bg: #eef8f6;
   --bg-color: #f8fafc;
   --text-color: #334155;
   --card-bg: #ffffff;
@@ -135,7 +135,7 @@ a:hover { text-decoration: underline; }
   background: #f8fafc;
   color: #0f172a;
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);    
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 @media (max-width: 1200px) {
     .doc-nav {

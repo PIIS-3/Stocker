@@ -1,46 +1,34 @@
 import api from './api';
 
-// ── Interfaz del Producto ───────────────────────────────────────────
-// Define la estructura de datos que el frontend espera recibir de la API.
-export interface Product {
-  id: number;
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
-  category_id: number;
-  store_id: number;
+export interface ProductCategory {
+  category_name: string;
 }
 
-// Payload para crear un producto (sin 'id', lo genera el backend)
-export type CreateProductPayload = Omit<Product, 'id'>;
-// Payload para actualizar parcialmente un producto
-export type UpdateProductPayload = Partial<CreateProductPayload>;
+// Respuesta real del backend para /api/products
+export interface ProductApi {
+  id_product: number;
+  sku: string;
+  product_name: string;
+  brand: string | null;
+  fixed_selling_price: number;
+  status: string;
+  category: ProductCategory | null;
+}
 
-// Ruta del recurso en la API
 const RESOURCE = '/products';
 
-// ── Servicio CRUD de Productos ──────────────────────────────────────
-// Funciones que encapsulan las peticiones HTTP para el recurso Productos.
-// Otros servicios (tiendas, categorías, empleados) deben seguir este mismo patrón.
 export const productsService = {
-  /** Obtiene todos los productos */
-  getAll: () =>
-    api.get<Product[]>(RESOURCE),
+  /** Obtiene listado de productos con paginación opcional */
+  async getProducts(skip = 0, limit = 100): Promise<ProductApi[]> {
+    const { data } = await api.get<ProductApi[]>(RESOURCE, {
+      params: { skip, limit },
+    });
+    return data;
+  },
 
-  /** Obtiene un producto por su ID */
-  getById: (id: number) =>
-    api.get<Product>(`${RESOURCE}/${id}`),
-
-  /** Crea un nuevo producto */
-  create: (data: CreateProductPayload) =>
-    api.post<Product>(RESOURCE, data),
-
-  /** Actualiza parcialmente un producto existente */
-  update: (id: number, data: UpdateProductPayload) =>
-    api.patch<Product>(`${RESOURCE}/${id}`, data),
-
-  /** Elimina un producto por su ID */
-  delete: (id: number) =>
-    api.delete(`${RESOURCE}/${id}`),
+  /** Obtiene el detalle de un producto por ID */
+  async getProductById(productId: number): Promise<ProductApi> {
+    const { data } = await api.get<ProductApi>(`${RESOURCE}/${productId}`);
+    return data;
+  },
 };

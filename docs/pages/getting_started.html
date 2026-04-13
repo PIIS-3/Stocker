@@ -39,9 +39,13 @@
     <!-- SEEDING -->
     <div class="step-card">
         <h3>2. Inyectar datos de prueba (Seed Database)</h3>
-        <p>Como Postgres arranca en limpio, FastAPI usará Alembic para crear las tablas vacías. Una vez estén creadas (10 segundos tras encender el servidor), debes ejecutar la siembra (Seed) de forma manual si quieres tener Categorías, Roles, Tiendas y un Usuario Administrador pre-cargado. Se hace inyectando directamente el script mediante un conducto (pipe) hacia el motor interactivo <code>psql</code> de la base de datos.</p>
-        <pre><code>docker exec -i stocker_db psql -U postgres -d stocker &lt; ../database/seed.sql</code></pre>
-        <p>Si la inserción va bien, la consola te mostrará un listado de confirmaciones <code>INSERT 0 3</code>.</p>
+        <p>Como Postgres arranca en limpio, FastAPI usará Alembic para crear las tablas vacías. Una vez estén creadas (10 segundos tras encender el servidor), ejecuta el seeder del backend para cargar categorías y productos de prueba de forma idempotente.</p>
+        <pre><code>make seed</code></pre>
+        <p>Equivalente directo sin Makefile:</p>
+        <pre><code>docker exec stocker_api python -m app.seed</code></pre>
+        <p>El script está en <code>backend/app/seed.py</code>, utiliza SQLModel Session y crea/actualiza registros sin duplicarlos (por <code>category_name</code> y <code>sku</code>).</p>
+        <p>Alternativa legacy con SQL plano:</p>
+        <pre><code>make seed-sql</code></pre>
     </div>
 
     <!-- MIGRATIONS -->
@@ -63,9 +67,33 @@
         <h3>4. Apagar y Limpiar</h3>
         <p>Si quieres apagarlo todo temporalmente para conservar recursos y disco:</p>
         <pre><code>docker compose down</code></pre>
-        
+
         <p>Si notas fallos extraños y quieres **borrar todo el progreso (Resetear de Fábrica)**, eliminando la base de datos, los datos guardados en el disco virtual de Docker y las imágenes construidas, usa:</p>
         <pre><code>docker compose down -v --rmi all --remove-orphans</code></pre>
+    </div>
+
+    <div class="step-card">
+        <h3>5. Comandos de Makefile para desarrollo</h3>
+        <p>Para estandarizar el flujo del equipo, ejecuta estos comandos desde la raíz del repositorio:</p>
+        <ul>
+            <li><code>make up</code>: levanta el entorno Docker completo (con build).</li>
+            <li><code>make down</code>: apaga los contenedores del proyecto.</li>
+            <li><code>make restart</code>: reinicia el stack completo.</li>
+            <li><code>make seed</code>: ejecuta el seeder Python idempotente.</li>
+            <li><code>make seed-sql</code>: ejecuta el seed SQL legacy.</li>
+        </ul>
+    </div>
+
+    <div class="step-card">
+        <h3>6. Parámetros de entorno del equipo</h3>
+        <p>Estas variables viven en <code>docker/.env</code> (base en <code>docker/.env.example</code>):</p>
+        <ul>
+            <li><code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>POSTGRES_DB</code>: credenciales y nombre de DB.</li>
+            <li><code>API_PORT</code>: puerto local del backend.</li>
+            <li><code>FRONTEND_PORT</code>: puerto local del frontend.</li>
+            <li><code>FRONTEND_URL</code>: origen permitido por CORS para FastAPI.</li>
+            <li><code>VITE_API_URL</code>: URL base consumida por el frontend.</li>
+        </ul>
     </div>
 
 </div>

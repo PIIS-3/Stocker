@@ -22,9 +22,9 @@ function App() {
           <Route element={<PublicLayout />}>
             <Route index element={<Home />} />
             <Route path="login" element={<Login />} />
-            <Route path="contacto" element={<Contact />} />
-            <Route path="privacidad" element={<Privacy />} />
-            <Route path="terminos" element={<Terms />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="privacy" element={<Privacy />} />
+            <Route path="terms" element={<Terms />} />
           </Route>
 
           {/* Rutas del panel de administración — layout con Sidebar */}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Diccionario de Datos</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .table-wrap { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        .data-table th { text-align: left; background: #f8fafc; color: #334155; border-bottom: 2px solid #e2e8f0; padding: 0.65rem; }
+        .data-table td { border-bottom: 1px solid #f1f5f9; padding: 0.65rem; vertical-align: top; }
+        .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .pk { background: #dcfce7; color: #166534; }
+        .fk { background: #dbeafe; color: #1e40af; }
+        .idx { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>🗂️ Diccionario de Datos (Backend)</h1>
+        <p>Estado actualizado de tablas y campos definidos actualmente en los modelos SQLModel del backend.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>Tabla: category</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td>id_category</td><td>int</td><td><span class="badge pk">PK</span></td><td>Identificador de categoría.</td></tr>
+                    <tr><td>category_name</td><td>str</td><td><span class="badge idx">UNIQUE + INDEX</span></td><td>Nombre visible de la categoría.</td></tr>
+                    <tr><td>description</td><td>str | null</td><td>-</td><td>Descripción funcional de la categoría.</td></tr>
+                    <tr><td>status</td><td>StatusEnum</td><td>DEFAULT Active</td><td>Estado operativo.</td></tr>
+                    <tr><td>created_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de creación.</td></tr>
+                    <tr><td>updated_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de actualización.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Tabla: product_template</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td>id_product</td><td>int</td><td><span class="badge pk">PK</span></td><td>Identificador de producto.</td></tr>
+                    <tr><td>sku</td><td>str</td><td><span class="badge idx">UNIQUE + INDEX</span></td><td>Código SKU único de referencia.</td></tr>
+                    <tr><td>product_name</td><td>str</td><td>NOT NULL</td><td>Nombre comercial del producto.</td></tr>
+                    <tr><td>brand</td><td>str | null</td><td>-</td><td>Marca del producto.</td></tr>
+                    <tr><td>fixed_selling_price</td><td>float</td><td>NOT NULL</td><td>Precio fijo de venta.</td></tr>
+                    <tr><td>status</td><td>StatusEnum</td><td>DEFAULT Active</td><td>Estado operativo.</td></tr>
+                    <tr><td>category_id</td><td>int</td><td><span class="badge fk">FK → category.id_category</span></td><td>Relación con categoría.</td></tr>
+                    <tr><td>created_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de creación.</td></tr>
+                    <tr><td>updated_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de actualización.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Tabla: store</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td>id_store</td><td>int</td><td><span class="badge pk">PK</span></td><td>Identificador de tienda.</td></tr>
+                    <tr><td>store_name</td><td>str</td><td><span class="badge idx">UNIQUE + INDEX</span></td><td>Nombre de la tienda.</td></tr>
+                    <tr><td>address</td><td>str | null</td><td>-</td><td>Dirección física.</td></tr>
+                    <tr><td>status</td><td>StatusEnum</td><td>DEFAULT Active</td><td>Estado operativo.</td></tr>
+                    <tr><td>created_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de creación.</td></tr>
+                    <tr><td>updated_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de actualización.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Tabla: role</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td>id_role</td><td>int</td><td><span class="badge pk">PK</span></td><td>Identificador de rol.</td></tr>
+                    <tr><td>role_name</td><td>RoleEnum</td><td>UNIQUE</td><td>Rol del empleado (SuperAdmin, Manager, Staff).</td></tr>
+                    <tr><td>status</td><td>StatusEnum</td><td>DEFAULT Active</td><td>Estado operativo.</td></tr>
+                    <tr><td>created_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de creación.</td></tr>
+                    <tr><td>updated_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de actualización.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Tabla: employee</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td>id_employee</td><td>int</td><td><span class="badge pk">PK</span></td><td>Identificador del empleado.</td></tr>
+                    <tr><td>first_name</td><td>str</td><td>NOT NULL</td><td>Nombre del empleado.</td></tr>
+                    <tr><td>last_name</td><td>str</td><td>NOT NULL</td><td>Apellido del empleado.</td></tr>
+                    <tr><td>username</td><td>str</td><td><span class="badge idx">UNIQUE + INDEX</span></td><td>Usuario de acceso al sistema.</td></tr>
+                    <tr><td>hashed_password</td><td>str</td><td>NOT NULL</td><td>Contraseña hasheada.</td></tr>
+                    <tr><td>status</td><td>StatusEnum</td><td>DEFAULT Active</td><td>Estado operativo.</td></tr>
+                    <tr><td>role_id</td><td>int</td><td><span class="badge fk">FK → role.id_role</span></td><td>Rol asignado.</td></tr>
+                    <tr><td>store_id</td><td>int</td><td><span class="badge fk">FK → store.id_store</span></td><td>Tienda asignada.</td></tr>
+                    <tr><td>created_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de creación.</td></tr>
+                    <tr><td>updated_at</td><td>datetime</td><td>DEFAULT now</td><td>Fecha de actualización.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
