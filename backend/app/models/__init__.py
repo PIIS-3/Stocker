@@ -13,13 +13,13 @@ from .category import CategoryBase, Category
 from .product import ProductTemplateBase, ProductTemplate, ProductTemplateResponse
 
 # ── Tienda ───────────────────────────────────────────────────────────
-from .store import StoreBase, Store
+from .store import StoreBase, Store, StoreCreate, StoreUpdate, StoreResponse
 
 # ── Rol ──────────────────────────────────────────────────────────────
 from .role import RoleBase, Role
 
 # ── Empleado ─────────────────────────────────────────────────────────
-from .employee import EmployeeBase, EmployeeCreate, Employee, EmployeeResponse
+from .employee import EmployeeBase, EmployeeCreate, Employee, EmployeeResponse, UserCreate, UserUpdate, UserResponse
 
 __all__ = [
     # Enums
@@ -35,6 +35,9 @@ __all__ = [
     # Tienda
     "StoreBase",
     "Store",
+    "StoreCreate",
+    "StoreUpdate",
+    "StoreResponse",
     # Rol
     "RoleBase",
     "Role",
@@ -43,4 +46,8 @@ __all__ = [
     "EmployeeCreate",
     "Employee",
     "EmployeeResponse",
+    # Usuario (API schemas)
+    "UserCreate",
+    "UserUpdate",
+    "UserResponse",
 ]
