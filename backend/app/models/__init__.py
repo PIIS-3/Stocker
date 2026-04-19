@@ -19,7 +19,7 @@ from .store import StoreBase, Store
 from .role import RoleBase, Role
 
 # ── Empleado ─────────────────────────────────────────────────────────
-from .employee import EmployeeBase, EmployeeCreate, Employee, EmployeeResponse
+from .employee import EmployeeBase, EmployeeCreate, Employee, EmployeeResponse, UserCreate, UserUpdate, UserResponse
 
 __all__ = [
     # Enums
@@ -43,4 +43,8 @@ __all__ = [
     "EmployeeCreate",
     "Employee",
     "EmployeeResponse",
+    # Usuario (API schemas)
+    "UserCreate",
+    "UserUpdate",
+    "UserResponse",
 ]
