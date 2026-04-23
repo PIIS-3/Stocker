@@ -9,7 +9,6 @@ on:
 
 jobs: 
   docker:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
