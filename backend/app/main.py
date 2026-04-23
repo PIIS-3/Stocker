@@ -1,15 +1,25 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .core.config import settings
 from .api.router import api_router
-from .database import engine
+from .database import engine, ensure_db_objects
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup: crea los triggers de updated_at en PostgreSQL si no existen."""
+    ensure_db_objects()
+    yield
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description=settings.DESCRIPTION,
+    lifespan=lifespan,
 )
 
 # ── CORS ─────────────────────────────────────────────────────────────

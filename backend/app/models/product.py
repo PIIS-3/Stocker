@@ -1,9 +1,10 @@
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
 from .category import Category, CategoryBase
+from .mixins import TimestampMixin
 
 
 class ProductTemplateBase(SQLModel):
@@ -15,11 +16,10 @@ class ProductTemplateBase(SQLModel):
     category_id: int = Field(foreign_key="category.id_category")
 
 
-class ProductTemplate(ProductTemplateBase, table=True):
+# Hereda TimestampMixin para created_at y updated_at centralizados.
+class ProductTemplate(TimestampMixin, ProductTemplateBase, table=True):
     __tablename__ = "product_template"
     id_product: Optional[int] = Field(default=None, primary_key=True)
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     category: Optional[Category] = Relationship(back_populates="products")
 

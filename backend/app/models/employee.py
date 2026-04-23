@@ -1,10 +1,11 @@
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
 from .role import Role, RoleBase
 from .store import Store, StoreBase
+from .mixins import TimestampMixin
 
 
 class EmployeeBase(SQLModel):
@@ -20,11 +21,10 @@ class EmployeeCreate(EmployeeBase):
     password: str
 
 
-class Employee(EmployeeBase, table=True):
+# Hereda TimestampMixin para created_at y updated_at centralizados.
+class Employee(TimestampMixin, EmployeeBase, table=True):
     id_employee: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     role: Optional[Role] = Relationship(back_populates="employees")
     store: Optional[Store] = Relationship(back_populates="employees")

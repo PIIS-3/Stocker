@@ -6,6 +6,9 @@
 # ── Enums ────────────────────────────────────────────────────────────
 from .enums import StatusEnum, RoleEnum
 
+# ── Mixins ───────────────────────────────────────────────────────────
+from .mixins import TimestampMixin
+
 # ── Categoría ────────────────────────────────────────────────────────
 from .category import CategoryBase, Category
 
@@ -13,7 +16,7 @@ from .category import CategoryBase, Category
 from .product import ProductTemplateBase, ProductTemplate, ProductTemplateResponse
 
 # ── Tienda ───────────────────────────────────────────────────────────
-from .store import StoreBase, Store
+from .store import StoreBase, StoreCreate, StoreUpdate, Store, StoreResponse
 
 # ── Rol ──────────────────────────────────────────────────────────────
 from .role import RoleBase, Role
@@ -25,6 +28,8 @@ __all__ = [
     # Enums
     "StatusEnum",
     "RoleEnum",
+    # Mixins
+    "TimestampMixin",
     # Categoría
     "CategoryBase",
     "Category",
@@ -34,7 +39,10 @@ __all__ = [
     "ProductTemplateResponse",
     # Tienda
     "StoreBase",
+    "StoreCreate",
+    "StoreUpdate",
     "Store",
+    "StoreResponse",
     # Rol
     "RoleBase",
     "Role",
