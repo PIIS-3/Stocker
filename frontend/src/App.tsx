@@ -12,6 +12,7 @@ import StoresList from './pages/admin/StoresList';
 import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
 import ProductsList from './pages/admin/ProductsList';
+import Roadmap from './pages/Roadmap';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="contact" element={<Contact />} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="terms" element={<Terms />} />
+            <Route path="roadmap" element={<Roadmap />} />
           </Route>
 
           {/* Rutas del panel de administración — layout con Sidebar */}
