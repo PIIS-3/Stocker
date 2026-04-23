@@ -16,11 +16,12 @@ export function UserForm({ isOpen, onClose, mode = 'create' }: UserFormProps) {
       isOpen={isOpen}
       onClose={onClose}
       title={isEdit ? 'Editar Empleado' : 'Nuevo Empleado'}
-      subtitle={isEdit ? 'Modifica los datos del usuario.' : 'Registra un nuevo empleado en el sistema.'}
+      subtitle={
+        isEdit ? 'Modifica los datos del usuario.' : 'Registra un nuevo empleado en el sistema.'
+      }
       size="md"
     >
       <form className="p-6 flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-
         {/* Nombre + Username */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
@@ -40,7 +41,9 @@ export function UserForm({ isOpen, onClose, mode = 'create' }: UserFormProps) {
               Usuario <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                @
+              </span>
               <input
                 id="user-username"
                 type="text"
@@ -105,7 +108,9 @@ export function UserForm({ isOpen, onClose, mode = 'create' }: UserFormProps) {
               className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-700 bg-white"
               defaultValue={isEdit ? 'Store_Admin' : ''}
             >
-              <option value="" disabled>Seleccionar rol</option>
+              <option value="" disabled>
+                Seleccionar rol
+              </option>
               <option value="DB_Admin">Administrador (DB)</option>
               <option value="Store_Admin">Manager de Tienda</option>
               <option value="Worker">Trabajador</option>

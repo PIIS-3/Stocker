@@ -35,10 +35,7 @@ export function Modal({ isOpen, onClose, title, subtitle, children, size = 'md' 
       role="dialog"
     >
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
       <div
@@ -61,9 +58,7 @@ export function Modal({ isOpen, onClose, title, subtitle, children, size = 'md' 
         </div>
 
         {/* Body */}
-        <div className="overflow-y-auto flex-1">
-          {children}
-        </div>
+        <div className="overflow-y-auto flex-1">{children}</div>
       </div>
 
       <style>{`

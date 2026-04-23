@@ -16,11 +16,14 @@ export function ProductForm({ isOpen, onClose, mode = 'create' }: ProductFormPro
       isOpen={isOpen}
       onClose={onClose}
       title={isEdit ? 'Editar Producto' : 'Nuevo Producto'}
-      subtitle={isEdit ? 'Modifica los datos del producto.' : 'Completa la información para registrar un nuevo producto.'}
+      subtitle={
+        isEdit
+          ? 'Modifica los datos del producto.'
+          : 'Completa la información para registrar un nuevo producto.'
+      }
       size="lg"
     >
       <form className="p-6 flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-
         {/* SKU + Nombre */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
@@ -72,7 +75,9 @@ export function ProductForm({ isOpen, onClose, mode = 'create' }: ProductFormPro
               className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-700 bg-white"
               defaultValue={isEdit ? 'Electrónica' : ''}
             >
-              <option value="" disabled>Seleccionar categoría</option>
+              <option value="" disabled>
+                Seleccionar categoría
+              </option>
               <option>Electrónica</option>
               <option>Ropa Deportiva</option>
               <option>Hogar</option>
@@ -88,7 +93,9 @@ export function ProductForm({ isOpen, onClose, mode = 'create' }: ProductFormPro
               Precio de Venta (€) <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">€</span>
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">
+                €
+              </span>
               <input
                 id="product-price"
                 type="number"

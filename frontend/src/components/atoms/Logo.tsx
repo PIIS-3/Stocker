@@ -10,11 +10,7 @@ interface LogoProps {
   iconSize?: string;
 }
 
-export function Logo({
-  label = 'Stocker',
-  showBg = false,
-  iconSize = 'h-10 w-10',
-}: LogoProps) {
+export function Logo({ label = 'Stocker', showBg = false, iconSize = 'h-10 w-10' }: LogoProps) {
   return (
     <Link to="/" className="flex items-center gap-3">
       <div

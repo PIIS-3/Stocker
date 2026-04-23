@@ -62,7 +62,7 @@
 
     <div class="section-card">
         <h2>Fase 1: Backend (Base de Datos y Modelos)</h2>
-        
+
         <div class="phase-card">
             <div class="step-item">
                 <h3><span class="step-label">Paso 1.1</span> Crear Modelo SQLModel</h3>
@@ -76,7 +76,7 @@ class WarehouseBase(SQLModel):
 
 # Los parámetros que el FrontEnd está forzado a mandar para crearla
 class WarehouseCreate(WarehouseBase):
-    pass 
+    pass
 
 # La estructura Real de la Tabla de Base de Datos
 class Warehouse(WarehouseBase, table=True):

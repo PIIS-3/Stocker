@@ -6,10 +6,38 @@ import { UserForm } from '../../components/organisms/UserForm';
 
 export default function UsersList() {
   const users = [
-    { id: 1, name: 'Ana López', username: 'alopez', role: 'Store_Admin', store: 'Madrid Centro', status: 'Active' },
-    { id: 2, name: 'Carlos Ruíz', username: 'cruiz', role: 'Worker', store: 'Barcelona Norte', status: 'Active' },
-    { id: 3, name: 'Elena García', username: 'egarcia', role: 'DB_Admin', store: 'Todas', status: 'Active' },
-    { id: 4, name: 'Miguel Torres', username: 'mtorres', role: 'Worker', store: 'Valencia Playa', status: 'Inactive' },
+    {
+      id: 1,
+      name: 'Ana López',
+      username: 'alopez',
+      role: 'Store_Admin',
+      store: 'Madrid Centro',
+      status: 'Active',
+    },
+    {
+      id: 2,
+      name: 'Carlos Ruíz',
+      username: 'cruiz',
+      role: 'Worker',
+      store: 'Barcelona Norte',
+      status: 'Active',
+    },
+    {
+      id: 3,
+      name: 'Elena García',
+      username: 'egarcia',
+      role: 'DB_Admin',
+      store: 'Todas',
+      status: 'Active',
+    },
+    {
+      id: 4,
+      name: 'Miguel Torres',
+      username: 'mtorres',
+      role: 'Worker',
+      store: 'Valencia Playa',
+      status: 'Inactive',
+    },
   ];
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -29,10 +57,7 @@ export default function UsersList() {
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4 flex-wrap">
-          <SearchInput
-            placeholder="Buscar por nombre o usuario..."
-            className="w-full md:w-72"
-          />
+          <SearchInput placeholder="Buscar por nombre o usuario..." className="w-full md:w-72" />
           <div className="flex gap-2">
             <select className="px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-600 bg-white">
               <option>Todos los roles</option>
@@ -56,7 +81,10 @@ export default function UsersList() {
             </thead>
             <tbody className="text-gray-700 text-sm">
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none">
+                <tr
+                  key={user.id}
+                  className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none"
+                >
                   <td className="p-4 font-medium text-gray-900">@{user.username}</td>
                   <td className="p-4">{user.name}</td>
                   <td className="p-4">
@@ -78,7 +106,7 @@ export default function UsersList() {
 
       {/* Modales */}
       <UserForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
-      <UserForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
+      <UserForm isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} mode="edit" />
     </div>
   );
 }

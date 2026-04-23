@@ -25,7 +25,10 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-gray-50">
-        <Link to="/login" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all">
+        <Link
+          to="/login"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
+        >
           <LogOut size={20} />
           <span className="font-medium">Cerrar sesión</span>
         </Link>
