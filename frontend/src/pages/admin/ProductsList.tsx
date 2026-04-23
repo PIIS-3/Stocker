@@ -65,10 +65,7 @@ export default function ProductsList() {
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4 flex-wrap">
-          <SearchInput
-            placeholder="Buscar por Nombre, SKU o Marca..."
-            className="w-full md:w-80"
-          />
+          <SearchInput placeholder="Buscar por Nombre, SKU o Marca..." className="w-full md:w-80" />
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">
               {isLoading ? 'Cargando...' : `${products.length} productos`}
@@ -105,7 +102,9 @@ export default function ProductsList() {
                 <th className="p-4 font-medium border-b border-gray-100">Producto</th>
                 <th className="p-4 font-medium border-b border-gray-100">Marca</th>
                 <th className="p-4 font-medium border-b border-gray-100">Categoría</th>
-                <th className="p-4 font-medium border-b border-gray-100 text-right">Precio Venta</th>
+                <th className="p-4 font-medium border-b border-gray-100 text-right">
+                  Precio Venta
+                </th>
                 <th className="p-4 font-medium border-b border-gray-100">Estado</th>
                 <th className="p-4 font-medium border-b border-gray-100 text-right">Acciones</th>
               </tr>
@@ -128,7 +127,10 @@ export default function ProductsList() {
               )}
 
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none">
+                <tr
+                  key={product.id}
+                  className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none"
+                >
                   <td className="p-4">
                     <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
                       <ImageIcon size={18} />
@@ -160,7 +162,7 @@ export default function ProductsList() {
 
       {/* Modales */}
       <ProductForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
-      <ProductForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
+      <ProductForm isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} mode="edit" />
     </div>
   );
 }

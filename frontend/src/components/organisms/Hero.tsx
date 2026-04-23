@@ -12,7 +12,7 @@ export function Hero() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10 w-full grid lg:grid-cols-2 gap-12 items-center">
         <div className="flex flex-col items-start text-left max-w-2xl">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -25,7 +25,7 @@ export function Hero() {
             SGA Sistema de Gestión
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -34,16 +34,17 @@ export function Hero() {
             Optimiza almacenes y <span className="text-brand">tiendas físicas</span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-lg"
           >
-            Control de inventario inteligente, gestión de lotes y trazabilidad de fallos en tiempo real para llevar tu logística al siguiente nivel.
+            Control de inventario inteligente, gestión de lotes y trazabilidad de fallos en tiempo
+            real para llevar tu logística al siguiente nivel.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -56,7 +57,7 @@ export function Hero() {
           </motion.div>
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9, x: 20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -72,7 +73,7 @@ export function Hero() {
               </div>
               <div className="h-4 w-24 bg-gray-100 rounded-full"></div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-brand/5 rounded-xl p-4 flex flex-col gap-2">
                 <div className="text-brand text-sm font-medium">Inventario</div>
@@ -85,49 +86,52 @@ export function Hero() {
                 <div className="text-xs text-brand">+5 nuevos</div>
               </div>
             </div>
-            
+
             <div className="flex-1 rounded-xl bg-gray-50 border border-gray-100 p-4 relative overflow-hidden">
-               <div className="absolute bottom-0 left-0 w-full h-[60%] bg-gradient-to-t from-brand/20 to-transparent"></div>
-               {/* Decorative graph bars */}
-               <div className="flex items-end justify-between h-full w-full px-2 gap-2 relative z-10">
-                 {[40, 70, 45, 90, 65, 80, 55].map((height, i) => (
-                   <motion.div 
-                     key={i} 
-                     initial={{ height: 0 }}
-                     animate={{ height: `${height}%` }}
-                     transition={{ duration: 1, delay: 0.5 + (i * 0.1) }}
-                     className="w-full bg-brand rounded-t-sm opacity-80"
-                   ></motion.div>
-                 ))}
-               </div>
+              <div className="absolute bottom-0 left-0 w-full h-[60%] bg-gradient-to-t from-brand/20 to-transparent"></div>
+              {/* Decorative graph bars */}
+              <div className="flex items-end justify-between h-full w-full px-2 gap-2 relative z-10">
+                {[40, 70, 45, 90, 65, 80, 55].map((height, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ height: 0 }}
+                    animate={{ height: `${height}%` }}
+                    transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
+                    className="w-full bg-brand rounded-t-sm opacity-80"
+                  ></motion.div>
+                ))}
+              </div>
             </div>
           </div>
-          
+
           {/* Floating UI Elements */}
-          <motion.div 
-             animate={{ y: [-10, 10, -10] }}
-             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-             className="absolute -right-8 -top-8 glass p-4 rounded-xl flex items-center gap-4 shadow-xl pointer-events-none"
+          <motion.div
+            animate={{ y: [-10, 10, -10] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -right-8 -top-8 glass p-4 rounded-xl flex items-center gap-4 shadow-xl pointer-events-none"
           >
-            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-bold">✓</div>
+            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-bold">
+              ✓
+            </div>
             <div>
               <div className="text-sm font-bold text-gray-800">Lote #8493</div>
               <div className="text-xs text-gray-500">Trazabilidad OK</div>
             </div>
           </motion.div>
-          
-          <motion.div 
-             animate={{ y: [10, -10, 10] }}
-             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-             className="absolute -left-12 bottom-12 glass p-4 rounded-xl flex items-center gap-4 shadow-xl pointer-events-none"
+
+          <motion.div
+            animate={{ y: [10, -10, 10] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+            className="absolute -left-12 bottom-12 glass p-4 rounded-xl flex items-center gap-4 shadow-xl pointer-events-none"
           >
-            <div className="w-12 h-12 bg-brand/20 text-brand rounded-full flex items-center justify-center font-bold">!</div>
+            <div className="w-12 h-12 bg-brand/20 text-brand rounded-full flex items-center justify-center font-bold">
+              !
+            </div>
             <div>
               <div className="text-sm font-bold text-gray-800">Alerta Stock Bajo</div>
               <div className="text-xs text-gray-500">Producto SK-492</div>
             </div>
           </motion.div>
-
         </motion.div>
       </div>
     </section>

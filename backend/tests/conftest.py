@@ -27,7 +27,7 @@ def client_fixture(session: Session):
     """Crea un cliente de FastAPI con la base de datos de prueba inyectada."""
     def get_db_override():
         yield session
-    
+
     app.dependency_overrides[get_db] = get_db_override
     client = TestClient(app)
     yield client

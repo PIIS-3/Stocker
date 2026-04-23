@@ -110,7 +110,7 @@
     <section class="architecture-overview">
         <h2>Resumen del Sistema</h2>
         <p>El proyecto Stocker está separado en una arquitectura de microservicios de tres capas orquestados mediante <code>docker-compose</code>. Esto permite que el Frontend, la API Backend y la Base de Datos corran en entornos aislados pero comunicados a través de una red virtual interna de Docker.</p>
-        
+
         <h3>Orquestador Principal</h3>
         <ul class="file-list">
             <li class="file-item">
@@ -131,7 +131,7 @@
         <div class="container-card">
             <h3 class="container-title">📁 Database <span class="badge">stocker_db (postgres:16-alpine)</span></h3>
             <p>Contenedor de almacenamiento persistente corriendo PostgreSQL V16. Ahora se arranca completamente en blanco para entregar el control de arquitecturas a código Python (Alembic). Los datos de validación inicial deben cargarse de forma manual con <code>seed.sql</code> tras el arranque.</p>
-            
+
             <h4>Archivos de Configuración e Inicialización:</h4>
             <ul class="file-list">
                 <li class="file-item">
@@ -145,7 +145,7 @@
         <div class="container-card">
             <h3 class="container-title">⚙️ Backend API <span class="badge">stocker_api (python:3.12-slim)</span></h3>
             <p>Servidor RESTful moderno escrito en FastAPI usando Uvicorn y conectado a la BD PostgreSQL a través de la arquitectura unificada de <strong>SQLModel</strong>.</p>
-            
+
             <h4>Archivos de Construcción y Migraciones:</h4>
             <ul class="file-list">
                 <li class="file-item">
@@ -163,7 +163,7 @@
         <div class="container-card">
             <h3 class="container-title">💻 Frontend <span class="badge">stocker_web (node:25-alpine)</span></h3>
             <p>Aplicación SPA generada en React con TypeScript gestionada dinámicamente in-memory por ViteJS bajo Node 25.</p>
-            
+
             <h4>Archivos de Construcción:</h4>
             <ul class="file-list">
                 <li class="file-item">

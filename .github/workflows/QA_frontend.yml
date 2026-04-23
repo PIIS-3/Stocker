@@ -7,7 +7,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-jobs: 
+jobs:
   docker:
     runs-on: ubuntu-latest
     steps:

@@ -3,10 +3,34 @@ import { PageHeader, StatCard } from '../../components/molecules';
 
 export default function Dashboard() {
   const stats = [
-    { label: 'Tiendas Activas', value: '12', icon: Store, color: 'bg-blue-50 text-blue-600', border: 'border-blue-100' },
-    { label: 'Usuarios', value: '48', icon: Users, color: 'bg-indigo-50 text-indigo-600', border: 'border-indigo-100' },
-    { label: 'Categorías', value: '34', icon: Package, color: 'bg-emerald-50 text-emerald-600', border: 'border-emerald-100' },
-    { label: 'Alertas de Stock', value: '3', icon: AlertCircle, color: 'bg-rose-50 text-rose-600', border: 'border-rose-100' },
+    {
+      label: 'Tiendas Activas',
+      value: '12',
+      icon: Store,
+      color: 'bg-blue-50 text-blue-600',
+      border: 'border-blue-100',
+    },
+    {
+      label: 'Usuarios',
+      value: '48',
+      icon: Users,
+      color: 'bg-indigo-50 text-indigo-600',
+      border: 'border-indigo-100',
+    },
+    {
+      label: 'Categorías',
+      value: '34',
+      icon: Package,
+      color: 'bg-emerald-50 text-emerald-600',
+      border: 'border-emerald-100',
+    },
+    {
+      label: 'Alertas de Stock',
+      value: '3',
+      icon: AlertCircle,
+      color: 'bg-rose-50 text-rose-600',
+      border: 'border-rose-100',
+    },
   ];
 
   return (
@@ -23,30 +47,38 @@ export default function Dashboard() {
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 line-clamp-4">
-         <h2 className="text-lg font-bold text-gray-900 mb-6">Actividad Reciente</h2>
-         <div className="flex flex-col gap-5">
-            <div className="flex items-start gap-4">
-              <div className="w-2 h-2 mt-2 rounded-full bg-rose-500"></div>
-              <div>
-                <p className="text-gray-800 text-sm">La tienda <span className="font-semibold">Madrid Centro</span> ha reportado un problema de stock en la categoría <span className="italic">Electrónica</span>.</p>
-                <p className="text-xs text-gray-400 mt-1">Hace 2 horas</p>
-              </div>
+        <h2 className="text-lg font-bold text-gray-900 mb-6">Actividad Reciente</h2>
+        <div className="flex flex-col gap-5">
+          <div className="flex items-start gap-4">
+            <div className="w-2 h-2 mt-2 rounded-full bg-rose-500"></div>
+            <div>
+              <p className="text-gray-800 text-sm">
+                La tienda <span className="font-semibold">Madrid Centro</span> ha reportado un
+                problema de stock en la categoría <span className="italic">Electrónica</span>.
+              </p>
+              <p className="text-xs text-gray-400 mt-1">Hace 2 horas</p>
             </div>
-            <div className="flex items-start gap-4">
-              <div className="w-2 h-2 mt-2 rounded-full bg-indigo-500"></div>
-              <div>
-                <p className="text-gray-800 text-sm">Nuevo empleado <span className="font-semibold">Ana López</span> registrado en <span className="font-semibold">Barcelona Norte</span> por el Administrador.</p>
-                <p className="text-xs text-gray-400 mt-1">Hace 5 horas</p>
-              </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-2 h-2 mt-2 rounded-full bg-indigo-500"></div>
+            <div>
+              <p className="text-gray-800 text-sm">
+                Nuevo empleado <span className="font-semibold">Ana López</span> registrado en{' '}
+                <span className="font-semibold">Barcelona Norte</span> por el Administrador.
+              </p>
+              <p className="text-xs text-gray-400 mt-1">Hace 5 horas</p>
             </div>
-            <div className="flex items-start gap-4">
-              <div className="w-2 h-2 mt-2 rounded-full bg-emerald-500"></div>
-              <div>
-                <p className="text-gray-800 text-sm">Se creó la nueva categoría <span className="italic">Ropa Deportiva</span>.</p>
-                <p className="text-xs text-gray-400 mt-1">Ayer a las 14:32</p>
-              </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-2 h-2 mt-2 rounded-full bg-emerald-500"></div>
+            <div>
+              <p className="text-gray-800 text-sm">
+                Se creó la nueva categoría <span className="italic">Ropa Deportiva</span>.
+              </p>
+              <p className="text-xs text-gray-400 mt-1">Ayer a las 14:32</p>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
     </div>
   );

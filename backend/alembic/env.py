@@ -22,7 +22,8 @@ sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..'
 
 from app.core.config import settings
 from sqlmodel import SQLModel
-import app.models  # noqa: F401 – Importación necesaria para que SQLModel registre los modelos en metadata
+import app.models  # noqa: F401
+# Importación necesaria para que SQLModel registre los modelos en metadata
 
 # Metadata de los modelos — Alembic la usa para detectar cambios
 # en el esquema y generar migraciones automáticas (autogenerate).

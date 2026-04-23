@@ -16,11 +16,14 @@ export function StoreForm({ isOpen, onClose, mode = 'create' }: StoreFormProps) 
       isOpen={isOpen}
       onClose={onClose}
       title={isEdit ? 'Editar Tienda' : 'Nueva Tienda'}
-      subtitle={isEdit ? 'Modifica los datos de la sucursal.' : 'Registra una nueva sucursal o punto de venta.'}
+      subtitle={
+        isEdit
+          ? 'Modifica los datos de la sucursal.'
+          : 'Registra una nueva sucursal o punto de venta.'
+      }
       size="md"
     >
       <form className="p-6 flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-
         {/* Nombre */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-gray-700" htmlFor="store-name">

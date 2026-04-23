@@ -27,7 +27,7 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           pytest tests
-  
+
   docker:
     needs: test
     runs-on: ubuntu-latest
