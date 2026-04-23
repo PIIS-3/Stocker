@@ -1,0 +1,18 @@
+name: Standards_global
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  editorconfig:
+    name: EditorConfig Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: EditorConfig Check
+        uses: editorconfig-checker/action-editorconfig-checker@v2
