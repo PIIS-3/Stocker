@@ -365,10 +365,10 @@ export default function RoadmapS3Full() {
             letterSpacing: '-0.5px',
           }}
         >
-          Stocker — Roadmap Sprint 3
+          Stocker — Roadmap Sprints
         </h1>
         <p style={{ fontSize: 14, color: 'var(--color-text-secondary)', margin: '6px 0 0' }}>
-          Sistema de Gestión de Almacenes · Sprints 1–3 · Feb – Mar 2025
+          Sistema de Gestión de Almacenes · Sprints 
         </p>
       </div>
 
