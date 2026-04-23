@@ -16,11 +16,14 @@ export function CategoryForm({ isOpen, onClose, mode = 'create' }: CategoryFormP
       isOpen={isOpen}
       onClose={onClose}
       title={isEdit ? 'Editar Categoría' : 'Nueva Categoría'}
-      subtitle={isEdit ? 'Modifica los datos de la categoría.' : 'Completa los campos para crear una nueva categoría.'}
+      subtitle={
+        isEdit
+          ? 'Modifica los datos de la categoría.'
+          : 'Completa los campos para crear una nueva categoría.'
+      }
       size="md"
     >
       <form className="p-6 flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-
         {/* Nombre */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-gray-700" htmlFor="category-name">

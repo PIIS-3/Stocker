@@ -6,8 +6,18 @@ import { CategoryForm } from '../../components/organisms/CategoryForm';
 
 export default function CategoriesList() {
   const categories = [
-    { id: 1, name: 'Electrónica', description: 'Dispositivos, cables y accesorios tech', status: 'Active' },
-    { id: 2, name: 'Ropa Deportiva', description: 'Indumentaria para actividades físicas', status: 'Active' },
+    {
+      id: 1,
+      name: 'Electrónica',
+      description: 'Dispositivos, cables y accesorios tech',
+      status: 'Active',
+    },
+    {
+      id: 2,
+      name: 'Ropa Deportiva',
+      description: 'Indumentaria para actividades físicas',
+      status: 'Active',
+    },
     { id: 3, name: 'Hogar', description: 'Muebles y decoración', status: 'Inactive' },
     { id: 4, name: 'Alimentación', description: 'Productos no perecederos', status: 'Active' },
   ];
@@ -44,12 +54,19 @@ export default function CategoriesList() {
             </thead>
             <tbody className="text-gray-700 text-sm">
               {categories.map((category) => (
-                <tr key={category.id} className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none">
+                <tr
+                  key={category.id}
+                  className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none"
+                >
                   <td className="p-4">#{category.id}</td>
                   <td className="p-4 font-medium text-gray-900">{category.name}</td>
                   <td className="p-4 max-w-xs truncate">{category.description}</td>
                   <td className="p-4">
-                    <StatusBadge status={category.status} activeLabel="Activa" inactiveLabel="Inactiva" />
+                    <StatusBadge
+                      status={category.status}
+                      activeLabel="Activa"
+                      inactiveLabel="Inactiva"
+                    />
                   </td>
                   <td className="p-4">
                     <ActionButtons onEdit={() => setIsEditOpen(true)} />
@@ -63,7 +80,7 @@ export default function CategoriesList() {
 
       {/* Modales */}
       <CategoryForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
-      <CategoryForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
+      <CategoryForm isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} mode="edit" />
     </div>
   );
 }

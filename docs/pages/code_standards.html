@@ -52,7 +52,7 @@
 
     <div class="section-card">
         <h2>1. Herramientas de Estandarización</h2>
-        
+
         <div class="rule-card">
             <div class="rule-title">⚙️ EditorConfig (Aplica a todo el repositorio)</div>
             <p>Se encarga de homogeneizar el formato más básico a nivel de editor, sin importar si usas VS Code, WebStorm o PyCharm.</p>
@@ -91,7 +91,7 @@
         <div class="rule-card">
             <div class="rule-title">💬 Idioma de los Comentarios</div>
             <p>A diferencia del código (que va siempre cifrado en inglés), <strong>el 100% de los comentarios de equipo deben ir en Español</strong>.</p>
-            
+
             <div class="rule-code">
                 <div class="code-bad">
 <pre><code>// Disable user input if loading occurs
@@ -107,15 +107,15 @@ if (isLoading) { ... }</code></pre>
         <div class="rule-card">
             <div class="rule-title">🤔 Comentarios Descriptivos (El Porqué)</div>
             <p>El código explica <em>qué</em> pasa, pero el comentario debe explicar el <em>por qué</em> (motivos de negocio, riesgos técnicos, arquitecturas).</p>
-            
+
             <div class="rule-code">
                 <div class="code-bad">
 <pre><code># Configura el echo a True
 engine = create_engine(db_url, echo=True)</code></pre>
                 </div>
                 <div class="code-good">
-<pre><code># echo=True le indica a SQLAlchemy que imprima 
-# en consola las consultas SQL puras. 
+<pre><code># echo=True le indica a SQLAlchemy que imprima
+# en consola las consultas SQL puras.
 # Activarlo solo para depuración en desarrollo local.
 engine = create_engine(db_url, echo=True)</code></pre>
                 </div>

@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Stocker API"
     VERSION: str = "1.0.0"
     DESCRIPTION: str = "Backend para Sistema de Gestión de Almacenes"
-    
+
     # URL del Frontend con fallback (si no está en .env, usa localhost:5173)
     FRONTEND_URL: str = "http://localhost:5173"
 
@@ -18,8 +18,10 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL(self) -> str:
-        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-    
+        user_pass = f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+        server_port = f"{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}"
+        return f"postgresql://{user_pass}@{server_port}/{self.POSTGRES_DB}"
+
     class Config:
         # Esto le dice a Pydantic que busque el archivo .env en la raíz
         env_file = ".env"

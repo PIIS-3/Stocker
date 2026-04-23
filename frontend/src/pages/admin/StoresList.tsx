@@ -43,7 +43,10 @@ export default function StoresList() {
             </thead>
             <tbody className="text-gray-700 text-sm">
               {stores.map((store) => (
-                <tr key={store.id} className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none">
+                <tr
+                  key={store.id}
+                  className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none"
+                >
                   <td className="p-4">#{store.id}</td>
                   <td className="p-4 font-medium text-gray-900">{store.name}</td>
                   <td className="p-4">{store.address}</td>
@@ -62,7 +65,7 @@ export default function StoresList() {
 
       {/* Modales */}
       <StoreForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
-      <StoreForm isOpen={isEditOpen}   onClose={() => setIsEditOpen(false)}   mode="edit" />
+      <StoreForm isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} mode="edit" />
     </div>
   );
 }

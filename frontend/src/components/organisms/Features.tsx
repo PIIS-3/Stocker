@@ -4,19 +4,22 @@ import { Box, Layers, AlertCircle } from 'lucide-react';
 const features = [
   {
     icon: <Box className="w-8 h-8 text-brand" />,
-    title: "Control de inventario inteligente",
-    description: "Visualiza y administra tus niveles de stock en tiempo real. Utiliza algoritmos predictivos para evitar quiebres y sobrestock."
+    title: 'Control de inventario inteligente',
+    description:
+      'Visualiza y administra tus niveles de stock en tiempo real. Utiliza algoritmos predictivos para evitar quiebres y sobrestock.',
   },
   {
     icon: <Layers className="w-8 h-8 text-brand" />,
-    title: "Gestión de lotes",
-    description: "Organiza tus productos por lotes, fechas de caducidad y ubicación exacta. Maximiza el rendimiento del espacio en tus almacenes."
+    title: 'Gestión de lotes',
+    description:
+      'Organiza tus productos por lotes, fechas de caducidad y ubicación exacta. Maximiza el rendimiento del espacio en tus almacenes.',
   },
   {
     icon: <AlertCircle className="w-8 h-8 text-brand" />,
-    title: "Trazabilidad de fallos",
-    description: "Detecta incidencias en tiempo real. Rastrea el origen de fallos y mermas para aplicar soluciones inmediatas y mejorar la calidad."
-  }
+    title: 'Trazabilidad de fallos',
+    description:
+      'Detecta incidencias en tiempo real. Rastrea el origen de fallos y mermas para aplicar soluciones inmediatas y mejorar la calidad.',
+  },
 ];
 
 export function Features() {
@@ -24,7 +27,7 @@ export function Features() {
     <section id="features" className="py-24 bg-white relative">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -33,14 +36,15 @@ export function Features() {
           >
             Todo lo que necesitas para tu <span className="text-brand">cadena de suministro</span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-lg text-gray-600"
           >
-            Stocker te ofrece herramientas avanzadas para transformar la manera en que gestionas tus almacenes y tiendas físicas.
+            Stocker te ofrece herramientas avanzadas para transformar la manera en que gestionas tus
+            almacenes y tiendas físicas.
           </motion.p>
         </div>
 
@@ -58,9 +62,7 @@ export function Features() {
                 {feature.icon}
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
+              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
             </motion.div>
           ))}
         </div>

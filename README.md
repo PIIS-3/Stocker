@@ -14,7 +14,7 @@ El proyecto está construido bajo una red orquestada de **Microservicios Docker*
 
 ## 🚀 Despliegue Rápido en Desarrollo (Local)
 
-El proyecto utiliza Docker Compose para aislar dependencias sin ensuciar tu sistema operativo anfitrión. 
+El proyecto utiliza Docker Compose para aislar dependencias sin ensuciar tu sistema operativo anfitrión.
 
 ### 1. Iniciar el entorno
 Sitúate en la raíz del proyecto, copia las variables de entorno oficiales y corre el comando Compose. Esto descargará, instalará y preparará todo tu ecosistema.

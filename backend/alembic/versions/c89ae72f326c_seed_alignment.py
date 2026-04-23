@@ -1,7 +1,7 @@
 """Seed alignment
 
 Revision ID: c89ae72f326c
-Revises: 
+Revises:
 Create Date: 2026-03-18 04:30:24.828683
 
 """
@@ -33,7 +33,8 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_category_category_name'), 'category', ['category_name'], unique=True)
     op.create_table('role',
-    sa.Column('role_name', sa.Enum('SuperAdmin', 'Manager', 'Staff', name='roleroleenum'), nullable=False),
+    sa.Column('role_name', sa.Enum('SuperAdmin', 'Manager', 'Staff', name='roleroleenum'),
+        nullable=False),
     sa.Column('status', sa.Enum('Active', 'Inactive', name='statusenum'), nullable=False),
     sa.Column('id_role', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),

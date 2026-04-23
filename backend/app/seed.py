@@ -139,7 +139,8 @@ def run_seed() -> None:
                 category = categories_by_name.get(category_name)
                 if not category:
                     raise ValueError(
-                        f"Categoría no encontrada para el producto {product_data['sku']}: {category_name}"
+                        f"Categoría no encontrada para el producto {product_data['sku']}: "
+                        f"{category_name}"
                     )
 
                 _, created = upsert_product(session, product_data, category.id_category)

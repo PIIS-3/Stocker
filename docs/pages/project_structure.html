@@ -20,7 +20,7 @@
         .tree .comment { color: #94a3b8; font-style: italic; }
         .tree .folder { color: #38bdf8; font-weight: bold; }
         .tree .file { color: #e2e8f0; }
-        
+
         .dependency-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .dependency-item { background: var(--brand-bg); padding: 1rem 1.5rem; border-radius: 8px; border-left: 4px solid var(--brand); }
         .dependency-name { font-weight: bold; color: #0f172a; font-size: 1.1rem; margin-bottom: 0.25rem; }
@@ -55,7 +55,7 @@
     <div class="section-card">
         <h2>1. Backend (API en FastAPI)</h2>
         <p>El backend sigue una arquitectura basada en capas (Rutas -> Schemas -> Operaciones -> Modelos) para separar claramente la recepción de datos de la escritura en base de datos.</p>
-        
+
         <div class="tree">
 <span class="folder">backend/</span>
 ├── <span class="folder">alembic/</span>            <span class="comment"># Contiene el historial de migraciones ('versions/') generado por Alembic</span>
@@ -109,7 +109,7 @@
     <div class="section-card">
         <h2>2. Frontend (React + Vite)</h2>
         <p>El frontend se erige sobre React 18 pero empaquetado por Vite, garantizando arranques en milisegundos en desarrollo.</p>
-        
+
         <div class="tree">
 <span class="folder">frontend/</span>
 ├── <span class="folder">src/</span>
