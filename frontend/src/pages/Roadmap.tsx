@@ -368,7 +368,7 @@ export default function RoadmapS3Full() {
           Stocker — Roadmap Sprints
         </h1>
         <p style={{ fontSize: 14, color: 'var(--color-text-secondary)', margin: '6px 0 0' }}>
-          Sistema de Gestión de Almacenes · Sprints 
+          Sistema de Gestión de Almacenes · Sprints
         </p>
       </div>
 
