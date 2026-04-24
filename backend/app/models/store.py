@@ -13,9 +13,13 @@ if TYPE_CHECKING:
 # Campos de negocio compartidos por StoreCreate y StoreResponse.
 # No se usa directamente en la API.
 class StoreBase(SQLModel):
-    store_name: str = Field(unique=True, index=True, min_length=1, description="Nombre único de la tienda.")
+    store_name: str = Field(
+        unique=True, index=True, min_length=1, description="Nombre único de la tienda."
+    )
     address: str = Field(min_length=1, description="Dirección física completa.")
-    status: StatusEnum = Field(default=StatusEnum.Active, description="Estado operativo (Active / Inactive).")
+    status: StatusEnum = Field(
+        default=StatusEnum.Active, description="Estado operativo (Active / Inactive)."
+    )
 
 
 # ── StoreCreate ──────────────────────────────────────────────────────
@@ -30,8 +34,12 @@ class StoreCreate(StoreBase):
 # Todos los campos son opcionales para permitir actualizaciones parciales.
 # No hereda StoreBase para no forzar campos obligatorios en un PATCH.
 class StoreUpdate(SQLModel):
-    store_name: Optional[str] = Field(default=None, min_length=1, description="Nuevo nombre (debe ser único).")
-    address: Optional[str] = Field(default=None, min_length=1, description="Nueva dirección física.")
+    store_name: Optional[str] = Field(
+        default=None, min_length=1, description="Nuevo nombre (debe ser único)."
+    )
+    address: Optional[str] = Field(
+        default=None, min_length=1, description="Nueva dirección física."
+    )
     status: Optional[StatusEnum] = Field(default=None, description="Nuevo estado operativo.")
 
 

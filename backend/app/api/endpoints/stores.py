@@ -60,7 +60,10 @@ def read_store(store_id: int, db: Session = Depends(get_db)):
 def create_store(store_in: models.StoreCreate, db: Session = Depends(get_db)):
     """Crea una nueva tienda."""
     if crud_stores.get_store_by_name(db, store_name=store_in.store_name):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="A store with that name already exists")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A store with that name already exists"
+        )
     return crud_stores.create_store(db, store_in=store_in)
 
 
@@ -85,7 +88,10 @@ def update_store(
         # Si la tienda encontrada ES la misma que estamos editando, no es conflicto.
         # Esto permite enviar el mismo nombre sin obtener un 409 innecesario.
         if existing is not None and existing.id_store != store_id:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="A store with that name already exists")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A store with that name already exists"
+            )
 
     updated = crud_stores.update_store(db, store_id=store_id, store_in=store_in)
     if updated is None:
