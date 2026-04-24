@@ -20,14 +20,14 @@ export default defineConfig([
     // Solo aplica a archivos TypeScript y TSX (componentes React).
     files: ['**/*.{ts,tsx}'],
     extends: [
-      js.configs.recommended,               // Reglas base de JavaScript.
-      tseslint.configs.recommended,          // Reglas de TypeScript (tipos, null-checks, etc.).
-      reactHooks.configs.flat.recommended,   // Detecta uso incorrecto de Hooks de React.
-      reactRefresh.configs.vite,             // Asegura que los componentes son compatibles con HMR de Vite.
+      js.configs.recommended, // Reglas base de JavaScript.
+      tseslint.configs.recommended, // Reglas de TypeScript (tipos, null-checks, etc.).
+      reactHooks.configs.flat.recommended, // Detecta uso incorrecto de Hooks de React.
+      reactRefresh.configs.vite, // Asegura que los componentes son compatibles con HMR de Vite.
     ],
     languageOptions: {
-      ecmaVersion: 2020,         // Permite sintaxis moderna de JS (async/await, optional chaining...).
-      globals: globals.browser,  // Reconoce variables globales del navegador (window, document, etc.).
+      ecmaVersion: 2020, // Permite sintaxis moderna de JS (async/await, optional chaining...).
+      globals: globals.browser, // Reconoce variables globales del navegador (window, document, etc.).
     },
     rules: {
       // ── console.log ──────────────────────────────────────────────────
@@ -56,4 +56,3 @@ export default defineConfig([
     },
   },
 ]);
-
