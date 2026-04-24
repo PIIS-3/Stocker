@@ -1,27 +1,45 @@
-# EditorConfig – https://editorconfig.org
+# EditorConfig — https://editorconfig.org
 # Garantiza un estilo de código consistente en todos los editores e IDEs del equipo.
-# Cada miembro del equipo debe tener la extensión EditorConfig instalada en su editor.
+# Requiere la extensión EditorConfig instalada en el editor (VS Code, Cursor, WebStorm...).
+# Verificado automáticamente en cada PR por el workflow lint-global.yml.
 
+# root = true indica que este es el .editorconfig raíz.
+# EditorConfig no buscará más archivos de configuración en directorios superiores.
 root = true
 
 # ── Valores por defecto (aplica a todos los archivos) ────────────────
 [*]
+# Codificación estándar que soporta todos los idiomas y símbolos.
 charset = utf-8
+# Finales de línea Unix (LF). Evita el CRLF de Windows, que rompe
+# scripts de bash y genera falsos diffs en Git.
 end_of_line = lf
+# Espacios en lugar de tabulaciones para consistencia entre editores.
 indent_style = space
+# 2 espacios por nivel de indentación (JS, TS, YAML, JSON, HTML...).
 indent_size = 2
+# Elimina espacios invisibles al final de cada línea para no generar
+# ruido en los diffs de Git.
 trim_trailing_whitespace = true
+# Añade una línea vacía al final de cada archivo.
+# Requerido por el estándar POSIX y verificado por editorconfig-checker.
 insert_final_newline = true
 
 # ── Python (4 espacios según PEP 8) ─────────────────────────────────
 [*.py]
+# PEP 8 exige 4 espacios para Python. Sobreescribe el valor por defecto de 2.
 indent_size = 4
+# Longitud máxima de línea. Coherente con la config de flake8/ruff del backend.
 max_line_length = 100
 
 # ── Markdown (no recortar espacios finales — son saltos de línea) ────
 [*.md]
+# En Markdown, dos espacios al final de una línea generan un <br>.
+# Si se recortasen, se perderían los saltos de línea intencionados.
 trim_trailing_whitespace = false
 
 # ── Makefiles (requieren tabulaciones obligatoriamente) ──────────────
 [Makefile]
+# La sintaxis de Makefile exige tabulaciones. Sobreescribe el estilo global de espacios.
 indent_style = tab
+

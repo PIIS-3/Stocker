@@ -32,6 +32,18 @@
         .code-bad::before { content: "❌ Incorrecto"; display: block; color: #ef4444; font-weight: bold; margin-bottom: 0.5rem; }
         .code-good { border-top: 3px solid #22c55e; }
         .code-good::before { content: "✅ Correcto"; display: block; color: #22c55e; font-weight: bold; margin-bottom: 0.5rem; }
+        .cmd-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .cmd-table th { background: #0f172a; color: white; padding: 0.75rem 1rem; text-align: left; }
+        .cmd-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .cmd-table tr:last-child td { border-bottom: none; }
+        .cmd-table code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+        .option-table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; font-size: 0.9rem; }
+        .option-table th { background: #334155; color: white; padding: 0.5rem 0.75rem; text-align: left; }
+        .option-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e2e8f0; }
+        .option-table tr:last-child td { border-bottom: none; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .badge-warn { background: #fef3c7; color: #92400e; }
+        .badge-err  { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
@@ -43,89 +55,151 @@
 <div class="container">
     <header>
         <h1>📖 Guía de Estándares de Código</h1>
-        <p>Esta guía define las reglas de formato estático y las convenciones establecidas para evitar conflictos de equipo.</p>
+        <p>Define las reglas de formato y las herramientas de calidad del proyecto. Aplica automáticamente en cada Pull Request a través de los GitHub Actions.</p>
     </header>
 
     <div class="alert alert-info">
-        <strong>Preparación del Entorno (VS Code):</strong> Es obligatorio instalar las extensiones <b>EditorConfig</b>, <b>Prettier</b> y <b>ESLint</b>, y tener activado <em>"Format on Save"</em> en los ajustes.
+        <strong>Preparación del Entorno (VS Code / Cursor):</strong> Instala las extensiones <b>EditorConfig</b>, <b>Prettier</b> y <b>ESLint</b>. Activa <em>"Format on Save"</em> para que el editor aplique las reglas automáticamente al guardar.
     </div>
 
+    <!-- ── HERRAMIENTAS ─────────────────────────────────────────────── -->
     <div class="section-card">
         <h2>1. Herramientas de Estandarización</h2>
 
         <div class="rule-card">
-            <div class="rule-title">⚙️ EditorConfig (Aplica a todo el repositorio)</div>
-            <p>Se encarga de homogeneizar el formato más básico a nivel de editor, sin importar si usas VS Code, WebStorm o PyCharm.</p>
-            <ul>
-                <li><strong>Finales de línea:</strong> LF (formato Unix). Bloquea que un desarrollador de Windows introduzca finales de línea CRLF que rompen scripts de bash y causan falsos difs en Git.</li>
-                <li><strong>Indentación:</strong> 4 espacios estrictos para Python (PEP 8), 2 espacios para Frontend y config files.</li>
-                <li><strong>Automático:</strong> Recorta espacios vacíos al final de las líneas de código y añade una nueva línea en blanco al final de cada archivo.</li>
-            </ul>
+            <div class="rule-title">⚙️ EditorConfig — <code>.editorconfig</code> (Repositorio completo)</div>
+            <p>Establece las reglas más básicas de formato. Las aplica tu editor automáticamente al escribir, sin necesidad de ejecutar ningún comando.</p>
+            <table class="option-table">
+                <tr><th>Opción</th><th>Valor</th><th>Explicación</th></tr>
+                <tr><td><code>charset</code></td><td>utf-8</td><td>Codificación estándar que soporta todos los idiomas y símbolos.</td></tr>
+                <tr><td><code>end_of_line</code></td><td>lf</td><td>Finales de línea Unix. Evita problemas con Windows (CRLF) que rompen scripts y crean falsos cambios en Git.</td></tr>
+                <tr><td><code>indent_style</code></td><td>space</td><td>Usa espacios en lugar de tabulaciones para consistencia entre editores.</td></tr>
+                <tr><td><code>indent_size</code></td><td>2 (JS/TS), 4 (Python)</td><td>2 espacios para frontend; 4 para Python según el estándar PEP 8.</td></tr>
+                <tr><td><code>trim_trailing_whitespace</code></td><td>true</td><td>Elimina los espacios invisibles al final de cada línea que generan ruido en los diffs de Git.</td></tr>
+                <tr><td><code>insert_final_newline</code></td><td>true</td><td>Añade una línea vacía al final de cada archivo. Requerido por el estándar POSIX y por EditorConfig Checker.</td></tr>
+            </table>
+            <p style="margin-top: 0.75rem;"><strong>Workflow que lo verifica:</strong> <code>lint-global.yml</code> → ejecuta <code>editorconfig-checker</code> en cada PR.</p>
         </div>
 
         <div class="rule-card">
-            <div class="rule-title">✨ Prettier (Solo Frontend)</div>
-            <p>Se enfoca ciegamente en el envoltorio visual del código: longitud de líneas, comillas, etc.</p>
-            <ul>
-                <li><strong>Comillas simples:</strong> Forzadas en JS/TS en lugar de dobles (excepto en JSX/HTML).</li>
-                <li><strong>Punto y coma (;):</strong> Obligatorios en sentencias.</li>
-                <li><strong>Ancho máximo:</strong> El código no debe superar los 100 caracteres antes de saltar la línea automáticamente.</li>
-            </ul>
+            <div class="rule-title">✨ Prettier — <code>.prettierrc</code> + <code>.prettierignore</code> (Solo Frontend)</div>
+            <p>Reformatea el código visualmente de forma automática. Se ocupa del <em>aspecto</em> del código (comillas, ancho de línea, comas finales), no de su lógica.</p>
+            <table class="option-table">
+                <tr><th>Opción</th><th>Valor</th><th>Explicación</th></tr>
+                <tr><td><code>semi</code></td><td>true</td><td>Punto y coma obligatorio al final de cada sentencia.</td></tr>
+                <tr><td><code>singleQuote</code></td><td>true</td><td>Comillas simples en JS/TS: <code>'texto'</code> en lugar de <code>"texto"</code>.</td></tr>
+                <tr><td><code>tabWidth</code></td><td>2</td><td>Indentación de 2 espacios. Coherente con <code>.editorconfig</code>.</td></tr>
+                <tr><td><code>trailingComma</code></td><td>es5</td><td>Añade coma final en objetos y arrays multilínea (reduce el ruido en diffs de Git al añadir nuevas líneas).</td></tr>
+                <tr><td><code>printWidth</code></td><td>100</td><td>Máximo 100 caracteres por línea antes de hacer salto automático.</td></tr>
+                <tr><td><code>jsxSingleQuote</code></td><td>false</td><td>En JSX/HTML, usa comillas dobles: <code>className="btn"</code> (convención HTML estándar).</td></tr>
+                <tr><td><code>arrowParens</code></td><td>always</td><td>Paréntesis siempre en arrow functions: <code>(x) => x</code> en vez de <code>x => x</code>.</td></tr>
+                <tr><td><code>endOfLine</code></td><td>lf</td><td>Finales de línea Unix. Coherente con <code>.editorconfig</code>.</td></tr>
+            </table>
+            <p style="margin-top: 0.75rem;"><strong>Archivos ignorados</strong> por <code>.prettierignore</code>: <code>dist/</code>, <code>node_modules/</code>, <code>*.min.*</code>, <code>*.map</code>.</p>
+            <p><strong>Workflow que lo verifica:</strong> <code>lint-frontend.yml</code> → ejecuta <code>npm run format:check</code>.</p>
         </div>
 
         <div class="rule-card">
-            <div class="rule-title">🚨 ESLint (Solo Frontend)</div>
-            <p>Revisa la _lógica_ y avisa de malas prácticas o errores de TypeScript.</p>
-            <ul>
-                <li><strong>Eliminación de `console.log`:</strong> Lanza advertencias (amarillo) si olvidas un <code>console.log</code>. <br><em>Excepción:</em> Si es necesario (como el logger global de la API), usar `// eslint-disable-next-line no-console`.</li>
-                <li><strong>Imports de Tipos:</strong> Obliga a usar <code>import type</code> cuando solo importas interfaces TypeScript, para que Vite las purgue mejor al construir.</li>
-                <li><strong>Variables no usadas:</strong> Lanza un aviso si declaras algo y nunca lo usas. Si es intencionado, predícelo con guión bajo (ej: <code>_req</code> o <code>_res</code>).</li>
-            </ul>
+            <div class="rule-title">🚨 ESLint — <code>eslint.config.js</code> (Solo Frontend)</div>
+            <p>Analiza la <em>lógica</em> del código y detecta errores, variables sin usar y malas prácticas de React/TypeScript. Complementa a Prettier: uno revisa el aspecto, el otro la lógica.</p>
+            <table class="option-table">
+                <tr><th>Regla</th><th>Nivel</th><th>Explicación</th></tr>
+                <tr>
+                    <td><code>no-console</code></td>
+                    <td><span class="badge badge-warn">warn</span></td>
+                    <td>Avisa si dejas un <code>console.log</code> olvidado. Solo se permiten <code>console.warn</code> y <code>console.error</code>. Para desactivar puntualmente: <code>// eslint-disable-next-line no-console</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>no-unused-vars</code></td>
+                    <td><span class="badge badge-warn">warn</span></td>
+                    <td>Avisa si declaras una variable y no la usas. Si es intencional, usa el prefijo <code>_</code>: <code>const [_state, setState] = useState()</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>consistent-type-imports</code></td>
+                    <td><span class="badge badge-warn">warn</span></td>
+                    <td>Obliga a usar <code>import type</code> para interfaces y tipos de TypeScript. Permite a Vite eliminarlos completamente al compilar, reduciendo el bundle final.</td>
+                </tr>
+            </table>
+            <p style="margin-top: 0.75rem;"><strong>Workflow que lo verifica:</strong> <code>lint-frontend.yml</code> → ejecuta <code>npm run lint</code>.</p>
         </div>
     </div>
 
+    <!-- ── COMANDOS ─────────────────────────────────────────────────── -->
     <div class="section-card">
-        <h2>2. Reglas de Documentación</h2>
-        <p>Una base de código mantenible se autodescribe, pero requiere claridad humana para las decisiones inusuales.</p>
+        <h2>2. Comandos de <code>package.json</code> — Cómo Ejecutarlos Manualmente</h2>
+        <p>Todos los comandos se ejecutan desde la carpeta <code>frontend/</code>.</p>
 
-        <div class="rule-card">
-            <div class="rule-title">💬 Idioma de los Comentarios</div>
-            <p>A diferencia del código (que va siempre cifrado en inglés), <strong>el 100% de los comentarios de equipo deben ir en Español</strong>.</p>
+        <table class="cmd-table">
+            <tr>
+                <th>Comando</th>
+                <th>Script interno</th>
+                <th>Cuándo usarlo</th>
+            </tr>
+            <tr>
+                <td><code>npm run dev</code></td>
+                <td><code>vite --host</code></td>
+                <td>Arrancar el servidor de desarrollo local. El <code>--host</code> lo expone en la red local (necesario para Docker). Accede en <code>http://localhost:5173</code>.</td>
+            </tr>
+            <tr>
+                <td><code>npm run build</code></td>
+                <td><code>tsc -b && vite build</code></td>
+                <td>Compilar para producción. Primero comprueba los tipos con TypeScript (<code>tsc -b</code>) y luego genera los archivos optimizados en <code>dist/</code>. Solo necesario para desplegar.</td>
+            </tr>
+            <tr>
+                <td><code>npm run lint</code></td>
+                <td><code>eslint .</code></td>
+                <td>Revisar errores de lógica y malas prácticas en todo el código TypeScript. Para corregir automáticamente lo posible: <code>npm run lint -- --fix</code>.</td>
+            </tr>
+            <tr>
+                <td><code>npm run format:check</code></td>
+                <td><code>prettier --check .</code></td>
+                <td>Verificar que el formato del código cumple las reglas (sin modificar archivos). Para <strong>aplicar</strong> el formato automáticamente: <code>npx prettier --write .</code>.</td>
+            </tr>
+            <tr>
+                <td><code>npm run preview</code></td>
+                <td><code>vite preview</code></td>
+                <td>Previsualizar localmente el bundle de producción ya compilado. Requiere haber ejecutado <code>npm run build</code> antes.</td>
+            </tr>
+        </table>
 
-            <div class="rule-code">
-                <div class="code-bad">
-<pre><code>// Disable user input if loading occurs
-if (isLoading) { ... }</code></pre>
-                </div>
-                <div class="code-good">
-<pre><code>// Deshabilita el input del usuario mientras la llamada a la API está en curso
-if (isLoading) { ... }</code></pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="rule-card">
-            <div class="rule-title">🤔 Comentarios Descriptivos (El Porqué)</div>
-            <p>El código explica <em>qué</em> pasa, pero el comentario debe explicar el <em>por qué</em> (motivos de negocio, riesgos técnicos, arquitecturas).</p>
-
-            <div class="rule-code">
-                <div class="code-bad">
-<pre><code># Configura el echo a True
-engine = create_engine(db_url, echo=True)</code></pre>
-                </div>
-                <div class="code-good">
-<pre><code># echo=True le indica a SQLAlchemy que imprima
-# en consola las consultas SQL puras.
-# Activarlo solo para depuración en desarrollo local.
-engine = create_engine(db_url, echo=True)</code></pre>
-                </div>
-            </div>
+        <div class="alert alert-info" style="margin-top: 1.5rem;">
+            <strong>Flujo recomendado antes de hacer un commit:</strong>
+            <pre style="margin: 0.5rem 0 0;"><code>npx prettier --write .   # 1. Aplica formato automáticamente
+npm run lint             # 2. Revisa errores de lógica
+npm run format:check     # 3. Confirma que el formato está correcto</code></pre>
         </div>
     </div>
 
+    <!-- ── GITHUB ACTIONS ──────────────────────────────────────────── -->
     <div class="section-card">
-        <h2>3. Nombrado de Variables (Naming Conventions)</h2>
-        <p>Seguir el estándar histórico de los respectivos lenguajes.</p>
+        <h2>3. GitHub Actions — Verificación Automática en PRs</h2>
+        <p>Cada Pull Request ejecuta automáticamente los siguientes workflows. Si alguno falla, el merge queda bloqueado.</p>
+
+        <div class="rule-card">
+            <div class="rule-title">🤖 <code>lint-frontend.yml</code></div>
+            <p><strong>Se activa en:</strong> Push a <code>main</code> y en cualquier Pull Request.</p>
+            <ol>
+                <li>Descarga el código del repositorio.</li>
+                <li>Instala Node.js 20 con <strong>caché de dependencias</strong>: si <code>package-lock.json</code> no ha cambiado, GitHub reutiliza <code>node_modules</code> de la ejecución anterior (pasa de ~2 min a ~15 segundos).</li>
+                <li>Instala dependencias con <code>npm ci</code> (reproducible, sin actualizar versiones).</li>
+                <li>Ejecuta <code>npm run lint</code> (ESLint).</li>
+                <li>Ejecuta <code>npm run format:check</code> (Prettier).</li>
+            </ol>
+        </div>
+
+        <div class="rule-card">
+            <div class="rule-title">🤖 <code>lint-global.yml</code></div>
+            <p><strong>Se activa en:</strong> Push a <code>main</code> y en cualquier Pull Request.</p>
+            <ol>
+                <li>Descarga el código del repositorio.</li>
+                <li>Ejecuta <code>editorconfig-checker</code>: verifica que todos los archivos del repositorio cumplen con las reglas de <code>.editorconfig</code> (indentación, finales de línea, línea final en blanco).</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- ── NAMING ────────────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h2>4. Nombrado de Variables (Naming Conventions)</h2>
 
         <div class="rule-card">
             <div class="rule-title">🐍 Backend (Python)</div>
@@ -143,6 +217,41 @@ engine = create_engine(db_url, echo=True)</code></pre>
                 <li><strong>Componentes React:</strong> <code>PascalCase</code> (ej: <code>ProductsList()</code>, <code>AdminLayout()</code>)</li>
                 <li><strong>Interfaces de TypeScript:</strong> <code>PascalCase</code> (ej: <code>ApiProduct</code>)</li>
             </ul>
+        </div>
+    </div>
+
+    <!-- ── COMENTARIOS ─────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h2>5. Reglas de Documentación y Comentarios</h2>
+
+        <div class="rule-card">
+            <div class="rule-title">💬 Docstrings vs Comentarios (#)</div>
+            <p>En Python, hay dos tipos de anotaciones con propósitos distintos:</p>
+            <div class="rule-code">
+                <div>
+                    <strong>Docstring <code>"""..."""</code></strong>
+                    <p>Documentación pública de la función. Aparece en Swagger y en el <code>help()</code> de Python. Solo debe describir qué hace la función, qué recibe y qué devuelve.</p>
+                </div>
+                <div>
+                    <strong>Comentario <code># ...</code></strong>
+                    <p>Nota interna para quien lee el código fuente. Explica el <em>por qué</em> de una decisión técnica, no el qué. Va dentro del cuerpo de la función.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="rule-card">
+            <div class="rule-title">🌍 Idioma de los Comentarios</div>
+            <p>El código (nombres de variables, funciones, clases) siempre en <strong>inglés</strong>. Los comentarios y docstrings siempre en <strong>español</strong>.</p>
+            <div class="rule-code">
+                <div class="code-bad">
+<pre><code># Disable user input if loading
+if (isLoading) { ... }</code></pre>
+                </div>
+                <div class="code-good">
+<pre><code># Deshabilita el input mientras la API responde
+if (isLoading) { ... }</code></pre>
+                </div>
+            </div>
         </div>
     </div>
 
