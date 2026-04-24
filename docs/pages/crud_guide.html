@@ -57,7 +57,30 @@
     </header>
 
     <div class="alert alert-info">
-        En este ejemplo, añadiremos la nueva entidad ficticia <strong>Warehouse</strong> (Almacenes).
+        En este ejemplo manual, añadiremos la nueva entidad ficticia <strong>Warehouse</strong> (Almacenes).
+    </div>
+
+    <div class="section-card" style="border: 2px solid #a855f7; background-color: #faf5ff;">
+        <h2 style="color: #7e22ce; margin-top: 0;">🤖 Fast-Track: Prompt para Inteligencia Artificial</h2>
+        <p style="color: #6b21a8; font-size: 0.95rem;">Si estás usando un Agente IA (Cursor, Copilot, Cline...), no hace falta que leas toda la guía. Copia este bloque de texto, sustituye <strong>[NOMBRE_ENTIDAD]</strong> y envíaselo al chat:</p>
+
+        <pre style="background: #1e293b; color: #f8fafc; padding: 1.2rem; border-radius: 8px; font-family: monospace; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.5; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">Implementa un nuevo CRUD completo para la entidad "[NOMBRE_ENTIDAD]".
+
+Utiliza los archivos de la entidad "Store" como tu estándar arquitectónico estricto:
+- Modelos: backend/app/models/store.py (Usa Base, Create, Update, Response y el Modelo ORM puro).
+- CRUD Pura: backend/app/crud/stores.py
+- Endpoints: backend/app/api/endpoints/stores.py
+
+REGLAS OBLIGATORIAS:
+1. El modelo ORM de BD debe heredar de `TimestampMixin` (backend/app/models/mixins.py) para autogestionar created_at y updated_at de PostgreSQL. No insertes la hora manualmente.
+2. Añade el nuevo modelo a backend/app/models/__init__.py
+3. En el archivo CRUD, devuelve solo datos u objetos ORM (o None). NO importes ni lances HTTPException aquí.
+4. En el archivo de endpoints, inyecta `Depends(get_db)`. Valida los conflictos de campos únicos (como nombres duplicados) usando el CRUD y lanzando `HTTP 409 Conflict`. Maneja los retornos `None` lanzando `HTTP 404 Not Found`. Usa siempre el `response_model`.
+5. Los endpoints deben replicar EXACTAMENTE los comentarios visuales de separación (`# ── GET /entidad/ ──`) y definir los diccionarios `_404` y `_409` para insertarlos en el parámetro `responses=` de los decoradores de FastAPI (ej: `responses={**_404, **_409}`).
+6. Crea siempre un endpoint adicional `GET /by-name/{name}` y ubícalo ANTES del endpoint `GET /{id}`.
+7. Registra el router en backend/app/api/router.py.
+8. Tipado fuerte en todo el código y usa model_validate() y model_dump(exclude_unset=True) para las actualizaciones.
+9. El código debe estar excelentemente documentado y comentado en español, explicando el por qué de cada función y bloque, exactamente igual que está documentado el CRUD 'stores'.</pre>
     </div>
 
     <div class="section-card">
@@ -67,24 +90,34 @@
             <div class="step-item">
                 <h3><span class="step-label">Paso 1.1</span> Crear Modelo SQLModel</h3>
                 <p>Crea un archivo nuevo: <code>backend/app/models/warehouse.py</code> y define la herencia tripartita típica (Base, Create, Response, Model).</p>
-                <pre><code>from sqlmodel import SQLModel, Field
+                <pre><code>from typing import Optional
+from datetime import datetime
+from sqlmodel import SQLModel, Field
+from .mixins import TimestampMixin
 
 # Base que exportan las variables más repetidas
 class WarehouseBase(SQLModel):
-    name: str
+    name: str = Field(unique=True, index=True, min_length=1)
     location: str
 
 # Los parámetros que el FrontEnd está forzado a mandar para crearla
 class WarehouseCreate(WarehouseBase):
     pass
 
-# La estructura Real de la Tabla de Base de Datos
-class Warehouse(WarehouseBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+# Schema para actualización parcial (PATCH)
+class WarehouseUpdate(SQLModel):
+    name: Optional[str] = Field(default=None, min_length=1)
+    location: Optional[str] = None
 
-# El cascarón de Respuesta hacia el Frontend (sin secretos)
+# La estructura Real de la Tabla de Base de Datos
+class Warehouse(TimestampMixin, WarehouseBase, table=True):
+    id_warehouse: Optional[int] = Field(default=None, primary_key=True)
+
+# El cascarón de Respuesta hacia el Frontend (con timestamps)
 class WarehouseResponse(WarehouseBase):
-    id: int
+    id_warehouse: int
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 </code></pre>
             </div>
 
@@ -111,13 +144,30 @@ docker exec stocker_api alembic upgrade head</code></pre>
                 <h3 style="color:#b45309;"><span class="step-label" style="background:#fef3c7; color:#b45309;">Paso 2.1</span> Crear el archivo CRUD de Lógica de Negocio</h3>
                 <p>Crea el archivo aislado <code>backend/app/crud/warehouse.py</code> y añade las mutaciones puras.</p>
                 <pre><code>from sqlmodel import Session, select
-from app.models.warehouse import Warehouse, WarehouseCreate
+from app.models.warehouse import Warehouse, WarehouseCreate, WarehouseUpdate
 
-def get_warehouses(db: Session, skip: int = 0, limit: int = 100):
+def get_warehouses(db: Session, skip: int = 0, limit: int = 100) -> list[Warehouse]:
     return db.exec(select(Warehouse).offset(skip).limit(limit)).all()
 
-def create_warehouse(db: Session, warehouse_in: WarehouseCreate):
+def get_warehouse_by_name(db: Session, warehouse_name: str) -> Warehouse | None:
+    return db.exec(select(Warehouse).where(Warehouse.name == warehouse_name)).first()
+
+def create_warehouse(db: Session, warehouse_in: WarehouseCreate) -> Warehouse:
     db_warehouse = Warehouse.model_validate(warehouse_in)
+    db.add(db_warehouse)
+    db.commit()
+    db.refresh(db_warehouse)
+    return db_warehouse
+
+def update_warehouse(db: Session, warehouse_id: int, warehouse_in: WarehouseUpdate) -> Warehouse | None:
+    db_warehouse = db.exec(select(Warehouse).where(Warehouse.id_warehouse == warehouse_id)).first()
+    if db_warehouse is None:
+        return None
+
+    update_data = warehouse_in.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_warehouse, field, value)
+
     db.add(db_warehouse)
     db.commit()
     db.refresh(db_warehouse)
@@ -127,21 +177,30 @@ def create_warehouse(db: Session, warehouse_in: WarehouseCreate):
             <div class="step-item">
                 <h3 style="color:#b45309;"><span class="step-label" style="background:#fef3c7; color:#b45309;">Paso 2.2</span> Publicar el Endpoint API</h3>
                 <p>Crea <code>backend/app/api/endpoints/warehouses.py</code>. Esto generará las URL HTTP, ligándolas a la función CRUD creada anteriormente y forzando la validación del schema Response.</p>
-                <pre><code>from fastapi import APIRouter, Depends
+                <pre><code>from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
-from app.api import deps
+from app.database import get_db
 from app.crud import warehouse as crud
-from app.models.warehouse import WarehouseResponse, WarehouseCreate
+from app.models.warehouse import WarehouseResponse, WarehouseCreate, WarehouseUpdate
 
 router = APIRouter()
 
 @router.get("/", response_model=list[WarehouseResponse])
-def read_warehouses(db: Session = Depends(deps.get_db), skip: int = 0, limit: int = 100):
+def read_warehouses(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     return crud.get_warehouses(db, skip=skip, limit=limit)
 
-@router.post("/", response_model=WarehouseResponse)
-def create_warehouse(*, db: Session = Depends(deps.get_db), warehouse_in: WarehouseCreate):
-    return crud.create_warehouse(db, warehouse_in)</code></pre>
+@router.post("/", response_model=WarehouseResponse, status_code=status.HTTP_201_CREATED)
+def create_warehouse(*, db: Session = Depends(get_db), warehouse_in: WarehouseCreate):
+    if crud.get_warehouse_by_name(db, warehouse_name=warehouse_in.name):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Warehouse already exists")
+    return crud.create_warehouse(db, warehouse_in)
+
+@router.patch("/{warehouse_id}", response_model=WarehouseResponse)
+def update_warehouse(warehouse_id: int, warehouse_in: WarehouseUpdate, db: Session = Depends(get_db)):
+    updated = crud.update_warehouse(db, warehouse_id=warehouse_id, warehouse_in=warehouse_in)
+    if updated is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Warehouse not found")
+    return updated</code></pre>
             </div>
 
             <div class="step-item">
