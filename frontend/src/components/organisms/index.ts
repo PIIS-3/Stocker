@@ -8,3 +8,4 @@ export { ProductForm } from './ProductForm';
 export { CategoryForm } from './CategoryForm';
 export { StoreForm } from './StoreForm';
 export { UserForm } from './UserForm';
+export { RoadmapCTA } from './RoadmapCTA';

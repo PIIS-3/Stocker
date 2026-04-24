@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Roadmap from './pages/Roadmap';
 
 import { AdminLayout } from './components/templates';
 import Dashboard from './pages/admin/Dashboard';
@@ -25,6 +26,7 @@ function App() {
             <Route path="contact" element={<Contact />} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="terms" element={<Terms />} />
+            <Route path="roadmap" element={<Roadmap />} />
           </Route>
 
           {/* Rutas del panel de administración — layout con Sidebar */}
