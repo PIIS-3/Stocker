@@ -10,7 +10,7 @@ from .enums import StatusEnum, RoleEnum
 from .mixins import TimestampMixin
 
 # ── Categoría ────────────────────────────────────────────────────────
-from .category import CategoryBase, Category
+from .category import CategoryBase, CategoryCreate, CategoryUpdate, Category, CategoryResponse
 
 # ── Producto ─────────────────────────────────────────────────────────
 from .product import ProductTemplateBase, ProductTemplate, ProductTemplateResponse
@@ -32,7 +32,10 @@ __all__ = [
     "TimestampMixin",
     # Categoría
     "CategoryBase",
+    "CategoryCreate",
+    "CategoryUpdate",
     "Category",
+    "CategoryResponse",
     # Producto
     "ProductTemplateBase",
     "ProductTemplate",
