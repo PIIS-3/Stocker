@@ -34,7 +34,7 @@ def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
     """Devuelve una tienda por su nombre exacto."""
     db_store = crud_stores.get_store_by_name(db, store_name=store_name)
     if db_store is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Store not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return db_store
 
 
@@ -45,7 +45,7 @@ def read_store(store_id: int, db: Session = Depends(get_db)):
     """Devuelve una tienda por su ID numérico."""
     db_store = crud_stores.get_store_by_id(db, store_id=store_id)
     if db_store is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Store not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return db_store
 
 
@@ -62,7 +62,7 @@ def create_store(store_in: models.StoreCreate, db: Session = Depends(get_db)):
     if crud_stores.get_store_by_name(db, store_name=store_in.store_name):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="A store with that name already exists"
+            detail="Ya existe una tienda con ese nombre."
         )
     return crud_stores.create_store(db, store_in=store_in)
 
@@ -90,12 +90,12 @@ def update_store(
         if existing is not None and existing.id_store != store_id:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="A store with that name already exists"
+                detail="Ya existe una tienda con ese nombre."
             )
 
     updated = crud_stores.update_store(db, store_id=store_id, store_in=store_in)
     if updated is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Store not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return updated
 
 
@@ -106,7 +106,7 @@ def delete_store(store_id: int, db: Session = Depends(get_db)):
     """Elimina una tienda por su ID. Devuelve el registro tal como era antes de borrarse."""
     deleted = crud_stores.delete_store(db, store_id=store_id)
     if deleted is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Store not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return deleted
 
 
