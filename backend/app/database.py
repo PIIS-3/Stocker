@@ -48,6 +48,7 @@ def ensure_db_objects() -> None:
                     IF NOT EXISTS (
                         SELECT 1 FROM pg_trigger
                         WHERE tgname = 'trg_{table}_updated_at'
+                        AND tgrelid = '{table}'::regclass
                     ) THEN
                         CREATE TRIGGER trg_{table}_updated_at
                             BEFORE UPDATE ON {table}
