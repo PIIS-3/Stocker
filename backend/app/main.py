@@ -3,14 +3,19 @@ from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from sqlmodel import SQLModel
 from .core.config import settings
 from .api.router import api_router
 from .database import engine, ensure_db_objects
+import app.models  # Required so SQLModel knows about the tables
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: crea los triggers de updated_at en PostgreSQL si no existen."""
+    """Startup: crea las tablas si no existen y añade los triggers de updated_at."""
+    # 1. Crea las tablas e índices definidos en los modelos (equivalente a la migración inicial)
+    SQLModel.metadata.create_all(engine)
+    # 2. Añade los triggers personalizados (funciones de PostgreSQL)
     ensure_db_objects()
     yield
 
