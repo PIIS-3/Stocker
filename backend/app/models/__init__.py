@@ -22,7 +22,7 @@ from .store import StoreBase, StoreCreate, StoreUpdate, Store, StoreResponse
 from .role import RoleBase, Role
 
 # ── Empleado ─────────────────────────────────────────────────────────
-from .employee import EmployeeBase, EmployeeCreate, Employee, EmployeeResponse
+from .employee import EmployeeBase, EmployeeCreate, EmployeeUpdate, Employee, EmployeeResponse
 
 __all__ = [
     # Enums
@@ -49,6 +49,7 @@ __all__ = [
     # Empleado
     "EmployeeBase",
     "EmployeeCreate",
+    "EmployeeUpdate",
     "Employee",
     "EmployeeResponse",
 ]
