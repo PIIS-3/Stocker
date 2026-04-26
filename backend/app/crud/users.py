@@ -47,7 +47,7 @@ def create_user(db: Session, user_in: models.UserCreate) -> models.Employee:
 
 def update_user(db: Session, user: models.Employee, data: models.UserUpdate) -> models.Employee:
     """Actualiza solo los campos enviados (patch-style). No modifica la contraseña."""
-    update_data = data.model_dump(exclude_unset=True)
+    update_data = data.model_dump(exclude_unset=True, exclude_none=True)
     for field, value in update_data.items():
         setattr(user, field, value)
     user.updated_at = datetime.now(timezone.utc)
