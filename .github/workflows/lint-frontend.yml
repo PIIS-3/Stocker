@@ -1,0 +1,62 @@
+# lint-frontend.yml — Estándares de Código del Frontend (ESLint + Prettier)
+#
+# Se ejecuta en dos situaciones:
+#   1. Al hacer push directo a la rama 'main'.
+#   2. Al abrir, reabrir o actualizar un Pull Request (cualquier rama de origen).
+#
+# Comprueba dos cosas de forma secuencial:
+#   1. ESLint   → errores de lógica y malas prácticas TypeScript/React (eslint.config.js)
+#   2. Prettier → formato visual del código: comillas, ancho de línea, etc. (.prettierrc)
+#
+# Si cualquiera falla, el PR queda bloqueado y no se puede hacer merge a main.
+
+name: Lint — Frontend
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  # ── JOB: Lint & Format ───────────────────────────────────────────────
+  lint-and-format:
+    name: ESLint & Prettier
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Todos los comandos de este job se ejecutan dentro de frontend/
+        # para no tener que escribir 'cd frontend &&' en cada step.
+        working-directory: frontend
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # Caché de dependencias: GitHub guarda node_modules entre ejecuciones.
+          # Si package-lock.json no cambia, se reutiliza la caché en lugar de
+          # descargar todo de npm. Reduce el tiempo de ~2 min a ~15 segundos.
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        # npm ci instala EXACTAMENTE lo que hay en package-lock.json.
+        # A diferencia de npm install, nunca actualiza versiones, lo que
+        # garantiza builds reproducibles en cualquier entorno.
+        run: npm ci
+
+      - name: Comprobar errores con ESLint
+        # Detecta variables sin usar, console.log olvidados, malas prácticas
+        # de React Hooks y errores de tipos TypeScript. Ver eslint.config.js.
+        run: npm run lint
+
+      - name: Comprobar formato con Prettier
+        # Verifica que el formato visual del código (comillas, indentación,
+        # ancho de línea) cumple las reglas de .prettierrc.
+        # Solo COMPRUEBA — no modifica archivos. Para aplicar el formato
+        # localmente: npx prettier --write .
+        run: npm run format:check

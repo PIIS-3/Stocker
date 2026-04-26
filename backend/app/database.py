@@ -1,24 +1,61 @@
 import os
 from sqlmodel import create_engine, Session
+from sqlalchemy import text
 from .core.config import settings
 
-# ── Motor de Base de Datos ───────────────────────────────────────────
+
 engine = create_engine(
     settings.DATABASE_URL,
-    # echo: Imprime en consola todas las sentencias SQL que se ejecutan.
-    # Útil para depuración durante el desarrollo. Se activa con la
-    # variable de entorno SQL_ECHO=true (por defecto está desactivado).
+    # Imprime las sentencias SQL en consola. Activar con SQL_ECHO=true.
     echo=os.getenv("SQL_ECHO", "false").lower() == "true",
-    # pool_pre_ping: Antes de reutilizar una conexión del pool, envía un
-    # ping al servidor para verificar que sigue activa. Evita errores por
-    # conexiones cerradas tras períodos de inactividad.
+    # Verifica la conexión antes de reutilizarla para evitar errores por timeout.
     pool_pre_ping=True,
 )
 
 
-# ── Dependencia de Sesión ────────────────────────────────────────────
 def get_db():
-    """Genera una sesión de base de datos por cada petición HTTP.
-    Se cierra automáticamente al finalizar la petición gracias al 'yield'."""
+    """Genera una sesión de BD por petición HTTP. Se cierra al terminar."""
     with Session(engine) as session:
         yield session
+
+
+def ensure_db_objects() -> None:
+    """Crea los triggers de updated_at si no existen. Seguro de llamar en cada arranque."""
+    # SQLModel solo crea tablas e índices automáticamente.
+    # Los triggers de PostgreSQL hay que crearlos aparte.
+    # PostgreSQL no tiene ON UPDATE CURRENT_TIMESTAMP (eso es MySQL);
+    # el trigger BEFORE UPDATE es el equivalente nativo en Postgres.
+    _TABLES = ("store", "product_template", "employee")
+
+    with Session(engine) as session:
+        # Función PL/pgSQL compartida — SET updated_at = NOW() en cada UPDATE.
+        session.exec(text("""
+            CREATE OR REPLACE FUNCTION set_updated_at()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                NEW.updated_at = NOW();
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+        """))
+
+        # Postgres no soporta CREATE TRIGGER IF NOT EXISTS,
+        # se comprueba en pg_trigger antes de crear.
+        for table in _TABLES:
+            session.exec(text(f"""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM pg_trigger
+                        WHERE tgname = 'trg_{table}_updated_at'
+                        AND tgrelid = '{table}'::regclass
+                    ) THEN
+                        CREATE TRIGGER trg_{table}_updated_at
+                            BEFORE UPDATE ON {table}
+                            FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+                    END IF;
+                END;
+                $$;
+            """))
+
+        session.commit()

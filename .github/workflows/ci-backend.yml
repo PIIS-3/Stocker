@@ -1,0 +1,80 @@
+# ci-backend.yml — Integración Continua del Backend (Python / FastAPI)
+#
+# Se ejecuta en dos situaciones:
+#   1. Al hacer push directo a la rama 'main'.
+#   2. Al abrir, reabrir o actualizar un Pull Request (cualquier rama de origen).
+#
+# Flujo:
+#   backend-tests → docker-build
+#   Si los tests fallan, el build de Docker no se ejecuta (needs: backend-tests).
+
+name: CI — Backend
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  # ── JOB 1: Tests ────────────────────────────────────────────────────
+  # Instala las dependencias de Python y ejecuta la suite de tests con pytest.
+  # Es el primer "guardián": si el código rompe algún test, el pipeline para aquí.
+  backend-tests:
+    name: Tests (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v6.0.2
+
+      - name: Configurar Python 3.13
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: '3.13'
+
+      - name: Instalar dependencias de Python
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar tests con pytest
+        working-directory: backend
+        run: |
+          # PYTHONPATH asegura que los imports relativos del proyecto
+          # funcionen correctamente desde el directorio backend/.
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          pytest tests
+
+  # ── JOB 2: Build Docker ─────────────────────────────────────────────
+  # Construye la imagen Docker del backend para verificar que el Dockerfile
+  # es correcto y que el contenedor arranca sin errores.
+  # Solo se ejecuta si el JOB anterior (backend-tests) ha pasado.
+  # No sube la imagen a ningún registro (push: false); solo valida el build.
+  docker-build:
+    name: Build Docker Image
+    needs: backend-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v6.0.2
+
+      - name: Configurar QEMU
+        # QEMU permite emular otras arquitecturas de CPU (ej: ARM para Raspberry Pi).
+        uses: docker/setup-qemu-action@v3.2.0
+
+      - name: Configurar Docker Buildx
+        # Buildx es el motor de construcción moderno de Docker que soporta
+        # multi-plataforma y caché avanzada.
+        uses: docker/setup-buildx-action@v3.6.1
+
+      - name: Construir imagen Docker del backend
+        id: docker_build
+        uses: docker/build-push-action@v6.7.0
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false   # Solo validar el build, no subir la imagen.
+          tags: |
+            piis3/stocker:${{ github.sha }}

@@ -1,0 +1,36 @@
+# lint-global.yml — Estándares Globales del Repositorio (EditorConfig)
+#
+# Se ejecuta en dos situaciones:
+#   1. Al hacer push directo a la rama 'main'.
+#   2. Al abrir, reabrir o actualizar un Pull Request (cualquier rama de origen).
+#
+# Aplica a TODOS los archivos del repositorio (Python, TypeScript, YAML, Markdown...),
+# no solo al frontend. Verifica las reglas definidas en .editorconfig:
+#   - Indentación: 2 espacios (frontend/config), 4 espacios (Python)
+#   - Finales de línea: LF (Unix), nunca CRLF (Windows)
+#   - Sin espacios al final de las líneas
+#   - Línea vacía al final de cada archivo (estándar POSIX)
+
+name: Lint — Global
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  # ── JOB: EditorConfig ───────────────────────────────────────────────
+  editorconfig-check:
+    name: EditorConfig
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar reglas de EditorConfig
+        # editorconfig-checker escanea todos los archivos del repositorio
+        # y falla si alguno no cumple las reglas de .editorconfig.
+        # No requiere Node.js ni Python: es una herramienta independiente.
+        uses: editorconfig-checker/action-editorconfig-checker@v2

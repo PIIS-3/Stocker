@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Roadmap from './pages/Roadmap';
 
 import { AdminLayout } from './components/templates';
 import Dashboard from './pages/admin/Dashboard';

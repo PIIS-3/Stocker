@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stocker - Estrategia de Testing</title>
+    <title>Stocker - Guía de Testing</title>
     <link rel="stylesheet" href="../styles.css">
     <style>
         .test-box {
@@ -14,27 +14,14 @@
             margin-bottom: 1.5rem;
         }
         .test-box h3 { margin-top: 0; }
-        .feature-coming {
-            opacity: 0.7;
-            pointer-events: none;
-            position: relative;
-        }
-        .feature-coming::before {
-            content: "PRÓXIMAMENTE (FASE 6)";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-10deg);
-            background: var(--brand-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            font-weight: bold;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            letter-spacing: 2px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
+        .cmd-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .cmd-table th { background: #0f172a; color: white; padding: 0.75rem 1rem; text-align: left; }
+        .cmd-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .cmd-table tr:last-child td { border-bottom: none; }
+        .cmd-table code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem; }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-planned { background: #fef3c7; color: #92400e; }
     </style>
 </head>
 <body>
@@ -43,41 +30,138 @@
     <a href="../index.html" class="back-link">← Volver al Hub Central</a>
 </nav>
 
-<div class="container feature-coming">
+<div class="container">
     <header>
-        <h1>🧪 Guía y Estrategia de Testing (TDD)</h1>
-        <p>Documento de planificación sobre cómo aseguraremos la calidad del software (Próxima Fase de Desarrollo).</p>
+        <h1>🧪 Guía de Testing y QA Automático</h1>
+        <p>Describe las herramientas de calidad del proyecto: tests automáticos, checks de formato y cómo ejecutarlos manualmente.</p>
     </header>
 
+    <!-- ── GITHUB ACTIONS QA ─────────────────────────────────────────── -->
     <div class="section-card">
-        <h2>Backend (Pytest + FastAPI.TestClient)</h2>
-        <p>Gracias a la separación de la Lógica CRUD, probar el backend será extremadamente modular.</p>
+        <h2>1. GitHub Actions — QA Automático en Pull Requests</h2>
+        <p>Los siguientes workflows se ejecutan automáticamente en cada PR y bloquean el merge si fallan.</p>
 
         <div class="test-box">
-            <h3>1. Pruebas Unitarias (CRUD)</h3>
-            <p><strong>Herramienta:</strong> <code>pytest</code></p>
-            <p>Se crearán funciones <code>test_create_product()</code> en la carpeta <code>backend/tests/crud/</code>. Mockearemos (fingiremos) la Sesión de Base de Datos para probar la lógica sin afectar al disco duro.</p>
+            <h3>🔧 <code>ci-backend.yml</code> <span class="badge badge-active">Activo</span></h3>
+            <p>Verifica la integridad del backend Python en dos fases que deben pasar en orden:</p>
+            <ol>
+                <li><strong>Tests (<code>pytest tests/</code>):</strong> Ejecuta toda la suite de tests del directorio <code>backend/tests/</code>. Si hay algún test roto, el workflow falla aquí y la fase de Docker no se ejecuta (<code>needs: test</code>).</li>
+                <li><strong>Build Docker:</strong> Construye la imagen Docker del backend para verificar que el <code>Dockerfile</code> es correcto y que el contenedor arranca sin errores. No sube la imagen al registro (solo valida).</li>
+            </ol>
+            <p><strong>Cómo ejecutar los tests manualmente:</strong></p>
+            <pre><code>cd backend
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+pytest tests</code></pre>
         </div>
 
         <div class="test-box">
-            <h3>2. Pruebas de Integración (API Endpoints)</h3>
-            <p><strong>Herramienta:</strong> <code>TestClient</code> de FastAPI</p>
-            <p>Lanzaremos peticiones HTTP falsas a <code>/api/products</code> y comprobaremos si nos devuelve Pydantic Validation Errors (Error 422) al enviar JSON corruptos o códigos 200 cuando es correcto.</p>
+            <h3>⚛️ <code>ci-frontend.yml</code> <span class="badge badge-active">Activo</span></h3>
+            <p>Verifica que el frontend React/TypeScript compila sin errores:</p>
+            <ol>
+                <li>Instala Node.js y las dependencias con caché de GitHub Actions.</li>
+                <li>Ejecuta <code>npm run build</code>: primero comprueba los tipos con TypeScript (<code>tsc -b</code>) y luego compila con Vite. Si hay algún error de tipo o sintaxis, el build falla.</li>
+            </ol>
+            <p><strong>Cómo ejecutar el build manualmente:</strong></p>
+            <pre><code>cd frontend
+npm run build</code></pre>
+        </div>
+
+        <div class="test-box">
+            <h3>📐 <code>lint-frontend.yml</code> <span class="badge badge-active">Activo</span></h3>
+            <p>Verifica que el código del frontend sigue los estándares de formato y estilo:</p>
+            <ol>
+                <li><strong>ESLint (<code>npm run lint</code>):</strong> Detecta errores de lógica, variables sin usar y malas prácticas de React/TypeScript. Configurado en <code>eslint.config.js</code>.</li>
+                <li><strong>Prettier (<code>npm run format:check</code>):</strong> Verifica que el formato visual del código (comillas, ancho de línea, etc.) cumple las reglas de <code>.prettierrc</code>. Solo comprueba, no modifica archivos.</li>
+            </ol>
+            <p><strong>Cómo ejecutar manualmente:</strong></p>
+            <pre><code>cd frontend
+npm run lint              # Ver errores de lógica
+npm run lint -- --fix     # Corregir automáticamente lo posible
+npx prettier --write .    # Aplicar formato automáticamente
+npm run format:check      # Verificar que el formato es correcto</code></pre>
+        </div>
+
+        <div class="test-box">
+            <h3>🌍 <code>lint-global.yml</code> <span class="badge badge-active">Activo</span></h3>
+            <p>Verifica que <strong>todos</strong> los archivos del repositorio (no solo el frontend) cumplen las reglas básicas de <code>.editorconfig</code>: indentación correcta, finales de línea LF, línea vacía final.</p>
+            <p>No requiere ningún comando manual extra; tu editor lo aplica automáticamente si tienes instalada la extensión EditorConfig.</p>
         </div>
     </div>
 
+    <!-- ── TESTS BACKEND ─────────────────────────────────────────────── -->
     <div class="section-card">
-        <h2>Frontend (Vitest + React Testing Library)</h2>
-        <p>Vite ya incluye el entorno nativo de Vitest (mucho más rápido que el antiguo Jest).</p>
+        <h2>2. Tests Backend (Pytest)</h2>
+        <p>Los tests del backend están en <code>backend/tests/</code> y usan <code>pytest</code> con el cliente de tests de FastAPI.</p>
 
         <div class="test-box">
-            <h3>1. Unit Tests de Componentes Visuales</h3>
-            <p>Comprobaremos que componentes aislados (como el <code>Navbar</code>) renderizan correctamente si le inyectamos Props como "Usuario Logeado".</p>
+            <h3>Estructura de tests</h3>
+            <pre><code>backend/tests/
+├── conftest.py       # Fixtures compartidos: sesión de BD de test, cliente HTTP, etc.
+└── test_stores.py    # Tests de los endpoints de tiendas (GET, POST, PATCH, DELETE)</code></pre>
         </div>
 
         <div class="test-box">
-            <h3>2. Mocks de Interceptores Axios</h3>
-            <p>Simularemos respuestas de red en la capa <code>services/</code> para comprobar cómo reaccionan las pantallas a un Error de Red (500 Server Error) de manera segura.</p>
+            <h3>Comandos disponibles</h3>
+            <table class="cmd-table">
+                <tr><th>Comando</th><th>Descripción</th></tr>
+                <tr>
+                    <td><code>pytest tests/</code></td>
+                    <td>Ejecuta todos los tests.</td>
+                </tr>
+                <tr>
+                    <td><code>pytest tests/ -v</code></td>
+                    <td>Modo verbose: muestra el nombre de cada test y si pasa o falla.</td>
+                </tr>
+                <tr>
+                    <td><code>pytest tests/test_stores.py</code></td>
+                    <td>Solo ejecuta los tests de tiendas.</td>
+                </tr>
+                <tr>
+                    <td><code>pytest tests/ -k "test_create"</code></td>
+                    <td>Solo ejecuta los tests cuyo nombre contenga "test_create".</td>
+                </tr>
+                <tr>
+                    <td><code>pytest tests/ --tb=short</code></td>
+                    <td>Muestra un traceback corto cuando un test falla (más legible).</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="test-box">
+            <h3>Qué se testea actualmente</h3>
+            <ul>
+                <li><strong>GET /stores/</strong> → Devuelve lista de tiendas (200).</li>
+                <li><strong>POST /stores/</strong> → Crea una tienda y verifica que los timestamps se generan (201).</li>
+                <li><strong>POST /stores/ duplicado</strong> → Devuelve 409 si el nombre ya existe.</li>
+                <li><strong>GET /stores/{id}</strong> → Devuelve una tienda por ID (200) o 404 si no existe.</li>
+                <li><strong>PATCH /stores/{id}</strong> → Actualiza parcialmente y verifica que <code>updated_at</code> cambia.</li>
+                <li><strong>DELETE /stores/{id}</strong> → Elimina y devuelve el registro (200) o 404 si no existe.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ── TESTS FRONTEND (PLANIFICADO) ─────────────────────────────── -->
+    <div class="section-card">
+        <h2>3. Tests Frontend <span class="badge badge-planned">Planificado</span></h2>
+        <p>Vite incluye soporte nativo para Vitest, que es mucho más rápido que Jest y no requiere configuración extra.</p>
+
+        <div class="test-box">
+            <h3>Herramientas previstas</h3>
+            <ul>
+                <li><strong>Vitest:</strong> Runner de tests nativo de Vite. Misma API que Jest.</li>
+                <li><strong>React Testing Library:</strong> Para testear componentes desde la perspectiva del usuario (no de la implementación interna).</li>
+                <li><strong>MSW (Mock Service Worker):</strong> Para simular respuestas del backend sin necesitar el servidor real.</li>
+            </ul>
+        </div>
+
+        <div class="test-box">
+            <h3>Qué se planea testear</h3>
+            <ul>
+                <li>Que el componente <code>Navbar</code> renderiza correctamente con y sin usuario autenticado.</li>
+                <li>Que la pantalla de login muestra errores cuando las credenciales son incorrectas (respuesta 401 mockeada).</li>
+                <li>Que la lista de tiendas muestra un mensaje vacío si el backend devuelve un array vacío.</li>
+                <li>Que los formularios (create/edit) validan los campos antes de enviar la petición.</li>
+            </ul>
         </div>
     </div>
 

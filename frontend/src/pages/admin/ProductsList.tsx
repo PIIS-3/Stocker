@@ -48,6 +48,7 @@ export default function ProductsList() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadProducts();
   }, []);
 

@@ -1,6 +1,31 @@
 import { useState } from 'react';
 
-const sprints = [
+// ── Tipos ────────────────────────────────────────────────────────
+type StatusType = 'done' | 'warning';
+
+interface Task {
+  id: string | number;
+  name: string;
+  tag?: string;
+  color?: string;
+  status: StatusType;
+  subtasks?: Array<{
+    id: string;
+    name: string;
+    status: StatusType;
+  }>;
+}
+
+interface Sprint {
+  id: number;
+  name: string;
+  dates: string;
+  status: StatusType;
+  focus: string;
+  tasks: Task[];
+}
+
+const sprints: Sprint[] = [
   {
     id: 1,
     name: 'Sprint 1',
@@ -279,12 +304,15 @@ const sprints = [
   },
 ];
 
-const statusConfig = {
+const statusConfig: Record<
+  StatusType,
+  { label: string; bg: string; text: string; border: string }
+> = {
   done: { label: 'Completado', bg: '#085041', text: '#9FE1CB', border: '#1D9E75' },
   warning: { label: 'Con incidencias', bg: '#412402', text: '#FAC775', border: '#BA7517' },
 };
 
-const TaskStatus = ({ status }) => {
+const TaskStatus = ({ status }: { status: StatusType }) => {
   if (status === 'done')
     return (
       <div
@@ -333,10 +361,10 @@ const TaskStatus = ({ status }) => {
 };
 
 export default function RoadmapS3Full() {
-  const [expanded, setExpanded] = useState(3);
-  const [expandedTasks, setExpandedTasks] = useState({});
+  const [expanded, setExpanded] = useState<number | null>(3);
+  const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
 
-  const toggleTask = (id, e) => {
+  const toggleTask = (id: string | number, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedTasks((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -499,7 +527,6 @@ export default function RoadmapS3Full() {
                     {sprint.tasks.map((task) => {
                       const hasSubtasks = task.subtasks && task.subtasks.length > 0;
                       const isTaskExpanded = expandedTasks[task.id];
-                      const tc = statusConfig[task.status] || statusConfig.done;
 
                       return (
                         <div key={task.id}>
@@ -571,7 +598,7 @@ export default function RoadmapS3Full() {
                                 gap: 4,
                               }}
                             >
-                              {task.subtasks.map((sub) => (
+                              {task.subtasks?.map((sub) => (
                                 <div
                                   key={sub.id}
                                   style={{

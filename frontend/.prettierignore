@@ -1,4 +1,14 @@
+# .prettierignore — Archivos que Prettier no debe formatear.
+# La sintaxis es idéntica a .gitignore.
+
+# Código compilado para producción: lo genera Vite automáticamente, no hay que tocarlo.
 dist/
+
+# Librerías de terceros instaladas por npm: nunca se editan a mano.
 node_modules/
+
+# Archivos ya minificados (bundle comprimido): formatearlos rompería la compresión.
 *.min.*
+
+# Source maps para depuración: binarios generados automáticamente.
 *.map
