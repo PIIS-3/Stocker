@@ -18,7 +18,9 @@ def get_stores(db: Session, skip: int = 0, limit: int = 100) -> list[models.Stor
         skip:  Registros a saltar (offset). Ej: página 2 con limit=10 → skip=10.
         limit: Máximo de registros a devolver.
     """
-    return db.exec(select(models.Store).offset(skip).limit(limit)).all()
+    return db.exec(
+        select(models.Store).order_by(models.Store.id_store).offset(skip).limit(limit)
+    ).all()
 
 
 def get_store_by_id(db: Session, store_id: int) -> models.Store | None:
