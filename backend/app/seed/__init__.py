@@ -10,8 +10,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from ..database import engine
 from ._base import SeedReport
 from .categories import seed_categories
-from .products import seed_products
 from .stores import seed_stores
+from .products import seed_products
+from .employees import seed_employees
 
 def run_seed() -> None:
     """Ejecuta todos los seeders en una única transacción global."""
@@ -21,12 +22,15 @@ def run_seed() -> None:
         try:
             # 1. Categorías (necesarias para productos)
             categories_map = seed_categories(session, report)
-            
-            # 2. Productos
+
+            # 2. Tiendas (necesarias para empleados)
+            stores_map = seed_stores(session, report)
+
+            # 3. Productos
             seed_products(session, report, categories_map)
-            
-            # 3. Tiendas
-            seed_stores(session, report)
+
+            # 4. Empleados
+            seed_employees(session, report, stores_map)
 
             session.commit()
             report.print_summary()
