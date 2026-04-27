@@ -72,6 +72,44 @@
             <li>Se les añadirá al instante a la lista de "Reviewers" sin que tú tengas que agregarlos a mano.</li>
             <li>Cualquiera de los 4 puede aprobar (Approve) el Pull Request, permitiendo al autor fusionar el botón "Merge to main".</li>
         </ul>
+    <div class="section-card">
+        <h2>4. Checklist Obligatorio Pre-PR</h2>
+        <p>Para evitar que el CI de GitHub bloquee tu trabajo, ejecuta siempre estos comandos en local antes de hacer <code>git push</code>.</p>
+
+        <div class="step-card">
+            <h3>🌐 4.1 Validación Global (EditorConfig)</h3>
+            <p>Verifica indentación, finales de línea y espacios en blanco en todo el repositorio.</p>
+            <pre><code>npx editorconfig-checker</code></pre>
+        </div>
+
+        <div class="step-card">
+            <h3>⚛️ 4.2 Frontend (React)</h3>
+            <p>Ejecuta estos comandos desde la carpeta <code>/frontend</code>:</p>
+            <ul>
+                <li><code>npx prettier --write .</code> — Corrige el formato automáticamente.</li>
+                <li><code>npm run lint</code> — Verifica errores de lógica y tipos.</li>
+                <li><code>npm run test</code> — Ejecuta la suite de pruebas unitarias (Vitest).</li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <h3>🐍 4.3 Backend (FastAPI)</h3>
+            <p>Ejecuta estos comandos desde la carpeta <code>/backend</code>:</p>
+            <ul>
+                <li><code>PYTHONPATH=. pytest tests</code> — Ejecuta las pruebas de API y CRUD.</li>
+            </ul>
+            <p class="small"><strong>¿Por qué <code>PYTHONPATH=.</code>?</strong> Le indica a Python que busque los módulos (carpeta <code>app/</code>) en el directorio actual para evitar errores de importación.</p>
+            
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 6px; margin-top: 1rem; border: 1px solid #e2e8f0;">
+                <p style="margin: 0; font-weight: 600; font-size: 0.9rem;">💡 Tip: Trabajando con Entorno Virtual (.venv)</p>
+                <p style="font-size: 0.85rem; margin: 0.5rem 0;">Si prefieres no usar Docker para los tests, crea un entorno aislado:</p>
+                <code style="font-size: 0.8rem; display: block; background: #fff; padding: 0.5rem; border-radius: 4px;">
+                    python3 -m venv .venv<br>
+                    source .venv/bin/activate<br>
+                    pip install -r requirements.txt
+                </code>
+            </div>
+        </div>
     </div>
 
 </div>

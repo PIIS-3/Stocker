@@ -53,6 +53,9 @@
         <p class="ok">Resultado: mapeo compatible con <code>ProductsList.tsx</code>.</p>
     </div>
 
+        </table>
+    </div>
+
     <div class="section-card">
         <h2>3. Reporte de bugs de render en mobile</h2>
         <table class="check-table">
@@ -60,6 +63,18 @@
             <tbody>
                 <tr><td>MOB-001</td><td>Las tablas administrativas usan scroll horizontal en pantallas pequeñas.</td><td>Baja</td><td class="warn">Comportamiento esperado</td></tr>
                 <tr><td>MOB-002</td><td>No se detectaron bloqueos de navegación en rutas públicas/privadas durante validación HTTP.</td><td>-</td><td class="ok">Sin bug</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-card">
+        <h2>4. Verificación de Audio y Preferencias</h2>
+        <table class="check-table">
+            <thead><tr><th>Prueba</th><th>Acción</th><th>Resultado</th></tr></thead>
+            <tbody>
+                <tr><td>Desbloqueo de Audio</td><td>Click en Toggle de Sonido</td><td class="ok">OK - Desbloquea HTMLAudio y WebAudio</td></tr>
+                <tr><td>Persistencia</td><td>Recargar página</td><td class="ok">OK - Se mantiene estado en localStorage</td></tr>
+                <tr><td>Feedback Sonoro</td><td>Simular notificación exitosa</td><td class="ok">OK - Reproduce archivo mp3 correctamente</td></tr>
             </tbody>
         </table>
     </div>
