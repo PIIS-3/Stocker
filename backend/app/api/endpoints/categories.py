@@ -34,7 +34,9 @@ def read_category_by_name(category_name: str, db: Session = Depends(get_db)):
     """Devuelve una categoría por su nombre exacto."""
     db_category = crud_categories.get_category_by_name(db, category_name=category_name)
     if db_category is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada."
+        )
     return db_category
 
 
@@ -45,7 +47,9 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
     """Devuelve una categoría por su ID numérico."""
     db_category = crud_categories.get_category_by_id(db, category_id=category_id)
     if db_category is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada."
+        )
     return db_category
 
 
@@ -95,7 +99,9 @@ def update_category(
 
     updated = crud_categories.update_category(db, category_id=category_id, category_in=category_in)
     if updated is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada."
+        )
     return updated
 
 
@@ -106,5 +112,7 @@ def delete_category(category_id: int, db: Session = Depends(get_db)):
     """Elimina una categoría por su ID. Devuelve el registro tal como era antes de borrarse."""
     deleted = crud_categories.delete_category(db, category_id=category_id)
     if deleted is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada."
+        )
     return deleted

@@ -11,6 +11,11 @@ const navItems = [
   { name: 'Usuarios', path: '/admin/users', icon: Users },
 ];
 
+/**
+ * Componente: Sidebar
+ * Barra lateral de navegación para el panel de administración.
+ * Define las rutas principales y permite cerrar la sesión.
+ */
 export function Sidebar() {
   return (
     <div className="w-64 bg-white border-r border-gray-100 flex flex-col h-full shadow-sm">
