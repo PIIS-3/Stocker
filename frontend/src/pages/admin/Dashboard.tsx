@@ -1,6 +1,12 @@
 import { Package, Store, Users, AlertCircle } from 'lucide-react';
 import { PageHeader, StatCard } from '../../components/molecules';
+import { SoundToggle } from '../../components/atoms';
 
+/**
+ * Componente: Dashboard
+ * Vista general del panel de administración que muestra estadísticas rápidas
+ * y permite gestionar preferencias del sistema como el sonido.
+ */
 export default function Dashboard() {
   const stats = [
     {
@@ -44,6 +50,15 @@ export default function Dashboard() {
         {stats.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mt-6 flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Preferencias de Sonido</h3>
+          <p className="text-xs text-gray-500 mt-1">
+            Activa o desactiva los sonidos de las notificaciones del sistema.
+          </p>
+        </div>
+        <SoundToggle />
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 line-clamp-4">
