@@ -18,9 +18,13 @@ export default defineConfig({
       },
     }),
   ],
+  // Configuración de pruebas con Vitest
   test: {
+    // Habilita APIs globales como 'describe', 'it', 'expect' para no tener que importarlas en cada archivo
     globals: true,
+    // Simula un entorno de navegador en Node.js usando jsdom
     environment: 'jsdom',
+    // Archivo de configuración que se ejecuta antes de cada prueba
     setupFiles: './src/vitest-setup.ts',
   },
 });

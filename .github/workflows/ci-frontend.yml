@@ -36,10 +36,12 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Instalar dependencias
+        # npm ci es preferible en CI porque es más rápido y garantiza que el lockfile no cambie
         working-directory: ./frontend
         run: npm ci
 
       - name: Ejecutar Pruebas (Vitest)
+        # --run ejecuta las pruebas una sola vez en lugar de entrar en modo observación (watch)
         working-directory: ./frontend
         run: npm test -- --run
 
