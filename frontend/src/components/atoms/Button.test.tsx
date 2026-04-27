@@ -11,7 +11,7 @@ describe('Button component', () => {
   it('handles click events', () => {
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     fireEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -25,11 +25,7 @@ describe('Button component', () => {
   });
 
   it('renders with an icon', () => {
-    render(
-      <Button icon={<span data-testid="test-icon">icon</span>}>
-        With Icon
-      </Button>
-    );
+    render(<Button icon={<span data-testid="test-icon">icon</span>}>With Icon</Button>);
     expect(screen.getByTestId('test-icon')).toBeInTheDocument();
     expect(screen.getByText('With Icon')).toBeInTheDocument();
   });
