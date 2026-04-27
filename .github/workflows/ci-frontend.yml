@@ -19,12 +19,37 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
+  # ── JOB: Test ────────────────────────────────────────────────────────
+  # Ejecuta linting y pruebas unitarias para asegurar la calidad del código.
+  test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Ejecutar Pruebas (Vitest)
+        working-directory: ./frontend
+        run: npm test -- --run
+
   # ── JOB: Build Docker ────────────────────────────────────────────────
   # Construye la imagen Docker del frontend (Vite + Nginx o similar).
   # Esto verifica que el Dockerfile y el proceso de build de React
   # son correctos end-to-end. No sube la imagen (push: false).
   docker-build:
     name: Build Docker Image
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repositorio
