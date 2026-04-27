@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Guía CRUD Backend</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .phase-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #38bdf8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .phase-title {
+            color: #0284c7;
+            margin-top: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+            font-size: 1.3rem;
+        }
+        .step-label {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+        }
+        .step-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .step-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>⚙️ Guía Paso a Paso: CRUD Backend</h1>
+        <p>Tutorial sobre cómo añadir de forma correcta, modular y escalable un nuevo recurso ("entidad") en el servidor FastAPI.</p>
+    </header>
+
+    <div class="alert alert-info">
+        En este ejemplo, utilizaremos la entidad <strong>Store</strong> (Tiendas) como el estándar de oro del proyecto.
+    </div>
+
+    <div class="section-card" style="border: 2px solid #a855f7; background-color: #faf5ff;">
+        <h2 style="color: #7e22ce; margin-top: 0;">🤖 Fast-Track: Prompt para Inteligencia Artificial</h2>
+        <p style="color: #6b21a8; font-size: 0.95rem;">Copia este bloque de texto, sustituye <strong>[NOMBRE_ENTIDAD]</strong> y envíaselo al chat:</p>
+
+        <pre style="background: #1e293b; color: #f8fafc; padding: 1.2rem; border-radius: 8px; font-family: monospace; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.5; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">Implementa un nuevo CRUD completo para la entidad "[NOMBRE_ENTIDAD]".
+
+Utiliza los archivos de la entidad "Store" como tu estándar arquitectónico estricto:
+- Modelos: backend/app/models/store.py (Usa Base, Create, Update, Response y el Modelo ORM puro).
+- CRUD Pura: backend/app/crud/stores.py
+- Endpoints: backend/app/api/endpoints/stores.py
+
+REGLAS OBLIGATORIAS:
+1. El modelo ORM de BD debe heredar de `TimestampMixin` (backend/app/models/mixins.py) para autogestionar created_at y updated_at.
+2. Añade el nuevo modelo a backend/app/models/__init__.py
+3. En el archivo CRUD, devuelve solo datos u objetos ORM (o None). NO importes ni lances HTTPException aquí.
+4. En el archivo de endpoints, inyecta `Depends(get_db)`. Valida conflictos (409) y no encontrados (404).
+5. Los endpoints deben replicar los comentarios visuales de separación (# ── GET /entidad/ ──).
+6. Crea siempre un endpoint adicional `GET /by-name/{name}` antes del `GET /{id}`.
+7. Registra el router en backend/app/api/router.py.
+8. Todo el código debe estar excelentemente documentado en español.</pre>
+    </div>
+
+    <div class="section-card">
+        <h2>Fase 1: Base de Datos y Modelos</h2>
+
+        <div class="phase-card">
+            <div class="step-item">
+                <h3><span class="step-label">Paso 1.1</span> Crear Modelo SQLModel</h3>
+                <p>Archivo: <code>backend/app/models/store.py</code></p>
+                <pre><code>from typing import Optional
+from datetime import datetime
+from sqlmodel import SQLModel, Field
+from .mixins import TimestampMixin
+
+class StoreBase(SQLModel):
+    name: str = Field(unique=True, index=True, min_length=1)
+    address: str
+
+class StoreCreate(StoreBase):
+    pass
+
+class StoreUpdate(SQLModel):
+    name: Optional[str] = Field(default=None, min_length=1)
+    address: Optional[str] = None
+
+class Store(TimestampMixin, StoreBase, table=True):
+    id_store: Optional[int] = Field(default=None, primary_key=True)
+
+class StoreResponse(StoreBase):
+    id_store: int
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+</code></pre>
+            </div>
+
+            <div class="step-item">
+                <h3><span class="step-label">Paso 1.2</span> Registrar en el Índice</h3>
+                <p>Archivo: <code>backend/app/models/__init__.py</code></p>
+                <pre><code>from .store import Store, StoreBase, StoreCreate, StoreResponse</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Fase 2: Lógica y Rutas API</h2>
+
+        <div class="phase-card" style="border-left-color: #f59e0b;">
+            <div class="step-item">
+                <h3 style="color:#b45309;"><span class="step-label" style="background:#fef3c7; color:#b45309;">Paso 2.1</span> Crear CRUD (Lógica)</h3>
+                <p>Archivo: <code>backend/app/crud/stores.py</code></p>
+                <pre><code>from sqlmodel import Session, select
+from app.models.store import Store, StoreCreate, StoreUpdate
+
+def get_stores(db: Session, skip: int = 0, limit: int = 100) -> list[Store]:
+    return db.exec(select(Store).offset(skip).limit(limit)).all()
+
+def create_store(db: Session, store_in: StoreCreate) -> Store:
+    db_store = Store.model_validate(store_in)
+    db.add(db_store)
+    db.commit()
+    db.refresh(db_store)
+    return db_store
+</code></pre>
+            </div>
+
+            <div class="step-item">
+                <h3 style="color:#b45309;"><span class="step-label" style="background:#fef3c7; color:#b45309;">Paso 2.2</span> Publicar Endpoints</h3>
+                <p>Archivo: <code>backend/app/api/endpoints/stores.py</code></p>
+                <pre><code>from fastapi import APIRouter, Depends, HTTPException, status
+from app.database import get_db
+from app.crud import stores as crud
+
+router = APIRouter()
+
+@router.get("/", response_model=list[StoreResponse])
+def read_stores(db: Session = Depends(get_db)):
+    return crud.get_stores(db)
+</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Fase 3: Frontend</h2>
+        <p>Para la implementación de la interfaz de usuario en React, consulta nuestra guía detallada:</p>
+        <a href="frontend_crud_guide.html" class="alert alert-success" style="display: block; text-decoration: none; color: #15803d; font-weight: bold; text-align: center; padding: 1rem;">
+            👉 Ir a la Guía de CRUD Frontend (React)
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

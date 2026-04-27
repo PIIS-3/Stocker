@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Guía CRUD Frontend</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .phase-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #22c55e;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .phase-title {
+            color: #15803d;
+            margin-top: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+            font-size: 1.3rem;
+        }
+        .step-label {
+            display: inline-block;
+            background: #dcfce3;
+            color: #15803d;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+        }
+        .step-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .step-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>⚛️ Guía Paso a Paso: CRUD Frontend (React)</h1>
+        <p>Tutorial detallado sobre cómo implementar la interfaz de usuario para un nuevo recurso, siguiendo el patrón de <strong>Diseño Atómico</strong> y el estándar establecido en el módulo de Tiendas.</p>
+    </header>
+
+    <div class="alert alert-success">
+        Usaremos la entidad <strong>Store</strong> (Tiendas) como referencia directa para ilustrar el estándar actual.
+    </div>
+
+    <div class="section-card" style="border: 2px solid #22c55e; background-color: #f0fdf4;">
+        <h2 style="color: #15803d; margin-top: 0;">🤖 Fast-Track: Prompt para Agentes IA</h2>
+        <p style="color: #166534; font-size: 0.95rem;">Copia este bloque de texto para que la IA genere el frontend del CRUD siguiendo exactamente la arquitectura del proyecto:</p>
+
+        <pre style="background: #1e293b; color: #f8fafc; padding: 1.2rem; border-radius: 8px; font-family: monospace; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.5; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">Implementa el frontend completo para el CRUD de "[NOMBRE_ENTIDAD]".
+
+Utiliza los archivos de la entidad "Store" como estándar arquitectónico:
+- Servicio: frontend/src/services/stores.service.ts
+- Formulario: frontend/src/components/organisms/StoreForm.tsx
+- Listado: frontend/src/pages/admin/StoresList.tsx
+
+REGLAS OBLIGATORIAS:
+1. Sigue el patrón de Diseño Atómico.
+2. El servicio debe usar la instancia central `api`.
+3. El formulario debe soportar modos 'create' y 'edit'.
+4. La página de listado debe usar `ToastNotification` con sonido.
+5. Registra la nueva ruta en `App.tsx` y añádela al `Sidebar.tsx`.
+6. Todo el código debe estar excelentemente documentado en español.</pre>
+    </div>
+
+    <div class="section-card">
+        <h2>Fase 1: Capa de Datos (Servicios)</h2>
+        <div class="phase-card">
+            <div class="step-item">
+                <h3><span class="step-label">Paso 1.1</span> Definir Interfaces y Servicio</h3>
+                <p>Archivo: <code>frontend/src/services/stores.service.ts</code></p>
+                <pre><code>import api from './api';
+
+export interface StoreApi {
+  id_store: number;
+  name: string;
+  address: string;
+}
+
+export const storesService = {
+  getStores: async () => {
+    const res = await api.get&lt;StoreApi[]&gt;('/stores/');
+    return res.data;
+  }
+};</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Fase 2: Componentes (Organismos)</h2>
+        <div class="phase-card" style="border-left-color: #3b82f6;">
+            <div class="step-item">
+                <h3 style="color:#1d4ed8;"><span class="step-label" style="background:#dbeafe; color:#1d4ed8;">Paso 2.1</span> Formulario Modal</h3>
+                <p>Archivo: <code>frontend/src/components/organisms/StoreForm.tsx</code></p>
+                <ul>
+                    <li>Encapsula la lógica de <code>create</code> y <code>edit</code>.</li>
+                    <li>Usa <code>Modal</code> y maneja el estado de carga.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Fase 3: Páginas y Navegación</h2>
+        <div class="phase-card" style="border-left-color: #f59e0b;">
+            <div class="step-item">
+                <h3 style="color:#b45309;"><span class="step-label" style="background:#fef3c7; color:#b45309;">Paso 3.1</span> Listado y Gestión</h3>
+                <p>Archivo: <code>frontend/src/pages/admin/StoresList.tsx</code></p>
+                <ul>
+                    <li>Orquesta la carga de datos y las acciones de borrado/edición.</li>
+                    <li>Integra <code>ToastNotification</code> con feedback sonoro.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

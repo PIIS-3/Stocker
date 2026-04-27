@@ -25,52 +25,50 @@
     <div class="section-card">
         <h2>1. Arquitectura API (Backend)</h2>
         <div class="step">
-            <h3>1.1 Entrada HTTP</h3>
-            <p>FastAPI inicializa la aplicación en <code>backend/app/main.py</code> e incluye el router principal de API.</p>
-        </div>
-        <div class="step">
-            <h3>1.2 Router principal</h3>
-            <p>El router maestro en <code>backend/app/api/router.py</code> publica rutas bajo <code>/api</code> y delega por recurso (actualmente productos).</p>
-        </div>
-        <div class="step">
-            <h3>1.3 Endpoints de productos</h3>
-            <p>Endpoints actuales:</p>
+            <h3>1.1 Estructura de Endpoints</h3>
+            <p>El router maestro en <code>backend/app/api/router.py</code> organiza las rutas bajo los siguientes recursos:</p>
             <ul>
-                <li><code>GET /api/products/</code>: listado paginado con <code>skip</code> y <code>limit</code>.</li>
-                <li><code>GET /api/products/{product_id}</code>: detalle por ID con 404 si no existe.</li>
+                <li><code>/stores/</code>: Gestión de tiendas y locales.</li>
+                <li><code>/categories/</code>: Clasificación de productos.</li>
+                <li><code>/products/</code>: Plantillas de productos y SKUs.</li>
+                <li><code>/employees/</code>: Gestión de personal y accesos.</li>
+                <li><code>/roles/</code>: Permisos del sistema.</li>
             </ul>
-            <p class="small">La respuesta está validada por <code>response_model</code> con esquemas SQLModel/Pydantic.</p>
         </div>
         <div class="step">
-            <h3>1.4 Capa CRUD y DB Session</h3>
-            <p>La lógica de consulta vive en <code>backend/app/crud/products.py</code> y usa <code>Session</code> de SQLModel definida en <code>backend/app/database.py</code>.</p>
+            <h3>1.2 Validación y Tipado</h3>
+            <p>Usamos **SQLModel** para garantizar que los datos que entran (Create) y salen (Response) cumplen estrictamente con los esquemas definidos en <code>backend/app/models/</code>. Esto genera automáticamente la documentación OpenAPI en <code>/docs</code>.</p>
+        </div>
+        <div class="step">
+            <h3>1.3 Capa CRUD</h3>
+            <p>La lógica de persistencia está aislada en <code>backend/app/crud/</code>. Cada función recibe una <code>Session</code> de base de datos, lo que facilita el testing unitario sin necesidad de levantar el servidor web.</p>
         </div>
     </div>
 
     <div class="section-card">
         <h2>2. Conexión de servicios Frontend</h2>
         <div class="step">
-            <h3>2.1 Instancia Axios central</h3>
-            <p><code>frontend/src/services/api.ts</code> define base URL, timeout e interceptores. La URL se normaliza para apuntar siempre a <code>/api</code>.</p>
+            <h3>2.1 Cliente API Centralizado</h3>
+            <p>Localizado en <code>frontend/src/services/api.ts</code>. Centraliza el <code>baseURL</code> y los interceptores para manejar errores globales o inyectar cabeceras de autorización.</p>
         </div>
         <div class="step">
-            <h3>2.2 Servicio de productos tipado</h3>
-            <p><code>frontend/src/services/products.service.ts</code> implementa:</p>
-            <ul>
-                <li><code>getProducts(skip, limit)</code></li>
-                <li><code>getProductById(productId)</code></li>
-            </ul>
-            <p class="small">El contrato tipado de respuesta es <code>ProductApi</code>.</p>
+            <h3>2.2 Servicios por Recurso</h3>
+            <p>Cada entidad tiene su propio servicio en <code>frontend/src/services/</code> (ej: <code>stores.service.ts</code>), exportando funciones asíncronas que devuelven Promesas tipadas con interfaces de TypeScript.</p>
         </div>
         <div class="step">
-            <h3>2.3 Consumo en vista administrativa</h3>
-            <p><code>frontend/src/pages/admin/ProductsList.tsx</code> consume el servicio con <code>useEffect</code> y maneja <code>isLoading</code>, <code>errorMessage</code> y render de tabla.</p>
+            <h3>2.3 Implementación en UI</h3>
+            <p>Las páginas administrativas en <code>frontend/src/pages/admin/</code> utilizan estos servicios dentro de <code>useEffect</code> o callbacks de eventos para sincronizar el estado de la UI con el servidor.</p>
         </div>
     </div>
 
     <div class="section-card">
-        <h2>3. Flujo extremo a extremo</h2>
-        <p>1) Vista React ejecuta <code>productsService.getProducts()</code> → 2) Axios llama <code>/api/products/</code> → 3) FastAPI valida y delega a CRUD → 4) CRUD consulta SQLModel Session → 5) FastAPI responde JSON validado → 6) Frontend mapea y renderiza tabla.</p>
+        <h2>3. Estándares Técnicos</h2>
+        <ul>
+            <li><strong>Formato:</strong> JSON para todas las peticiones y respuestas.</li>
+            <li><strong>Codificación:</strong> UTF-8.</li>
+            <li><strong>Errores:</strong> Uso de códigos de estado HTTP semánticos (404 Not Found, 409 Conflict, 422 Validation Error).</li>
+            <li><strong>Audio:</strong> El frontend utiliza la ruta <code>/sounds/notification-chime.mp3</code> para feedback sonoro en operaciones exitosas.</li>
+        </ul>
     </div>
 </div>
 </body>
