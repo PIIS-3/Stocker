@@ -59,7 +59,7 @@ class Store(TimestampMixin, StoreBase, table=True):
 # Schema de salida para todas las respuestas de la API.
 # Extiende StoreBase añadiendo id y timestamps generados por la BD.
 class StoreResponse(StoreBase):
-    id_store: int
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    id_store: int = Field(description="ID único de la tienda.")
+    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
+    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")
 

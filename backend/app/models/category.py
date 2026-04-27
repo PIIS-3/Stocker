@@ -62,6 +62,6 @@ class Category(TimestampMixin, CategoryBase, table=True):
 # Schema de salida para todas las respuestas de la API.
 # Extiende CategoryBase añadiendo id y timestamps generados por la BD.
 class CategoryResponse(CategoryBase):
-    id_category: int
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    id_category: int = Field(description="ID único de la categoría.")
+    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
+    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")
