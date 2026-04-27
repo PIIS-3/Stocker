@@ -20,9 +20,9 @@ on:
 
 jobs:
   # ── JOB: Test ────────────────────────────────────────────────────────
-  # Ejecuta linting y pruebas unitarias para asegurar la calidad del código.
+  # Ejecuta pruebas unitarias para asegurar la calidad del código.
   test:
-    name: Lint & Test
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repositorio
