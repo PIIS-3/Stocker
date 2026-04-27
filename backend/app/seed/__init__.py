@@ -34,7 +34,7 @@ def run_seed() -> None:
 
             session.commit()
             report.print_summary()
-            
+
         except (SQLAlchemyError, ValueError) as exc:
             session.rollback()
             print(f"\n❌ Error ejecutando seed: {exc}")

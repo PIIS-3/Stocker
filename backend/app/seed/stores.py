@@ -2,8 +2,8 @@
 stores.py — Datos de prueba y lógica de seed para Tiendas.
 
 Los datos cubren los escenarios más habituales del CRUD:
-  - Tiendas activas en distintas ciudades para probar listado y búsqueda.
-  - Una tienda inactiva para probar filtrado por estado en la UI.
+    - Tiendas activas en distintas ciudades para probar listado y búsqueda.
+    - Una tienda inactiva para probar filtrado por estado en la UI.
 """
 from __future__ import annotations
 

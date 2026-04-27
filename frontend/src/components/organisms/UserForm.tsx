@@ -8,6 +8,11 @@ interface UserFormProps {
   mode?: 'create' | 'edit';
 }
 
+/**
+ * Componente: UserForm
+ * Formulario modal para la gestión de usuarios (empleados).
+ * Permite definir roles, tiendas asignadas y credenciales de acceso.
+ */
 export function UserForm({ isOpen, onClose, mode = 'create' }: UserFormProps) {
   const isEdit = mode === 'edit';
 

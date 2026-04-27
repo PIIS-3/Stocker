@@ -13,7 +13,7 @@ export function AdminLayout() {
         <AdminHeader />
 
         {/* Zona de trabajo con scroll */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+        <main className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto bg-gray-50">
           <Outlet />
         </main>
       </div>

@@ -4,7 +4,7 @@ _base.py — Utilidades compartidas para todos los módulos de seed.
 Proporciona:
 - SeedReport: acumulador de contadores creados/actualizados por entidad.
 - upsert_by_field: helper genérico que evita duplicar la lógica de upsert
-  en cada módulo de seed.
+en cada módulo de seed.
 """
 from __future__ import annotations
 
