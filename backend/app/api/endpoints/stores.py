@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 from typing import List
 
@@ -11,6 +12,7 @@ router = APIRouter()
 # Respuestas comunes documentadas en Swagger para todos los endpoints.
 _404 = {404: {"description": "Tienda no encontrada."}}
 _409 = {409: {"description": "Ya existe una tienda con ese nombre."}}
+_409_DELETE = {409: {"description": "No se puede eliminar una tienda con registros asociados."}}
 
 
 # ── GET /stores/ ─────────────────────────────────────────────────────
@@ -34,7 +36,9 @@ def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
     """Devuelve una tienda por su nombre exacto."""
     db_store = crud_stores.get_store_by_name(db, store_name=store_name)
     if db_store is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
+        )
     return db_store
 
 
@@ -45,7 +49,9 @@ def read_store(store_id: int, db: Session = Depends(get_db)):
     """Devuelve una tienda por su ID numérico."""
     db_store = crud_stores.get_store_by_id(db, store_id=store_id)
     if db_store is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
+        )
     return db_store
 
 
@@ -95,18 +101,32 @@ def update_store(
 
     updated = crud_stores.update_store(db, store_id=store_id, store_in=store_in)
     if updated is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
+        )
     return updated
 
 
 # ── DELETE /stores/{store_id} ────────────────────────────────────────
 
-@router.delete("/{store_id}", response_model=models.StoreResponse, responses=_404)
+@router.delete(
+    "/{store_id}", response_model=models.StoreResponse, responses={**_404, **_409_DELETE}
+)
 def delete_store(store_id: int, db: Session = Depends(get_db)):
     """Elimina una tienda por su ID. Devuelve el registro tal como era antes de borrarse."""
-    deleted = crud_stores.delete_store(db, store_id=store_id)
+    try:
+        deleted = crud_stores.delete_store(db, store_id=store_id)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No se puede eliminar la tienda porque tiene registros asociados.",
+        )
+
     if deleted is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
+        )
     return deleted
 
 
