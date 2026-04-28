@@ -1,5 +1,6 @@
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
@@ -23,6 +24,16 @@ class CategoryBase(SQLModel):
         default=StatusEnum.Active, description="Estado operativo (Active / Inactive)."
     )
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "category_name": "Electrónica de Consumo",
+                "description": "Smartphones, tablets, ordenadores y accesorios relacionados.",
+                "status": "Active"
+            }
+        }
+    )
+
 
 # ── CategoryCreate ───────────────────────────────────────────────────────
 # Schema de entrada para POST /categories/.
@@ -43,6 +54,16 @@ class CategoryUpdate(SQLModel):
     )
     status: Optional[StatusEnum] = Field(
         default=None, description="Nuevo estado operativo."
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "category_name": "Línea Blanca",
+                "description": "Grandes electrodomésticos para el hogar.",
+                "status": "Active"
+            }
+        }
     )
 
 

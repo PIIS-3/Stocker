@@ -20,12 +20,37 @@ async def lifespan(app: FastAPI):
     yield
 
 
+tags_metadata = [
+    {
+        "name": "General",
+        "description": "Endpoints básicos del sistema (salud, bienvenida).",
+    },
+    {
+        "name": "Tiendas",
+        "description": "Gestión de locales físicos y sucursales.",
+    },
+    {
+        "name": "Categorías",
+        "description": "Clasificación de productos del inventario.",
+    },
+    {
+        "name": "Productos",
+        "description": "Gestión de plantillas y variantes de productos.",
+    },
+    {
+        "name": "Empleados",
+        "description": "Administración del personal asignado a tiendas.",
+    },
+]
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description=settings.DESCRIPTION,
+    openapi_tags=tags_metadata,
     lifespan=lifespan,
 )
+
 
 # ── CORS ─────────────────────────────────────────────────────────────
 # Permite que el frontend (React) se comunique con la API desde un

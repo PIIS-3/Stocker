@@ -1,5 +1,6 @@
 from typing import Optional
 from datetime import datetime
+from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
@@ -28,6 +29,19 @@ class ProductTemplateBase(SQLModel):
     category_id: int = Field(
         foreign_key="category.id_category",
         description="ID de la categoría a la que pertenece el producto."
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "sku": "ELEC-SMART-001",
+                "product_name": "iPhone 15 Pro",
+                "brand": "Apple",
+                "fixed_selling_price": 1200.00,
+                "status": "Active",
+                "category_id": 1
+            }
+        }
     )
 
 

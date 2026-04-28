@@ -1,6 +1,7 @@
 from typing import Optional
 from datetime import datetime
 
+from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
@@ -27,6 +28,19 @@ class EmployeeBase(SQLModel):
     )
     role_id: int = Field(foreign_key="role.id_role", description="ID del rol asignado.")
     store_id: int = Field(foreign_key="store.id_store", description="ID de la tienda asignada.")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "first_name": "Juan",
+                "last_name": "García Pérez",
+                "username": "jgarcia",
+                "status": "Active",
+                "role_id": 1,
+                "store_id": 1
+            }
+        }
+    )
 
 
 # ── EmployeeCreate ───────────────────────────────────────────────────
@@ -75,6 +89,16 @@ class EmployeeUpdate(SQLModel):
         default=None,
         min_length=1,
         description="Hash de contraseña ya preparado. El CRUD no lo calcula.",
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "first_name": "María",
+                "status": "Inactive",
+                "role_id": 2
+            }
+        }
     )
 
 

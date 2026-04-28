@@ -1,5 +1,6 @@
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
@@ -19,6 +20,16 @@ class StoreBase(SQLModel):
     address: str = Field(min_length=1, description="Dirección física completa.")
     status: StatusEnum = Field(
         default=StatusEnum.Active, description="Estado operativo (Active / Inactive)."
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "store_name": "Stocker Central - Madrid",
+                "address": "Calle de la Gran Vía, 28, 28013 Madrid, España",
+                "status": "Active"
+            }
+        }
     )
 
 
@@ -41,6 +52,16 @@ class StoreUpdate(SQLModel):
         default=None, min_length=1, description="Nueva dirección física."
     )
     status: Optional[StatusEnum] = Field(default=None, description="Nuevo estado operativo.")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "store_name": "Stocker Express - Chamberí",
+                "address": "Calle de Fuencarral, 120, 28010 Madrid",
+                "status": "Inactive"
+            }
+        }
+    )
 
 
 # ── Store ────────────────────────────────────────────────────────────
