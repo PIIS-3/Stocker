@@ -20,7 +20,9 @@ _409 = {409: {"description": "Ya existe un empleado con ese username."}}
     "/",
     response_model=List[models.EmployeeResponse],
     summary="Listar empleados",
-    description="Devuelve la lista completa de empleados con soporte para paginación (skip/limit).",
+    description=(
+        "Devuelve la lista completa de empleados con soporte para paginación (skip/limit)."
+    ),
 )
 def read_employees(
     skip: int = 0,
@@ -53,7 +55,9 @@ def read_employee_by_name(name: str, db: Session = Depends(get_db)):
     response_model=models.EmployeeResponse,
     responses=_404,
     summary="Obtener empleado por ID",
-    description="Recupera el detalle de un empleado a través de su identificador numérico único.",
+    description=(
+        "Recupera el detalle de un empleado a través de su identificador numérico único."
+    ),
 )
 def read_employee(employee_id: int, db: Session = Depends(get_db)):
     db_employee = crud_employees.get_employee_by_id(db, employee_id=employee_id)
@@ -89,8 +93,7 @@ def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(ge
     responses={**_404, **_409},
     summary="Actualizar empleado",
     description=(
-        "Modifica parcialmente los datos de un empleado. "
-        "Solo actualiza los campos enviados."
+        "Modifica parcialmente los datos de un empleado. Solo actualiza los campos enviados."
     ),
 )
 def update_employee(
