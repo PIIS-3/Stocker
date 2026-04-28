@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { PublicLayout } from './components/templates';
+import { PublicLayout } from './components/templates/PublicLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Contact from './pages/Contact';
@@ -7,13 +7,12 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Roadmap from './pages/Roadmap';
 
-import { AdminLayout } from './components/templates';
+import { AdminLayout } from './components/templates/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import StoresList from './pages/admin/StoresList';
 import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
 import ProductsList from './pages/admin/ProductsList';
-import Roadmap from './pages/Roadmap';
 
 function App() {
   return (

@@ -1,7 +1,11 @@
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { Button, StatusBadge, RoleBadge } from '../../components/atoms';
-import { PageHeader, SearchInput, ActionButtons } from '../../components/molecules';
+import { Button } from '../../components/atoms/Button';
+import { StatusBadge } from '../../components/atoms/StatusBadge';
+import { RoleBadge } from '../../components/atoms/RoleBadge';
+import { PageHeader } from '../../components/molecules/PageHeader';
+import { SearchInput } from '../../components/molecules/SearchInput';
+import { ActionButtons } from '../../components/molecules/ActionButtons';
 import { UserForm } from '../../components/organisms/UserForm';
 
 export default function UsersList() {
