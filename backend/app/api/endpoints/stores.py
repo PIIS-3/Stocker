@@ -12,9 +12,7 @@ router = APIRouter(tags=["Tiendas"])
 # Respuestas comunes documentadas en Swagger para todos los endpoints.
 _404 = {404: {"description": "Tienda no encontrada."}}
 _409 = {409: {"description": "Ya existe una tienda con ese nombre."}}
-_409_DELETE = {
-    409: {"description": "No se puede eliminar una tienda con registros asociados."}
-}
+_409_DELETE = {409: {"description": "No se puede eliminar una tienda con registros asociados."}}
 
 
 # ── GET /stores/ ─────────────────────────────────────────────────────
@@ -24,8 +22,7 @@ _409_DELETE = {
     response_model=List[models.StoreResponse],
     summary="Listar todas las tiendas",
     description=(
-        "Devuelve una lista paginada de todas las tiendas físicas "
-        "registradas en el sistema."
+        "Devuelve una lista paginada de todas las tiendas físicas registradas en el sistema."
     ),
 )
 def read_stores(

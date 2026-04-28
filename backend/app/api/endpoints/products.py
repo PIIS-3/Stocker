@@ -29,15 +29,13 @@ def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     responses=_404,
     summary="Obtener producto por ID",
     description=(
-        "Recupera la información detallada de una plantilla de producto "
-        "mediante su identificador único."
+        "Recupera la información detallada de una plantilla de producto mediante su "
+        "identificador único."
     ),
 )
 def read_product_by_id(product_id: int, db: Session = Depends(get_db)):
     product = crud_products.get_product_by_id(db, product_id=product_id)
     if not product:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return product
 

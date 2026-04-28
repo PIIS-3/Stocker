@@ -121,9 +121,7 @@ class EmployeeResponse(EmployeeBase):
     updated_at: Optional[datetime] = Field(
         default=None, description="Fecha de última actualización."
     )
-    role: Optional[RoleBase] = Field(
-        default=None, description="Información detallada del rol."
-    )
+    role: Optional[RoleBase] = Field(default=None, description="Información detallada del rol.")
     store: Optional[StoreBase] = Field(
         default=None, description="Información detallada de la tienda."
     )

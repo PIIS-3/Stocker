@@ -1,107 +1,155 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stocker - Guía de Operaciones (Getting Started)</title>
-    <link rel="stylesheet" href="../styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <nav class="doc-nav">
+      <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+    </nav>
 
-<nav class="doc-nav">
-    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
-</nav>
-
-<div class="container">
-    <header>
+    <div class="container">
+      <header>
         <h1>🚀 Guía de Operaciones (Getting Started)</h1>
-        <p>Aprende a levantar el proyecto, apagarlo, limpiarlo e inyectar datos falsos.</p>
-    </header>
+        <p>
+          Aprende a levantar el proyecto, gestionar la base de datos y validar
+          tu código usando el Makefile central.
+        </p>
+      </header>
 
-    <div class="warning-box">
-        <strong>Aviso Importante:</strong> La terminal debe estar abierta en la carpeta <code>/docker</code> o debes añadir <code>cd docker</code> antes de ejecutar estos comandos o fallarán.
-    </div>
+      <div class="warning-box">
+        <strong>Requisito:</strong> Debes tener
+        <strong>Docker Desktop</strong> instalado y abierto en tu ordenador
+        antes de empezar. Todos los comandos se ejecutan desde la raíz del
+        proyecto <code>Stocker/</code>.
+      </div>
 
-    <!-- STARTUP -->
-    <div class="step-card">
-        <h3>1. Preparar y Encender el Proyecto</h3>
-        <p>Primero, crea un archivo <code style="color:var(--text-color)">.env</code> copiando el de ejemplo dentro del directorio <code>/docker</code>:</p>
-        <pre><code>cp .env.example .env</code></pre>
-        <p>Luego, este comando construye las imágenes (Frontend en Node 25, Backend en Python 3.12 y Database en Postgres 16) y lanza los tres contenedores en segundo plano <code>-d</code>.</p>
-        <pre><code>docker compose up --build -d</code></pre>
-        <p>Una vez completado, las herramientas estarán en:</p>
+      <!-- STARTUP -->
+      <div class="step-card">
+        <h3>1. Encender el Proyecto</h3>
+        <p>
+          No necesitas configurar variables manualmente. El comando
+          <code>up</code> se encarga de crear el <code>.env</code> inicial por
+          ti:
+        </p>
+        <pre><code>make up</code></pre>
+        <p>
+          Una vez completado (puede tardar unos minutos la primera vez), accede
+          a:
+        </p>
         <ul>
-            <li><strong>Frontend React:</strong> <a href="http://localhost:5173" target="_blank">http://localhost:5173</a></li>
-            <li><strong>Backend API:</strong> <a href="http://localhost:8000" target="_blank">http://localhost:8000</a> (Documentación interactiva en <a href="http://localhost:8000/docs">/docs</a>)</li>
+          <li>
+            <strong>Frontend React:</strong>
+            <a href="http://localhost:5173" target="_blank"
+              >http://localhost:5173</a
+            >
+          </li>
+          <li>
+            <strong>Backend API:</strong>
+            <a href="http://localhost:8000" target="_blank"
+              >http://localhost:8000</a
+            >
+            (Swagger en <a href="http://localhost:8000/docs">/docs</a>)
+          </li>
         </ul>
-    </div>
+      </div>
 
-    <!-- SEEDING -->
-    <div class="step-card">
-        <h3>2. Inyectar datos de prueba (Seed Database)</h3>
-        <p>Como Postgres arranca en limpio, FastAPI usará Alembic para crear las tablas vacías. Una vez estén creadas (10 segundos tras encender el servidor), ejecuta el seeder del backend para cargar categorías y productos de prueba de forma idempotente.</p>
+      <!-- SEEDING -->
+      <div class="step-card">
+        <h3>2. Poblado de Datos (Seed)</h3>
+        <p>
+          Para tener algo que ver en la interfaz, inyecta los datos de prueba
+          iniciales:
+        </p>
         <pre><code>make seed</code></pre>
-        <p>Equivalente directo sin Makefile:</p>
-        <pre><code>docker exec stocker_api python -m app.seed</code></pre>
-        <p>El script está en <code>backend/app/seed.py</code>, utiliza SQLModel Session y crea/actualiza registros sin duplicarlos (por <code>category_name</code> y <code>sku</code>).</p>
-        <p>Alternativa legacy con SQL plano:</p>
-        <pre><code>make seed-sql</code></pre>
-    </div>
+        <p>
+          Este comando es <strong>idempotente</strong>: puedes ejecutarlo varias
+          veces y no duplicará los datos existentes.
+        </p>
+      </div>
 
-    <!-- MIGRATIONS -->
-    <div class="step-card">
-        <h3>3. Realizar cambios en la Base de Datos (Migraciones)</h3>
-        <p>Si alteras algún archivo dentro del paquete <code>models/</code> de Python para añadir o quitar columnas, debes ordenarle a Alembic que compare el modelo nuevo con el antiguo de Postgres y genere el script de actualización.</p>
+      <!-- MIGRATIONS -->
+      <div class="step-card">
+        <h3>3. Cambios en la Base de Datos (Alembic)</h3>
+        <p>
+          Si modificas un modelo en <code>backend/app/models/</code>, sigue este
+          flujo:
+        </p>
         <ol>
-            <li>Genera la captura autogenerada:<br>
-                <code>docker exec stocker_api alembic revision --autogenerate -m "He añadido una columna de Stock"</code>
-            </li>
-            <li>Aplica la actualización a la base de datos real:<br>
-                <code>docker exec stocker_api alembic upgrade head</code>
-            </li>
+          <li>
+            <strong>Crear migración:</strong><br />
+            <code>make migration m="descripcion del cambio"</code>
+          </li>
+          <li>
+            <strong>Aplicar cambios:</strong><br />
+            <code>make migrate</code>
+          </li>
         </ol>
-    </div>
+        <p class="small">
+          Esto asegura que tu base de datos en Docker esté siempre sincronizada
+          con tu código Python.
+        </p>
+      </div>
 
-    <!-- SHUTDOWN & CLEANUP -->
-    <div class="step-card">
-        <h3>4. Apagar y Limpiar</h3>
-        <p>Si quieres apagarlo todo temporalmente para conservar recursos y disco:</p>
-        <pre><code>docker compose down</code></pre>
-
-        <p>Si notas fallos extraños y quieres **borrar todo el progreso (Resetear de Fábrica)**, eliminando la base de datos, los datos guardados en el disco virtual de Docker y las imágenes construidas, usa:</p>
-        <pre><code>docker compose down -v --rmi all --remove-orphans</code></pre>
-    </div>
-
-    <div class="step-card">
-        <h3>5. Comandos de Makefile para desarrollo</h3>
-        <p>Para estandarizar el flujo del equipo, ejecuta estos comandos desde la raíz del repositorio:</p>
+      <!-- UTILS -->
+      <div class="step-card">
+        <h3>4. Herramientas Útiles</h3>
         <ul>
-            <li><code>make up</code>: levanta el entorno Docker completo (con build).</li>
-            <li><code>make down</code>: apaga los contenedores del proyecto.</li>
-            <li><code>make restart</code>: reinicia el stack completo.</li>
-            <li><code>make seed</code>: ejecuta el seeder Python idempotente.</li>
-            <li><code>make seed-sql</code>: ejecuta el seed SQL legacy.</li>
-            <li><code>make test</code>: **Global:** Ejecuta todos los tests (Backend + Frontend).</li>
-            <li><code>make test-backend</code>: ejecuta solo los tests del backend (pytest).</li>
-            <li><code>make test-frontend</code>: ejecuta solo los tests del frontend (Vitest).</li>
-            <li><code>make lint</code>: **Global:** Ejecuta todos los linters y validaciones.</li>
-            <li><code>make format-frontend</code>: aplica formato Prettier al frontend.</li>
+          <li>
+            <code>make up</code> o <strong>Iniciar:</strong> levanta el entorno
+            Docker completo (con build).
+          </li>
+          <li>
+            <code>make down</code> o <strong>Apagar todo:</strong> apaga los
+            contenedores del proyecto (Libera memoria y CPU de tu ordenador).
+          </li>
+          <li>
+            <code>make restart</code> o
+            <strong>Limpieza total:</strong> reinicia el stack completo. Si algo
+            falla catastróficamente, úsalo.
+          </li>
+          <li>
+            <strong>Ver Logs:</strong> <code>make logs</code> (Útil para
+            debugear errores del servidor o la base de datos).
+          </li>
+          <li><code>make seed</code>: ejecuta el seeder Python idempotente.</li>
+          <li><code>make seed-sql</code>: ejecuta el seed SQL legacy.</li>
+          <li>
+            <code>make test</code>: **Global:** Ejecuta todos los tests (Backend
+            + Frontend).
+          </li>
+          <li>
+            <code>make test-backend</code>: ejecuta solo los tests del backend
+            (pytest).
+          </li>
+          <li>
+            <code>make test-frontend</code>: ejecuta solo los tests del frontend
+            (Vitest).
+          </li>
+          <li>
+            <code>make lint</code>: **Global:** Ejecuta todos los linters y
+            validaciones.
+          </li>
+          <li>
+            <code>make format-frontend</code>: aplica formato Prettier al
+            frontend.
+          </li>
         </ul>
+      </div>
+
+      <!-- PR CHECK -->
+      <div class="step-card" style="border-left: 4px solid #f59e0b">
+        <h3>5. Antes de subir tu código (PR Check)</h3>
+        <p>
+          Es <strong>obligatorio</strong> que tu código pase todas las
+          validaciones antes de enviarlo a revisión:
+        </p>
+        <pre><code>make pr-check</code></pre>
+        <p>Si este comando falla, el equipo no aceptará tu Pull Request.</p>
+      </div>
     </div>
-
-    <div class="step-card">
-        <h3>6. Parámetros de entorno del equipo</h3>
-        <p>Estas variables viven en <code>docker/.env</code> (base en <code>docker/.env.example</code>):</p>
-        <ul>
-            <li><code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>POSTGRES_DB</code>: credenciales y nombre de DB.</li>
-            <li><code>API_PORT</code>: puerto local del backend.</li>
-            <li><code>FRONTEND_PORT</code>: puerto local del frontend.</li>
-            <li><code>FRONTEND_URL</code>: origen permitido por CORS para FastAPI.</li>
-            <li><code>VITE_API_URL</code>: URL base consumida por el frontend.</li>
-        </ul>
-    </div>
-
-</div>
-
-</body>
+  </body>
 </html>
