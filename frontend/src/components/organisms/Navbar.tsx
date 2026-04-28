@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Logo } from '../atoms';
+import { Logo } from '../atoms/Logo';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);

@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import { Navbar, Footer } from '../organisms';
+import { Navbar } from '../organisms/Navbar';
+import { Footer } from '../organisms/Footer';
 
 export function PublicLayout() {
   return (

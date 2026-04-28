@@ -1,15 +1,14 @@
 import { ChevronLeft, ChevronRight, Loader2, Plus, Trash2 } from 'lucide-react';
 import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
-import { Button, StatusBadge } from '../../components/atoms';
-import {
-  ActionButtons,
-  Modal,
-  SearchInput,
-  ToastNotification,
-  type ToastVariant,
-} from '../../components/molecules';
-import { StoreDetailsCard, StoreForm } from '../../components/organisms';
+import { Button } from '../../components/atoms/Button';
+import { StatusBadge } from '../../components/atoms/StatusBadge';
+import { ActionButtons } from '../../components/molecules/ActionButtons';
+import { Modal } from '../../components/molecules/Modal';
+import { SearchInput } from '../../components/molecules/SearchInput';
+import { ToastNotification, type ToastVariant } from '../../components/molecules/ToastNotification';
+import { StoreDetailsCard } from '../../components/organisms/StoreDetailsCard';
+import { StoreForm } from '../../components/organisms/StoreForm';
 import { storesService } from '../../services/stores.service';
 import type { StoreApi } from '../../services/stores.service';
 

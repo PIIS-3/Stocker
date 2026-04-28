@@ -1,7 +1,10 @@
 import { Plus, Image as ImageIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Button, StatusBadge } from '../../components/atoms';
-import { PageHeader, SearchInput, ActionButtons } from '../../components/molecules';
+import { Button } from '../../components/atoms/Button';
+import { StatusBadge } from '../../components/atoms/StatusBadge';
+import { PageHeader } from '../../components/molecules/PageHeader';
+import { SearchInput } from '../../components/molecules/SearchInput';
+import { ActionButtons } from '../../components/molecules/ActionButtons';
 import { ProductForm } from '../../components/organisms/ProductForm';
 import { productsService } from '../../services/products.service';
 
