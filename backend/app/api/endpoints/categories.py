@@ -5,8 +5,9 @@ from typing import List
 from ... import models
 from ...crud import categories as crud_categories
 from ...database import get_db
+from ..deps import get_current_employee
 
-router = APIRouter(tags=["Categorías"])
+router = APIRouter(tags=["Categorías"], dependencies=[Depends(get_current_employee)])
 
 # Respuestas comunes documentadas en Swagger para todos los endpoints.
 _404 = {404: {"description": "Categoría no encontrada."}}
