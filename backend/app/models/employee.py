@@ -1,6 +1,7 @@
 from typing import Optional
 from datetime import datetime
 
+from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
@@ -25,8 +26,21 @@ class EmployeeBase(SQLModel):
         default=StatusEnum.Active,
         description="Estado del empleado (Active / Inactive).",
     )
-    role_id: int = Field(foreign_key="role.id_role")
-    store_id: int = Field(foreign_key="store.id_store")
+    role_id: int = Field(foreign_key="role.id_role", description="ID del rol asignado.")
+    store_id: int = Field(foreign_key="store.id_store", description="ID de la tienda asignada.")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "first_name": "Juan",
+                "last_name": "García Pérez",
+                "username": "jgarcia",
+                "status": "Active",
+                "role_id": 1,
+                "store_id": 1
+            }
+        }
+    )
 
 
 # ── EmployeeCreate ───────────────────────────────────────────────────
@@ -44,16 +58,47 @@ class EmployeeCreate(EmployeeBase):
 # Schema de entrada para PATCH /employees/{id}.
 # Todos los campos son opcionales para permitir actualizaciones parciales.
 class EmployeeUpdate(SQLModel):
-    first_name: Optional[str] = Field(default=None, min_length=1)
-    last_name: Optional[str] = Field(default=None, min_length=1)
-    username: Optional[str] = Field(default=None, min_length=1)
-    status: Optional[StatusEnum] = None
-    role_id: Optional[int] = None
-    store_id: Optional[int] = None
+    first_name: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        description="Nombre del empleado."
+    )
+    last_name: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        description="Apellidos del empleado."
+    )
+    username: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        description="Nombre de usuario único del empleado."
+    )
+    status: Optional[StatusEnum] = Field(
+        default=None,
+        description="Estado del empleado (Active / Inactive)."
+    )
+    role_id: Optional[int] = Field(
+        default=None,
+        description="ID del rol del empleado."
+    )
+    store_id: Optional[int] = Field(
+        default=None,
+        description="ID de la tienda asignada."
+    )
     hashed_password: Optional[str] = Field(
         default=None,
         min_length=1,
-        description="Hash ya preparado. No se calcula ni valida en este CRUD.",
+        description="Hash de contraseña ya preparado. El CRUD no lo calcula.",
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "first_name": "María",
+                "status": "Inactive",
+                "role_id": 2
+            }
+        }
     )
 
 
@@ -71,8 +116,8 @@ class Employee(TimestampMixin, EmployeeBase, table=True):
 # Schema de salida para todas las respuestas de la API.
 # No expone hashed_password.
 class EmployeeResponse(EmployeeBase):
-    id_employee: int
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    role: Optional[RoleBase] = None
-    store: Optional[StoreBase] = None
+    id_employee: int = Field(description="ID único del empleado.")
+    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
+    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")
+    role: Optional[RoleBase] = Field(default=None, description="Información detallada del rol.")
+    store: Optional[StoreBase] = Field(default=None, description="Información detallada de la tienda.")

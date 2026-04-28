@@ -61,4 +61,4 @@ def test_read_product_by_id_api_not_found(client: TestClient):
     response = client.get("/api/products/999999")
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "Product not found"
+    assert response.json()["detail"] == "Producto no encontrado."

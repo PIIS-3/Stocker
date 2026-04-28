@@ -1,5 +1,6 @@
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
@@ -21,6 +22,16 @@ class CategoryBase(SQLModel):
     )
     status: StatusEnum = Field(
         default=StatusEnum.Active, description="Estado operativo (Active / Inactive)."
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "category_name": "Electrónica de Consumo",
+                "description": "Smartphones, tablets, ordenadores y accesorios relacionados.",
+                "status": "Active"
+            }
+        }
     )
 
 
@@ -45,6 +56,16 @@ class CategoryUpdate(SQLModel):
         default=None, description="Nuevo estado operativo."
     )
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "category_name": "Línea Blanca",
+                "description": "Grandes electrodomésticos para el hogar.",
+                "status": "Active"
+            }
+        }
+    )
+
 
 # ── Category ─────────────────────────────────────────────────────────────
 # Modelo ORM — representa la tabla 'category' en PostgreSQL.
@@ -62,6 +83,6 @@ class Category(TimestampMixin, CategoryBase, table=True):
 # Schema de salida para todas las respuestas de la API.
 # Extiende CategoryBase añadiendo id y timestamps generados por la BD.
 class CategoryResponse(CategoryBase):
-    id_category: int
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    id_category: int = Field(description="ID único de la categoría.")
+    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
+    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")

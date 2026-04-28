@@ -1,5 +1,6 @@
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field, Relationship
 
 from .enums import StatusEnum
@@ -19,6 +20,16 @@ class StoreBase(SQLModel):
     address: str = Field(min_length=1, description="Dirección física completa.")
     status: StatusEnum = Field(
         default=StatusEnum.Active, description="Estado operativo (Active / Inactive)."
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "store_name": "Stocker Central - Madrid",
+                "address": "Calle de la Gran Vía, 28, 28013 Madrid, España",
+                "status": "Active"
+            }
+        }
     )
 
 
@@ -42,6 +53,16 @@ class StoreUpdate(SQLModel):
     )
     status: Optional[StatusEnum] = Field(default=None, description="Nuevo estado operativo.")
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "store_name": "Stocker Express - Chamberí",
+                "address": "Calle de Fuencarral, 120, 28010 Madrid",
+                "status": "Inactive"
+            }
+        }
+    )
+
 
 # ── Store ────────────────────────────────────────────────────────────
 # Modelo ORM — representa la tabla 'store' en PostgreSQL.
@@ -59,7 +80,7 @@ class Store(TimestampMixin, StoreBase, table=True):
 # Schema de salida para todas las respuestas de la API.
 # Extiende StoreBase añadiendo id y timestamps generados por la BD.
 class StoreResponse(StoreBase):
-    id_store: int
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    id_store: int = Field(description="ID único de la tienda.")
+    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
+    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")
 
