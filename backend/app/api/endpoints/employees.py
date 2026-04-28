@@ -6,7 +6,7 @@ from sqlmodel import Session
 from ... import models
 from ...crud import employees as crud_employees
 from ...database import get_db
-from ..deps import get_current_employee
+from ..deps import get_current_employee, get_current_admin
 
 router = APIRouter(tags=["Empleados"], dependencies=[Depends(get_current_employee)])
 
@@ -76,6 +76,7 @@ def read_employee(employee_id: int, db: Session = Depends(get_db)):
     responses=_409,
     summary="Dar de alta empleado",
     description="Registra un nuevo empleado en el sistema asociado a un rol y una tienda.",
+    dependencies=[Depends(get_current_admin)],
 )
 def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(get_db)):
     if crud_employees.get_employee_by_username(db, username=employee_in.username):
@@ -96,6 +97,7 @@ def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(ge
     description=(
         "Modifica parcialmente los datos de un empleado. Solo actualiza los campos enviados."
     ),
+    dependencies=[Depends(get_current_admin)],
 )
 def update_employee(
     employee_id: int,
@@ -124,6 +126,7 @@ def update_employee(
     responses=_404,
     summary="Eliminar empleado",
     description="Borra definitivamente el registro de un empleado mediante su ID.",
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     deleted = crud_employees.delete_employee(db, employee_id=employee_id)
