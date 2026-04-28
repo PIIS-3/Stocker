@@ -5,7 +5,7 @@ from typing import List
 from ... import models
 from ...crud import categories as crud_categories
 from ...database import get_db
-from ..deps import get_current_employee
+from ..deps import get_current_employee, get_current_admin
 
 router = APIRouter(tags=["Categorías"], dependencies=[Depends(get_current_employee)])
 
@@ -84,6 +84,7 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
     responses=_409,
     summary="Crear nueva categoría",
     description="Registra una nueva categoría en el catálogo. El nombre debe ser único.",
+    dependencies=[Depends(get_current_admin)],
 )
 def create_category(category_in: models.CategoryCreate, db: Session = Depends(get_db)):
     if crud_categories.get_category_by_name(db, category_name=category_in.category_name):
@@ -105,6 +106,7 @@ def create_category(category_in: models.CategoryCreate, db: Session = Depends(ge
         "Permite modificar parcialmente los datos de una categoría. "
         "Solo se actualizarán los campos que se incluyan en el cuerpo de la petición."
     ),
+    dependencies=[Depends(get_current_admin)],
 )
 def update_category(
     category_id: int,
@@ -139,6 +141,7 @@ def update_category(
         "Borra una categoría del sistema utilizando su ID. "
         "No se recomienda borrar categorías que ya tengan productos asociados."
     ),
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_category(category_id: int, db: Session = Depends(get_db)):
     deleted = crud_categories.delete_category(db, category_id=category_id)
