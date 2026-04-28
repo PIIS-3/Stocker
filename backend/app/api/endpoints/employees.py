@@ -6,6 +6,7 @@ from sqlmodel import Session
 from ... import models
 from ...crud import employees as crud_employees
 from ...database import get_db
+from ..deps import get_current_employee, get_current_admin
 
 router = APIRouter(tags=["Empleados"])
 
@@ -23,6 +24,7 @@ _409 = {409: {"description": "Ya existe un empleado con ese username."}}
     description=(
         "Devuelve la lista completa de empleados con soporte para paginación (skip/limit)."
     ),
+    dependencies=[Depends(get_current_employee)],
 )
 def read_employees(
     skip: int = 0,
@@ -40,6 +42,7 @@ def read_employees(
     responses=_404,
     summary="Obtener empleado por username",
     description="Busca un empleado específico utilizando su nombre de usuario único.",
+    dependencies=[Depends(get_current_employee)],
 )
 def read_employee_by_name(name: str, db: Session = Depends(get_db)):
     db_employee = crud_employees.get_employee_by_username(db, username=name)
@@ -58,6 +61,7 @@ def read_employee_by_name(name: str, db: Session = Depends(get_db)):
     description=(
         "Recupera el detalle de un empleado a través de su identificador numérico único."
     ),
+    dependencies=[Depends(get_current_employee)],
 )
 def read_employee(employee_id: int, db: Session = Depends(get_db)):
     db_employee = crud_employees.get_employee_by_id(db, employee_id=employee_id)
@@ -75,6 +79,7 @@ def read_employee(employee_id: int, db: Session = Depends(get_db)):
     responses=_409,
     summary="Dar de alta empleado",
     description="Registra un nuevo empleado en el sistema asociado a un rol y una tienda.",
+    dependencies=[Depends(get_current_admin)],
 )
 def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(get_db)):
     if crud_employees.get_employee_by_username(db, username=employee_in.username):
@@ -95,6 +100,7 @@ def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(ge
     description=(
         "Modifica parcialmente los datos de un empleado. Solo actualiza los campos enviados."
     ),
+    dependencies=[Depends(get_current_admin)],
 )
 def update_employee(
     employee_id: int,
@@ -123,10 +129,10 @@ def update_employee(
     responses=_404,
     summary="Eliminar empleado",
     description="Borra definitivamente el registro de un empleado mediante su ID.",
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     deleted = crud_employees.delete_employee(db, employee_id=employee_id)
     if deleted is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Empleado no encontrado.")
     return deleted
-

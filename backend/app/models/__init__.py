@@ -24,6 +24,9 @@ from .role import RoleBase, Role
 # ── Empleado ─────────────────────────────────────────────────────────
 from .employee import EmployeeBase, EmployeeCreate, EmployeeUpdate, Employee, EmployeeResponse
 
+# ── Auth / Token ─────────────────────────────────────────────────────
+from .token import Token, TokenData
+
 __all__ = [
     # Enums
     "StatusEnum",
@@ -55,4 +58,7 @@ __all__ = [
     "EmployeeUpdate",
     "Employee",
     "EmployeeResponse",
+    # Token
+    "Token",
+    "TokenData",
 ]

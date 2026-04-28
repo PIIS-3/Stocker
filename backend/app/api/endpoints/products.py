@@ -5,6 +5,7 @@ from typing import List
 from ... import models
 from ...crud import products as crud_products
 from ...database import get_db
+from ..deps import get_current_employee
 
 router = APIRouter(tags=["Productos"])
 
@@ -17,10 +18,10 @@ _404 = {404: {"description": "Producto no encontrado."}}
     response_model=List[models.ProductTemplateResponse],
     summary="Listar productos",
     description="Obtiene la lista completa de plantillas de producto con soporte para paginación.",
+    dependencies=[Depends(get_current_employee)],
 )
 def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    products = crud_products.get_products(db, skip=skip, limit=limit)
-    return products
+    return crud_products.get_products(db, skip=skip, limit=limit)
 
 
 @router.get(
@@ -32,10 +33,10 @@ def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
         "Recupera la información detallada de una plantilla de producto mediante su "
         "identificador único."
     ),
+    dependencies=[Depends(get_current_employee)],
 )
 def read_product_by_id(product_id: int, db: Session = Depends(get_db)):
     product = crud_products.get_product_by_id(db, product_id=product_id)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return product
-

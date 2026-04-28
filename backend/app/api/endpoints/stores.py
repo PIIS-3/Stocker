@@ -6,6 +6,7 @@ from typing import List
 from ... import models
 from ...crud import stores as crud_stores
 from ...database import get_db
+from ..deps import get_current_employee, get_current_admin
 
 router = APIRouter(tags=["Tiendas"])
 
@@ -24,6 +25,7 @@ _409_DELETE = {409: {"description": "No se puede eliminar una tienda con registr
     description=(
         "Devuelve una lista paginada de todas las tiendas físicas registradas en el sistema."
     ),
+    dependencies=[Depends(get_current_employee)],
 )
 def read_stores(
     skip: int = 0,
@@ -44,6 +46,7 @@ def read_stores(
         "Busca una tienda específica utilizando su nombre exacto. "
         "Útil para búsquedas directas o validaciones."
     ),
+    dependencies=[Depends(get_current_employee)],
 )
 def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
     db_store = crud_stores.get_store_by_name(db, store_name=store_name)
@@ -65,6 +68,7 @@ def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
         "Recupera el detalle completo de una tienda utilizando su "
         "identificador único numérico."
     ),
+    dependencies=[Depends(get_current_employee)],
 )
 def read_store(store_id: int, db: Session = Depends(get_db)):
     db_store = crud_stores.get_store_by_id(db, store_id=store_id)
@@ -84,6 +88,7 @@ def read_store(store_id: int, db: Session = Depends(get_db)):
     responses=_409,
     summary="Registrar nueva tienda",
     description="Crea un nuevo registro de tienda en el sistema. El nombre debe ser único.",
+    dependencies=[Depends(get_current_admin)],
 )
 def create_store(store_in: models.StoreCreate, db: Session = Depends(get_db)):
     if crud_stores.get_store_by_name(db, store_name=store_in.store_name):
@@ -105,6 +110,7 @@ def create_store(store_in: models.StoreCreate, db: Session = Depends(get_db)):
         "Actualiza parcialmente la información de una tienda. "
         "Solo se procesan los campos incluidos en la petición."
     ),
+    dependencies=[Depends(get_current_admin)],
 )
 def update_store(
     store_id: int,
@@ -136,6 +142,7 @@ def update_store(
     responses={**_404, **_409_DELETE},
     summary="Dar de baja tienda",
     description="Elimina el registro de una tienda siempre que no tenga empleados asociados.",
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_store(store_id: int, db: Session = Depends(get_db)):
     try:
@@ -152,6 +159,3 @@ def delete_store(store_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
         )
     return deleted
-
-
-
