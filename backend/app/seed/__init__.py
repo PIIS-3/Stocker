@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from ..database import engine
 from ._base import SeedReport
+from .roles import seed_roles
 from .categories import seed_categories
 from .stores import seed_stores
 from .products import seed_products
@@ -20,6 +21,9 @@ def run_seed() -> None:
 
     with Session(engine) as session:
         try:
+            # 0. Roles (necesarios para empleados)
+            seed_roles(session, report)
+
             # 1. Categorías (necesarias para productos)
             categories_map = seed_categories(session, report)
 
