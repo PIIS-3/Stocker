@@ -12,7 +12,9 @@ router = APIRouter(tags=["Tiendas"])
 # Respuestas comunes documentadas en Swagger para todos los endpoints.
 _404 = {404: {"description": "Tienda no encontrada."}}
 _409 = {409: {"description": "Ya existe una tienda con ese nombre."}}
-_409_DELETE = {409: {"description": "No se puede eliminar una tienda con registros asociados."}}
+_409_DELETE = {
+    409: {"description": "No se puede eliminar una tienda con registros asociados."}
+}
 
 
 # ── GET /stores/ ─────────────────────────────────────────────────────
@@ -21,7 +23,10 @@ _409_DELETE = {409: {"description": "No se puede eliminar una tienda con registr
     "/",
     response_model=List[models.StoreResponse],
     summary="Listar todas las tiendas",
-    description="Devuelve una lista paginada de todas las tiendas físicas registradas en el sistema.",
+    description=(
+        "Devuelve una lista paginada de todas las tiendas físicas "
+        "registradas en el sistema."
+    ),
 )
 def read_stores(
     skip: int = 0,
@@ -38,7 +43,10 @@ def read_stores(
     response_model=models.StoreResponse,
     responses=_404,
     summary="Obtener tienda por nombre",
-    description="Busca una tienda específica utilizando su nombre exacto. Útil para búsquedas directas o validaciones.",
+    description=(
+        "Busca una tienda específica utilizando su nombre exacto. "
+        "Útil para búsquedas directas o validaciones."
+    ),
 )
 def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
     db_store = crud_stores.get_store_by_name(db, store_name=store_name)
@@ -56,7 +64,10 @@ def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
     response_model=models.StoreResponse,
     responses=_404,
     summary="Obtener tienda por ID",
-    description="Recupera el detalle completo de una tienda utilizando su identificador único numérico.",
+    description=(
+        "Recupera el detalle completo de una tienda utilizando su "
+        "identificador único numérico."
+    ),
 )
 def read_store(store_id: int, db: Session = Depends(get_db)):
     db_store = crud_stores.get_store_by_id(db, store_id=store_id)
@@ -93,7 +104,10 @@ def create_store(store_in: models.StoreCreate, db: Session = Depends(get_db)):
     response_model=models.StoreResponse,
     responses={**_404, **_409},
     summary="Actualizar datos de tienda",
-    description="Actualiza parcialmente la información de una tienda. Solo se procesan los campos incluidos en la petición.",
+    description=(
+        "Actualiza parcialmente la información de una tienda. "
+        "Solo se procesan los campos incluidos en la petición."
+    ),
 )
 def update_store(
     store_id: int,

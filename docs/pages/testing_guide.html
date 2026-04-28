@@ -49,9 +49,9 @@
                 <li><strong>Build Docker:</strong> Construye la imagen Docker del backend para verificar que el <code>Dockerfile</code> es correcto y que el contenedor arranca sin errores. No sube la imagen al registro (solo valida).</li>
             </ol>
             <p><strong>Cómo ejecutar los tests manualmente:</strong></p>
-            <pre><code>cd backend
-export PYTHONPATH=$PYTHONPATH:$(pwd)
-pytest tests</code></pre>
+            <pre><code>make test</code></pre>
+            <p>O desde la carpeta backend:</p>
+            <pre><code>python -m pytest tests</code></pre>
         </div>
 
         <div class="test-box">
@@ -105,8 +105,24 @@ npm run format:check      # Verificar que el formato es correcto</code></pre>
             <table class="cmd-table">
                 <tr><th>Comando</th><th>Descripción</th></tr>
                 <tr>
+                    <td><code>make test</code></td>
+                    <td>**Global:** Ejecuta todos los tests (Backend + Frontend).</td>
+                </tr>
+                <tr>
+                    <td><code>make test-backend</code></td>
+                    <td>Ejecuta solo los tests del backend (pytest).</td>
+                </tr>
+                <tr>
+                    <td><code>make test-frontend</code></td>
+                    <td>Ejecuta solo los tests del frontend (Vitest).</td>
+                </tr>
+                <tr>
+                    <td><code>make lint</code></td>
+                    <td>**Global:** Ejecuta todos los linters (EditorConfig, ESLint, Prettier).</td>
+                </tr>
+                <tr>
                     <td><code>pytest tests/</code></td>
-                    <td>Ejecuta todos los tests.</td>
+                    <td>Ejecuta tests del backend (dentro de carpeta backend).</td>
                 </tr>
                 <tr>
                     <td><code>pytest tests/ -v</code></td>

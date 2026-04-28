@@ -88,7 +88,10 @@ def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(ge
     response_model=models.EmployeeResponse,
     responses={**_404, **_409},
     summary="Actualizar empleado",
-    description="Modifica parcialmente los datos de un empleado. Solo actualiza los campos enviados.",
+    description=(
+        "Modifica parcialmente los datos de un empleado. "
+        "Solo actualiza los campos enviados."
+    ),
 )
 def update_employee(
     employee_id: int,

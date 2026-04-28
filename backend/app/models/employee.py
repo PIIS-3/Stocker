@@ -118,6 +118,12 @@ class Employee(TimestampMixin, EmployeeBase, table=True):
 class EmployeeResponse(EmployeeBase):
     id_employee: int = Field(description="ID único del empleado.")
     created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")
-    role: Optional[RoleBase] = Field(default=None, description="Información detallada del rol.")
-    store: Optional[StoreBase] = Field(default=None, description="Información detallada de la tienda.")
+    updated_at: Optional[datetime] = Field(
+        default=None, description="Fecha de última actualización."
+    )
+    role: Optional[RoleBase] = Field(
+        default=None, description="Información detallada del rol."
+    )
+    store: Optional[StoreBase] = Field(
+        default=None, description="Información detallada de la tienda."
+    )
