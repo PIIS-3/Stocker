@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from jose import JWTError, jwt
 from sqlmodel import SQLModel, create_engine, Session, StaticPool
 
-from app.api.deps import get_current_employee, oauth2_scheme
+from app.api.deps import get_current_employee, get_current_admin, oauth2_scheme
 from app.core.config import settings
 from app.core.security import get_password_hash
 from app.database import get_db
@@ -86,6 +86,7 @@ def client_fixture(session: Session):
 
     app.dependency_overrides[get_db] = get_db_override
     app.dependency_overrides[get_current_employee] = _validate_token_no_db
+    app.dependency_overrides[get_current_admin] = _validate_token_no_db
 
     # Entidades necesarias como soporte para el empleado de auth (FKs)
     role = models.Role(role_name=RoleEnum.SuperAdmin)
