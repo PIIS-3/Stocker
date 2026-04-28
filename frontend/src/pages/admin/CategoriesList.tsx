@@ -67,7 +67,8 @@ export default function CategoriesList() {
   };
 
   useEffect(() => {
-    loadCategories();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadCategories();
   }, []);
 
   useEffect(() => {
@@ -161,8 +162,14 @@ export default function CategoriesList() {
               {PAGE_SIZE_OPTIONS.map((size) => <option key={size} value={size}>{size}</option>)}
             </select>
           </div>
-          <Button variant="ghost" size="sm" onClick={loadCategories}>Actualizar</Button>
+          <Button variant="ghost" size="sm" onClick={() => void loadCategories()}>Actualizar</Button>
         </div>
+
+        {errorMessage && (
+          <div className="mx-3 mt-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: `${selectedPageSize * (TABLE_ROW_HEIGHT + 1) + TABLE_HEADER_HEIGHT + 1}px` }}>
           <table className="w-full min-w-[760px] text-left border-collapse">
@@ -216,7 +223,7 @@ export default function CategoriesList() {
           <p className="text-sm text-gray-600 text-center">Eliminarás "<span className="font-bold text-gray-900">{categoryToDelete?.category_name}</span>".</p>
           <div className="flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setCategoryToDelete(null)}>Cancelar</Button>
-            <Button variant="danger" icon={<Trash2 size={16} />} onClick={confirmDeleteCategory}>Eliminar</Button>
+            <Button variant="danger" icon={<Trash2 size={16} />} onClick={() => void confirmDeleteCategory()}>Eliminar</Button>
           </div>
         </div>
       </Modal>
@@ -230,8 +237,8 @@ export default function CategoriesList() {
         </div>
       </Modal>
 
-      <CategoryForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" onSuccess={handleCategorySuccess} />
-      <CategoryForm isOpen={isEditOpen} onClose={() => { setIsEditOpen(false); setSelectedCategory(null); }} mode="edit" initialData={selectedCategory} onSuccess={handleCategorySuccess} />
+      <CategoryForm key={`create-${isCreateOpen ? 'open' : 'closed'}`} isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" onSuccess={handleCategorySuccess} />
+      <CategoryForm key={`edit-${isEditOpen ? (selectedCategory?.id_category ?? 'none') : 'closed'}`} isOpen={isEditOpen} onClose={() => { setIsEditOpen(false); setSelectedCategory(null); }} mode="edit" initialData={selectedCategory} onSuccess={handleCategorySuccess} />
     </div>
   );
 }

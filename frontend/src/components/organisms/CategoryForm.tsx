@@ -1,5 +1,5 @@
 import { Save, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '../atoms/Button';
 import { Modal } from '../molecules/Modal';
 import { categoriesService } from '../../services/categories.service';
@@ -49,14 +49,9 @@ export function CategoryForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      setFormData(createInitialFormData());
-      setError(null);
-    }
-  }, [isOpen, initialData, mode]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { id, value } = e.target;
     const name = id.replace('category-', '');
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -79,8 +74,19 @@ export function CategoryForm({
 
       onSuccess?.(action, savedCategory);
       onClose();
-    } catch (err: any) {
-      const message = err.response?.data?.detail || 'Ocurrió un error al guardar la categoría.';
+    } catch (err: unknown) {
+      const message = (() => {
+        const detail =
+          typeof err === 'object' && err !== null && 'response' in err
+            ? (err as { response?: { data?: { detail?: unknown } } }).response?.data?.detail
+            : undefined;
+
+        if (typeof detail === 'string') {
+          return detail;
+        }
+        return 'Ocurrió un error al guardar la categoría.';
+      })();
+
       setError(message);
       onError?.(message);
     } finally {
