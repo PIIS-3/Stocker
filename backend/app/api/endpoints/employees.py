@@ -6,8 +6,9 @@ from sqlmodel import Session
 from ... import models
 from ...crud import employees as crud_employees
 from ...database import get_db
+from ..deps import get_current_employee
 
-router = APIRouter(tags=["Empleados"])
+router = APIRouter(tags=["Empleados"], dependencies=[Depends(get_current_employee)])
 
 # Respuestas comunes documentadas en Swagger.
 _404 = {404: {"description": "Empleado no encontrado."}}

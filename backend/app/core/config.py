@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     POSTGRES_PORT: str = "5432"
     POSTGRES_DB: str = "stocker"
 
+    # JWT — sobreescribir SECRET_KEY en producción vía variable de entorno
+    SECRET_KEY: str = "changeme-set-a-real-secret-in-env"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
     @property
     def DATABASE_URL(self) -> str:
         user_pass = f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
