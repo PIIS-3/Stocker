@@ -34,6 +34,16 @@ CATEGORIES_SEED: List[Dict[str, Any]] = [
         "description": "Productos de higiene y limpieza industrial",
         "status": models.StatusEnum.Active,
     },
+    {
+        "category_name": "Mobiliario",
+        "description": "Muebles de oficina, estanterías y sistemas de almacenaje",
+        "status": models.StatusEnum.Active,
+    },
+    {
+        "category_name": "Consumibles",
+        "description": "Artículos consumibles diversos: tóner, tinta, bolsas y más",
+        "status": models.StatusEnum.Active,
+    },
 ]
 
 

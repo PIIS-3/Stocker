@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Metadatos de la API
@@ -22,9 +22,7 @@ class Settings(BaseSettings):
         server_port = f"{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}"
         return f"postgresql://{user_pass}@{server_port}/{self.POSTGRES_DB}"
 
-    class Config:
-        # Esto le dice a Pydantic que busque el archivo .env en la raíz
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
 
 # Instanciamos para que otros archivos puedan importar 'settings'
 settings = Settings()

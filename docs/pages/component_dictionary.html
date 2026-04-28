@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Diccionario de Componentes</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .component-section { margin-bottom: 3rem; }
+        .component-section h2 { border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        .comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .comp-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.2rem;
+            transition: border-color 0.2s;
+        }
+        .comp-card:hover { border-color: #3b82f6; }
+        .comp-name { font-weight: 700; color: #1e293b; font-family: monospace; display: block; margin-bottom: 0.4rem; }
+        .comp-desc { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+        .comp-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            float: right;
+        }
+        .tag-atom { background: #dbeafe; color: #1e40af; }
+        .tag-molecule { background: #d1fae5; color: #065f46; }
+        .tag-organism { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>📖 Diccionario de Componentes</h1>
+        <p>Catálogo de piezas visuales listas para usar en el proyecto Stocker.</p>
+    </header>
+
+    <div class="component-section">
+        <h2>⚛️ Átomos</h2>
+        <div class="comp-grid">
+            <div class="comp-card">
+                <span class="comp-tag tag-atom">Atom</span>
+                <span class="comp-name">Button</span>
+                <p class="comp-desc">Botón principal del sistema. Soporta variantes: primary, secondary, outline, ghost y ghost-destructive.</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-atom">Atom</span>
+                <span class="comp-name">Logo</span>
+                <p class="comp-desc">El identificador visual del proyecto. Soporta modo oscuro y diferentes tamaños.</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-atom">Atom</span>
+                <span class="comp-name">StatusBadge</span>
+                <p class="comp-desc">Etiqueta visual para estados (Activo/Inactivo) con colores semánticos.</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-atom">Atom</span>
+                <span class="comp-name">SoundToggle</span>
+                <p class="comp-desc">Botón para habilitar/deshabilitar sonidos. Gestiona el desbloqueo de audio.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="component-section">
+        <h2>🧪 Moléculas</h2>
+        <div class="comp-grid">
+            <div class="comp-card">
+                <span class="comp-tag tag-molecule">Molecule</span>
+                <span class="comp-name">Modal</span>
+                <p class="comp-desc">Contenedor superpuesto para formularios o detalles. Incluye overlay y cierre.</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-molecule">Molecule</span>
+                <span class="comp-name">StatCard</span>
+                <p class="comp-desc">Tarjeta para mostrar indicadores numéricos en el dashboard (ej. total de productos).</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-molecule">Molecule</span>
+                <span class="comp-name">ToastNotification</span>
+                <p class="comp-desc">Alerta flotante con feedback visual y sonoro.</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-molecule">Molecule</span>
+                <span class="comp-name">SearchInput</span>
+                <p class="comp-desc">Input con icono de búsqueda integrado.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="component-section">
+        <h2>🦠 Organismos</h2>
+        <div class="comp-grid">
+            <div class="comp-card">
+                <span class="comp-tag tag-organism">Organism</span>
+                <span class="comp-name">StoreForm</span>
+                <p class="comp-desc">Organismo complejo que gestiona el formulario de tiendas (creación/edición).</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-organism">Organism</span>
+                <span class="comp-name">Sidebar</span>
+                <p class="comp-desc">Menú lateral de navegación administrativa con enlaces y logo.</p>
+            </div>
+            <div class="comp-card">
+                <span class="comp-tag tag-organism">Organism</span>
+                <span class="comp-name">AdminHeader</span>
+                <p class="comp-desc">Cabecera del panel que muestra el perfil y el buscador global.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

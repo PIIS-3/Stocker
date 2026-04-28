@@ -10,7 +10,7 @@ from .enums import StatusEnum, RoleEnum
 from .mixins import TimestampMixin
 
 # ── Categoría ────────────────────────────────────────────────────────
-from .category import CategoryBase, Category
+from .category import CategoryBase, CategoryCreate, CategoryUpdate, Category, CategoryResponse
 
 # ── Producto ─────────────────────────────────────────────────────────
 from .product import ProductTemplateBase, ProductTemplate, ProductTemplateResponse
@@ -22,7 +22,7 @@ from .store import StoreBase, StoreCreate, StoreUpdate, Store, StoreResponse
 from .role import RoleBase, Role
 
 # ── Empleado ─────────────────────────────────────────────────────────
-from .employee import EmployeeBase, EmployeeCreate, Employee, EmployeeResponse
+from .employee import EmployeeBase, EmployeeCreate, EmployeeUpdate, Employee, EmployeeResponse
 
 __all__ = [
     # Enums
@@ -32,7 +32,10 @@ __all__ = [
     "TimestampMixin",
     # Categoría
     "CategoryBase",
+    "CategoryCreate",
+    "CategoryUpdate",
     "Category",
+    "CategoryResponse",
     # Producto
     "ProductTemplateBase",
     "ProductTemplate",
@@ -49,6 +52,7 @@ __all__ = [
     # Empleado
     "EmployeeBase",
     "EmployeeCreate",
+    "EmployeeUpdate",
     "Employee",
     "EmployeeResponse",
 ]

@@ -114,10 +114,11 @@
 <span class="folder">frontend/</span>
 ├── <span class="folder">src/</span>
 │   ├── <span class="folder">assets/</span>         <span class="comment"># Imágenes estáticas y logo base</span>
-│   ├── <span class="folder">components/</span>     <span class="comment"># Componentes reusables (Layouts globales, Navbar, Footer, Sidebar)</span>
+│   ├── <span class="folder">components/</span>     <span class="comment"># Componentes Atómicos (atoms, molecules, organisms, templates)</span>
 │   ├── <span class="folder">pages/</span>          <span class="comment"># Vistas completas a las que el usuario accede vía URL ('Home', 'Login', 'Dashboard')</span>
 │   ├── <span class="folder">services/</span>       <span class="comment"># Lógica de llamadas a la API (api.ts base y servicios CRUD puntuales)</span>
 │   ├── <span class="folder">hooks/</span>          <span class="comment"># Hooks custom de React (estado y lógica compleja reutilizable)</span>
+│   ├── <span class="folder">utils/</span>          <span class="comment"># Funciones de utilidad pura (audio.ts, formateadores, validadores)</span>
 │   ├── App.tsx         <span class="comment"># Componente Orquestador de URLs (React Router) inyecta layouts</span>
 │   ├── index.css       <span class="comment"># Inyección de instrucciones de TailwindCSS a todo el proyecto</span>
 │   └── main.tsx        <span class="comment"># Punto de arranque donde React se inserta en el div '#root'</span>

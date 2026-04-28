@@ -72,6 +72,50 @@
             <li>Se les añadirá al instante a la lista de "Reviewers" sin que tú tengas que agregarlos a mano.</li>
             <li>Cualquiera de los 4 puede aprobar (Approve) el Pull Request, permitiendo al autor fusionar el botón "Merge to main".</li>
         </ul>
+    <div class="section-card">
+        <h2>4. Checklist Obligatorio Pre-PR</h2>
+        <p>Para evitar que el CI de GitHub bloquee tu trabajo, ejecuta siempre este comando unificado desde la raíz del proyecto antes de hacer <code>git push</code>.</p>
+
+        <div class="step-card" style="background: #0f172a; color: #f8fafc; border: none;">
+            <h3 style="color: #38bdf8;">🚀 El Comando Maestro</h3>
+            <p>Ejecuta esto y relájate. El sistema se encargará de validar todo por ti:</p>
+            <pre><code style="color: #fbbf24;">make pr-check</code></pre>
+        </div>
+
+        <h3>¿Qué hace este comando internamente?</h3>
+        <ul>
+            <li><strong>Validación Global:</strong> Revisa el EditorConfig (espacios, finales de línea).</li>
+            <li><strong>Frontend:</strong> Ejecuta Prettier (formato), ESLint (errores) y Vitest (pruebas).</li>
+            <li><strong>Backend:</strong> Ejecuta Pytest con la configuración correcta de PYTHONPATH.</li>
+        </ul>
+
+        <div class="alert alert-info" style="margin-top: 1.5rem;">
+            <strong>Nota:</strong> Si alguno de los pasos falla, el comando se detendrá. Debes corregir el error y volver a ejecutarlo hasta que veas el mensaje: <em>"✅ ¡Todo listo para el Pull Request!"</em>.
+        </div>
+
+        <h3>Comandos específicos de soporte</h3>
+        <div class="step-card">
+            <h3>🛡️ Validación Global (Linting)</h3>
+            <p>Verifica EditorConfig, ESLint del frontend y formato de Prettier en un solo paso:</p>
+            <pre><code>make lint</code></pre>
+        </div>
+
+        <div class="step-card">
+            <h3>🧪 Ejecución de Tests Individuales</h3>
+            <p>Ejecuta todas las pruebas del proyecto (Backend y Frontend):</p>
+            <pre><code>make test</code></pre>
+            <p>O por separado si estás trabajando en una sola parte:</p>
+            <ul>
+                <li><code>make test-backend</code> — Solo Python/FastAPI.</li>
+                <li><code>make test-frontend</code> — Solo React/Vitest.</li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <h3>✨ Formateo Automático</h3>
+            <p>Si el linter falla por reglas de estilo, aplica el formato automáticamente:</p>
+            <pre><code>make format-frontend</code></pre>
+        </div>
     </div>
 
 </div>

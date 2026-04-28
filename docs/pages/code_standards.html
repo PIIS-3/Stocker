@@ -119,6 +119,11 @@
                     <td><span class="badge badge-warn">warn</span></td>
                     <td>Obliga a usar <code>import type</code> para interfaces y tipos de TypeScript. Permite a Vite eliminarlos completamente al compilar, reduciendo el bundle final.</td>
                 </tr>
+                <tr>
+                    <td><code>no-cascading-renders</code></td>
+                    <td><span class="badge badge-err">error</span></td>
+                    <td>Evita llamar a <code>setState</code> de forma síncrona dentro de un <code>useEffect</code>. Inicializa el estado directamente en <code>useState(() => ...)</code> para mejorar el rendimiento.</td>
+                </tr>
             </table>
             <p style="margin-top: 0.75rem;"><strong>Workflow que lo verifica:</strong> <code>lint-frontend.yml</code> → ejecuta <code>npm run lint</code>.</p>
         </div>

@@ -57,6 +57,9 @@
     <header>
         <h1>📚 Hub de Documentación</h1>
         <p>Centro de conocimiento oficial del proyecto Stocker. Diseñado para ser leído de arriba a abajo por nuevos miembros del equipo.</p>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 1rem; border-radius: 8px; margin-top: 1rem; font-size: 0.9rem;">
+            ✨ <strong>Nueva Documentación Interactiva:</strong> Hemos mejorado la API con metadatos profesionales y ejemplos reales. Consúltala en <code>/docs</code> de tu servidor local.
+        </div>
     </header>
 
     <h2>🚀 1. Primeros Pasos y Operaciones</h2>
@@ -100,10 +103,30 @@
             <div class="hub-title">Estructura de Carpetas</div>
             <div class="hub-desc">Mapa del árbol completo del repositorio y explicaciones sobre qué rol cumple cada librería clave del ecosistema.</div>
         </a>
-        <a href="pages/crud_guide.html" class="hub-card secondary">
-            <div class="hub-icon">🛠️</div>
-            <div class="hub-title">Guía de Desarrollo CRUD</div>
-            <div class="hub-desc">Tutorial paso a paso y Prompts para IA construyendo un módulo completo desde la BD hasta React.</div>
+        <a href="pages/audio_guide.html" class="hub-card secondary">
+            <div class="hub-icon">🔊</div>
+            <div class="hub-title">Audio y Notificaciones</div>
+            <div class="hub-desc">Gestión de sonidos, desbloqueo de audio en navegadores y preferencias globales del usuario.</div>
+        </a>
+        <a href="pages/backend_crud_guide.html" class="hub-card secondary">
+            <div class="hub-icon">⚙️</div>
+            <div class="hub-title">CRUD Backend (API)</div>
+            <div class="hub-desc">Tutorial paso a paso y Prompts para IA construyendo modelos, esquemas y endpoints en FastAPI.</div>
+        </a>
+        <a href="pages/frontend_crud_guide.html" class="hub-card secondary">
+            <div class="hub-icon">⚛️</div>
+            <div class="hub-title">CRUD Frontend (React)</div>
+            <div class="hub-desc">Implementación detallada de servicios, formularios y listados siguiendo el Diseño Atómico.</div>
+        </a>
+        <a href="pages/atomic_design_guide.html" class="hub-card secondary">
+            <div class="hub-icon">⚛️</div>
+            <div class="hub-title">Metodología Atómica</div>
+            <div class="hub-desc">Explicación sobre cómo escalamos la UI usando Átomos, Moléculas y Organismos de forma consistente.</div>
+        </a>
+        <a href="pages/component_dictionary.html" class="hub-card secondary">
+            <div class="hub-icon">📖</div>
+            <div class="hub-title">Diccionario de Componentes</div>
+            <div class="hub-desc">Catálogo de piezas visuales listas para usar, desde botones hasta formularios complejos.</div>
         </a>
     </div>
 
@@ -129,6 +152,11 @@
             <div class="hub-title">Reporte QA Manual</div>
             <div class="hub-desc">Resultado de pruebas manuales de rutas, validación de payload de productos y revisión mobile.</div>
         </a>
+    </div>
+
+    <div class="alert alert-info" style="margin-top: 3rem; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 1.5rem; border-radius: 12px;">
+        <h3 style="margin-top: 0;">🛡️ Antes de cada Pull Request</h3>
+        <p>Asegúrate de ejecutar los linters, formateadores y tests locales para evitar fallos en el CI. Tienes la lista completa de comandos en la <a href="pages/workflow_guide.html" style="font-weight: 700; color: #1d4ed8;">Guía de Workflow</a>.</p>
     </div>
 
     <footer style="margin-top: 4rem; text-align: center; color: #94a3b8; font-size: 0.85rem;">

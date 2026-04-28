@@ -18,9 +18,7 @@ def get_categories(db: Session, skip: int = 0, limit: int = 100) -> list[models.
         skip:  Registros a saltar (offset). Ej: página 2 con limit=10 → skip=10.
         limit: Máximo de registros a devolver.
     """
-    return db.exec(
-        select(models.Category).order_by(models.Category.id_category).offset(skip).limit(limit)
-    ).all()
+    return db.exec(select(models.Category).offset(skip).limit(limit)).all()
 
 
 def get_category_by_id(db: Session, category_id: int) -> models.Category | None:
@@ -35,7 +33,7 @@ def get_category_by_name(db: Session, category_name: str) -> models.Category | N
 
     Se usa para dos propósitos:
     - Validar unicidad de nombre antes de crear o actualizar.
-    - Búsqueda directa desde GET /categories/by-name/{category_name}.
+    - Búsqueda directa opcional si fuese requerida.
     """
     return db.exec(
         select(models.Category).where(models.Category.category_name == category_name)
@@ -51,8 +49,8 @@ def create_category(db: Session, category_in: models.CategoryCreate) -> models.C
     db.add(db_category)
     db.commit()
     # db.refresh sincroniza el objeto Python con la fila en BD:
-    # recoge el id_category (SERIAL), created_at y updated_at (DEFAULT NOW())
-    # que PostgreSQL asignó durante el INSERT. Category hereda estos campos
+    # recoge el id_category (SERIAL), created_at y updated_at (DEFAULT CURRENT_TIMESTAMP)
+    # que PostgreSQL/SQLite asignó durante el INSERT. Category hereda estos campos
     # de TimestampMixin — existen en el modelo, pero su valor es None
     # hasta que la BD los rellena y el refresh los trae de vuelta.
     db.refresh(db_category)

@@ -8,6 +8,11 @@ interface CategoryFormProps {
   mode?: 'create' | 'edit';
 }
 
+/**
+ * Componente: CategoryForm
+ * Formulario modal para la gestión de categorías de productos.
+ * Permite organizar el inventario en grupos lógicos.
+ */
 export function CategoryForm({ isOpen, onClose, mode = 'create' }: CategoryFormProps) {
   const isEdit = mode === 'edit';
 

@@ -5,7 +5,7 @@ __pycache__/
 venv/
 env/
 .venv/
-alembic.ini
+.pytest_cache/
 
 # Dependencias y builds de Node
 node_modules/

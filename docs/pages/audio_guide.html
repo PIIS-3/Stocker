@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Guía de Audio y Notificaciones</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .audio-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>🔊 Audio y Notificaciones</h1>
+        <p>Documentación sobre cómo funciona el sistema de sonidos, las preferencias del usuario y la gestión del desbloqueo de audio en el navegador.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>🚀 Funcionamiento General</h2>
+        <p>El sistema de audio está diseñado para cumplir con las políticas de <strong>Autoplay</strong> de los navegadores modernos, que impiden que una página emita sonidos sin una interacción previa del usuario.</p>
+
+        <div class="audio-card">
+            <h3>1. Desbloqueo de Audio</h3>
+            <p>Para que los sonidos de notificación funcionen, el usuario debe realizar una acción (clic). Hemos centralizado esto en el componente <strong>SoundToggle</strong> ubicado en el Dashboard.</p>
+            <ul>
+                <li>Al activar el sonido, se ejecuta un "cebado" silencioso usando tanto <code>HTMLAudio</code> como <code>WebAudio API</code>.</li>
+                <li>Esto marca la pestaña como "autorizada" para reproducir audio en el futuro.</li>
+            </ul>
+        </div>
+
+        <div class="audio-card" style="border-left-color: #3b82f6;">
+            <h3>2. Preferencias Globales</h3>
+            <p>La preferencia del usuario se guarda en <code>localStorage</code> bajo la clave <code>notifySoundEnabled</code>.</p>
+            <ul>
+                <li><strong>isSoundEnabled()</strong>: Consulta si el usuario quiere escuchar sonidos.</li>
+                <li><strong>setSoundEnabled(value)</strong>: Guarda la nueva preferencia.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>🛠️ Utilidades Técnicas</h2>
+        <p>Todas las funciones residen en <code>frontend/src/utils/audio.ts</code>:</p>
+        <div class="code-block">
+            <pre><code>// Reproducir un sonido desde URL (Ej: Notificaciones)
+await playSoundFromUrl('/sounds/notification-chime.mp3');
+
+// Reproducir un tono sintetizado (Fallback si el archivo falla)
+playTone('success'); // 'success' | 'error' | 'info'</code></pre>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>🔔 Notificaciones (Toasts)</h2>
+        <p>El componente <code>ToastNotification</code> integra automáticamente el sonido:</p>
+        <div class="code-block">
+            <pre><code>&lt;ToastNotification
+  variant="success"
+  title="Tienda Guardada"
+  message="Los cambios se aplicaron con éxito"
+  playSound={true}
+  soundUrl="/sounds/notification-chime.mp3"
+/&gt;</code></pre>
+        </div>
+        <p class="alert alert-info" style="margin-top:1rem;">
+            <strong>Nota:</strong> Aunque <code>playSound</code> sea true, el componente verificará internamente <code>isSoundEnabled()</code> antes de intentar reproducir nada.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

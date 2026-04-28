@@ -8,6 +8,11 @@ interface ProductFormProps {
   mode?: 'create' | 'edit';
 }
 
+/**
+ * Componente: ProductForm
+ * Formulario modal para la gestión de productos del inventario.
+ * Incluye campos para SKU, marca, precio y categoría.
+ */
 export function ProductForm({ isOpen, onClose, mode = 'create' }: ProductFormProps) {
   const isEdit = mode === 'edit';
 

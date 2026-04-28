@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Guía de Diseño Atómico</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .atomic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .atomic-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .atomic-card h3 {
+            margin-top: 0;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .atomic-card p {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        .badge-atom { border-left: 4px solid #3b82f6; }
+        .badge-molecule { border-left: 4px solid #10b981; }
+        .badge-organism { border-left: 4px solid #f59e0b; }
+        .badge-template { border-left: 4px solid #8b5cf6; }
+        .badge-page { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>⚛️ Metodología: Diseño Atómico</h1>
+        <p>Entiende cómo estructuramos nuestra interfaz para que sea modular, reutilizable y fácil de escalar.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>¿Qué es el Diseño Atómico?</h2>
+        <p>Es una metodología que divide la interfaz en componentes básicos que se combinan para formar estructuras más complejas. Esto evita duplicidad de código y garantiza consistencia visual.</p>
+
+        <div class="atomic-grid">
+            <div class="atomic-card badge-atom">
+                <h3>⚛️ Átomos</h3>
+                <p>Las piezas más pequeñas: botones, etiquetas, inputs o iconos. No funcionan solos, son los ladrillos de la UI.</p>
+            </div>
+            <div class="atomic-card badge-molecule">
+                <h3>🧪 Moléculas</h3>
+                <p>Grupos de átomos unidos. Por ejemplo, un campo de búsqueda (Input + Botón). Tienen una función específica.</p>
+            </div>
+            <div class="atomic-card badge-organism">
+                <h3>🦠 Organismos</h3>
+                <p>Secciones complejas formadas por moléculas y átomos. Ejemplo: Un Navbar o un Formulario completo.</p>
+            </div>
+            <div class="atomic-card badge-template">
+                <h3>🖼️ Templates</h3>
+                <p>Esquemas de página que definen el layout (donde va el sidebar, el header, etc.) sin contenido real.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Reglas de Oro del Proyecto</h2>
+        <ul>
+            <li><strong>Jerarquía Estricta:</strong> Un Átomo no puede contener una Molécula. Un Organismo puede contener cualquier cosa por debajo de él.</li>
+            <li><strong>Estilos Centralizados:</strong> Los átomos deben usar variables de CSS o clases de Tailwind definidas en el `tailwind.config`.</li>
+            <li><strong>Prop Drilling:</strong> Evita pasar props a través de demasiados niveles. Si un Organismo necesita datos complejos, usa Contexto o inyecta el servicio.</li>
+            <li><strong>Exportación:</strong> Cada carpeta (atoms, molecules, etc.) tiene un `index.ts` que exporta todos sus componentes para facilitar los imports.</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <h2>Ejemplo Práctico</h2>
+        <p>Imagina la página de <strong>Tiendas</strong>:</p>
+        <ol>
+            <li><strong>Átomo:</strong> El botón de "Añadir Tienda".</li>
+            <li><strong>Molécula:</strong> El `SearchInput` de la parte superior.</li>
+            <li><strong>Organismo:</strong> El `StoreForm` (Modal + Inputs + Botones).</li>
+            <li><strong>Template:</strong> El `AdminLayout` (Sidebar + Contenido principal).</li>
+            <li><strong>Página:</strong> `StoresList.tsx` que une todo y le da datos.</li>
+        </ol>
+    </div>
+</div>
+
+</body>
+</html>
