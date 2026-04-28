@@ -19,7 +19,10 @@ _409 = {409: {"description": "Ya existe una categoría con ese nombre."}}
     "/",
     response_model=List[models.CategoryResponse],
     summary="Listar categorías",
-    description="Devuelve una lista de todas las categorías de productos disponibles, con soporte para paginación.",
+    description=(
+        "Devuelve una lista de todas las categorías de productos disponibles, "
+        "con soporte para paginación."
+    ),
 )
 def read_categories(
     skip: int = 0,
@@ -36,7 +39,10 @@ def read_categories(
     response_model=models.CategoryResponse,
     responses=_404,
     summary="Obtener categoría por nombre",
-    description="Busca una categoría específica mediante su nombre exacto. Ideal para búsquedas rápidas desde el frontend.",
+    description=(
+        "Busca una categoría específica mediante su nombre exacto. "
+        "Ideal para búsquedas rápidas desde el frontend."
+    ),
 )
 def read_category_by_name(category_name: str, db: Session = Depends(get_db)):
     db_category = crud_categories.get_category_by_name(db, category_name=category_name)
@@ -54,7 +60,10 @@ def read_category_by_name(category_name: str, db: Session = Depends(get_db)):
     response_model=models.CategoryResponse,
     responses=_404,
     summary="Obtener categoría por ID",
-    description="Recupera la información completa de una categoría utilizando su identificador único numérico.",
+    description=(
+        "Recupera la información completa de una categoría utilizando "
+        "su identificador único numérico."
+    ),
 )
 def read_category(category_id: int, db: Session = Depends(get_db)):
     db_category = crud_categories.get_category_by_id(db, category_id=category_id)
@@ -91,7 +100,10 @@ def create_category(category_in: models.CategoryCreate, db: Session = Depends(ge
     response_model=models.CategoryResponse,
     responses={**_404, **_409},
     summary="Actualizar categoría",
-    description="Permite modificar parcialmente los datos de una categoría. Solo se actualizarán los campos que se incluyan en el cuerpo de la petición.",
+    description=(
+        "Permite modificar parcialmente los datos de una categoría. "
+        "Solo se actualizarán los campos que se incluyan en el cuerpo de la petición."
+    ),
 )
 def update_category(
     category_id: int,
@@ -122,7 +134,10 @@ def update_category(
     response_model=models.CategoryResponse,
     responses=_404,
     summary="Eliminar categoría",
-    description="Borra una categoría del sistema utilizando su ID. No se recomienda borrar categorías que ya tengan productos asociados.",
+    description=(
+        "Borra una categoría del sistema utilizando su ID. "
+        "No se recomienda borrar categorías que ya tengan productos asociados."
+    ),
 )
 def delete_category(category_id: int, db: Session = Depends(get_db)):
     deleted = crud_categories.delete_category(db, category_id=category_id)

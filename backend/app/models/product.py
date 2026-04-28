@@ -56,4 +56,6 @@ class ProductTemplate(TimestampMixin, ProductTemplateBase, table=True):
 class ProductTemplateResponse(ProductTemplateBase):
     id_product: int = Field(description="ID único de la plantilla de producto.")
     created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    category: Optional[CategoryBase] = Field(default=None, description="Información de la categoría asociada.")
+    category: Optional[CategoryBase] = Field(
+        default=None, description="Información de la categoría asociada."
+    )

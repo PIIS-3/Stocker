@@ -82,5 +82,7 @@ class Store(TimestampMixin, StoreBase, table=True):
 class StoreResponse(StoreBase):
     id_store: int = Field(description="ID único de la tienda.")
     created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")
+    updated_at: Optional[datetime] = Field(
+        default=None, description="Fecha de última actualización."
+    )
 

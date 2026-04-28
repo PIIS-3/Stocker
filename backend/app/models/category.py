@@ -85,4 +85,6 @@ class Category(TimestampMixin, CategoryBase, table=True):
 class CategoryResponse(CategoryBase):
     id_category: int = Field(description="ID único de la categoría.")
     created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    updated_at: Optional[datetime] = Field(default=None, description="Fecha de última actualización.")
+    updated_at: Optional[datetime] = Field(
+        default=None, description="Fecha de última actualización."
+    )

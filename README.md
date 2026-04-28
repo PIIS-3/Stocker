@@ -53,6 +53,11 @@ Ejecuta estos comandos desde la raíz del repositorio.
 | `make restart` | Reinicia todo el stack con reconstrucción de imágenes. |
 | `make seed` | Ejecuta el seeder Python idempotente del backend. |
 | `make seed-sql` | Ejecuta el seeding SQL legacy directo sobre PostgreSQL. |
+| `make test` | **Global:** Ejecuta todos los tests (Backend + Frontend). |
+| `make test-backend` | Ejecuta los tests del backend (pytest). |
+| `make test-frontend` | Ejecuta los tests del frontend (Vitest). |
+| `make lint` | **Global:** Verifica EditorConfig, ESLint y formato de Prettier. |
+| `make format-frontend` | Aplica automáticamente el formato Prettier al frontend. |
 
 ### 4. Parámetros de entorno para desarrollo
 Estos parámetros se gestionan en `docker/.env` (puedes partir desde `docker/.env.example`):

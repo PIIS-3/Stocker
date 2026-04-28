@@ -14,7 +14,12 @@ from app.crud.categories import (
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
-def _seed(session: Session, name: str, description: str = "Desc", status: StatusEnum = StatusEnum.Active) -> Category:
+def _seed(
+    session: Session,
+    name: str,
+    description: str = "Desc",
+    status: StatusEnum = StatusEnum.Active
+) -> Category:
     category = Category(category_name=name, description=description, status=status)
     session.add(category)
     session.commit()
