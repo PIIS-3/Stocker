@@ -1,7 +1,7 @@
 import { Save, X } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '../atoms';
-import { Modal } from '../molecules';
+import { Button } from '../atoms/Button';
+import { Modal } from '../molecules/Modal';
 import { storesService } from '../../services/stores.service';
 import type { StoreCreate, StoreApi } from '../../services/stores.service';
 

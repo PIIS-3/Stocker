@@ -1,6 +1,7 @@
 import { Package, Store, Users, AlertCircle } from 'lucide-react';
-import { PageHeader, StatCard } from '../../components/molecules';
-import { SoundToggle } from '../../components/atoms';
+import { PageHeader } from '../../components/molecules/PageHeader';
+import { StatCard } from '../../components/molecules/StatCard';
+import { SoundToggle } from '../../components/atoms/SoundToggle';
 
 /**
  * Componente: Dashboard

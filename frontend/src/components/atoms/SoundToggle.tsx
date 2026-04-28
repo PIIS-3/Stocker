@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Speaker, VolumeX } from 'lucide-react';
-import { Button } from '.';
+import { Button } from './Button';
 import {
   isSoundEnabled,
   setSoundEnabled,

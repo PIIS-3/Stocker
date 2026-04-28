@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import { Sidebar, AdminHeader } from '../organisms';
+import { Sidebar } from '../organisms/Sidebar';
+import { AdminHeader } from '../organisms/AdminHeader';
 
 export function AdminLayout() {
   return (

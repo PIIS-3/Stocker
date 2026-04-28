@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { LayoutDashboard, Store, Users, Tags, Box, LogOut } from 'lucide-react';
-import { Logo } from '../atoms';
-import { NavItem } from '../molecules';
+import { Logo } from '../atoms/Logo';
+import { NavItem } from '../molecules/NavItem';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },

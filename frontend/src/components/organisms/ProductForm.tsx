@@ -1,6 +1,6 @@
 import { Save, X } from 'lucide-react';
-import { Button } from '../atoms';
-import { Modal } from '../molecules';
+import { Button } from '../atoms/Button';
+import { Modal } from '../molecules/Modal';
 
 interface ProductFormProps {
   isOpen: boolean;
