@@ -1,0 +1,47 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import SQLModel, Session, Field
+
+from ...core import security
+from ...crud import employees as crud_employees
+from ...database import get_db
+from ... import models
+
+router = APIRouter(tags=["Autenticación"])
+
+_401 = {401: {"description": "Usuario o contraseña incorrectos."}}
+
+
+class LoginRequest(SQLModel):
+    username: str = Field(min_length=1, description="Nombre de usuario.")
+    password: str = Field(min_length=1, description="Contraseña en texto plano.")
+
+
+# ── POST /auth/login ─────────────────────────────────────────────────
+
+@router.post(
+    "/login",
+    response_model=models.Token,
+    responses=_401,
+    summary="Iniciar sesión",
+    description=(
+        "Autentica al empleado con username y password. "
+        "Devuelve un token JWT Bearer válido para acceder al resto de endpoints."
+    ),
+)
+def login(login_in: LoginRequest, db: Session = Depends(get_db)):
+    employee = crud_employees.get_employee_by_username(db, username=login_in.username)
+    if employee is None or not security.verify_password(login_in.password, employee.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario o contraseña incorrectos.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    role_name = str(employee.role.role_name) if employee.role else ""
+    token_data = {
+        "id_employee": employee.id_employee,
+        "username": employee.username,
+        "role": role_name,
+    }
+    access_token = security.create_access_token(data=token_data)
+    return models.Token(access_token=access_token, token_type="bearer")

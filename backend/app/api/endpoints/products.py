@@ -5,8 +5,9 @@ from typing import List
 from ... import models
 from ...crud import products as crud_products
 from ...database import get_db
+from ..deps import get_current_employee
 
-router = APIRouter(tags=["Productos"])
+router = APIRouter(tags=["Productos"], dependencies=[Depends(get_current_employee)])
 
 # Respuestas comunes documentadas en Swagger.
 _404 = {404: {"description": "Producto no encontrado."}}
