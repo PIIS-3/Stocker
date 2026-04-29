@@ -69,7 +69,7 @@ def create_product(
     db: Session,
     product_in: models.ProductTemplateCreate,
 ) -> models.ProductTemplate:
-    """Inserta una nueva plantilla de producto y devuelve el registro creado con todos sus campos."""
+    """Inserta una nueva plantilla de producto y devuelve el registro creado."""
     # model_validate convierte el schema ProductTemplateCreate al modelo ORM ProductTemplate.
     db_product = models.ProductTemplate.model_validate(product_in)
     db.add(db_product)

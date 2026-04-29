@@ -22,7 +22,7 @@ def run_seed() -> None:
     with Session(engine) as session:
         try:
             # 0. Roles (necesarios para empleados)
-            seed_roles(session, report)
+            roles_map = seed_roles(session, report)
 
             # 1. Categorías (necesarias para productos)
             categories_map = seed_categories(session, report)
@@ -34,7 +34,7 @@ def run_seed() -> None:
             seed_products(session, report, categories_map)
 
             # 4. Empleados
-            seed_employees(session, report, stores_map)
+            seed_employees(session, report, stores_map, roles_map)
 
             session.commit()
             report.print_summary()

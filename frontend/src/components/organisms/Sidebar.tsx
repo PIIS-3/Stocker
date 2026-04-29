@@ -7,7 +7,7 @@ const navItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Productos', path: '/admin/products', icon: Box },
   { name: 'Categorías', path: '/admin/categories', icon: Tags },
-  { name: 'Tiendas', path: '/admin/stores', icon: Store },
+  { name: 'Tiendas Físicas', path: '/admin/stores', icon: Store },
   { name: 'Usuarios', path: '/admin/users', icon: Users },
 ];
 

@@ -12,11 +12,11 @@ export const authService = {
       username,
       password,
     });
-    
+
     if (data.access_token) {
       localStorage.setItem('token', data.access_token);
     }
-    
+
     return data;
   },
 
@@ -28,5 +28,5 @@ export const authService = {
   /** Verifica si hay una sesión activa */
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');
-  }
+  },
 };

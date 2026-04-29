@@ -22,7 +22,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "Carlos",
         "last_name": "García López",
         "username": "carlos.garcia",
-        "role_id": 1,  # SuperAdmin
+        "role_name": models.RoleEnum.SuperAdmin,
         "store_name": "Almacén Central Madrid",
         "status": models.StatusEnum.Active,
     },
@@ -30,7 +30,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "María",
         "last_name": "López Martínez",
         "username": "maria.lopez",
-        "role_id": 2,  # Manager
+        "role_name": models.RoleEnum.Manager,
         "store_name": "Centro Distribución Barcelona",
         "status": models.StatusEnum.Active,
     },
@@ -38,7 +38,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "Juan",
         "last_name": "Martín Rodríguez",
         "username": "juan.martin",
-        "role_id": 2,  # Manager
+        "role_name": models.RoleEnum.Manager,
         "store_name": "Almacén Valencia",
         "status": models.StatusEnum.Active,
     },
@@ -46,7 +46,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "Ana",
         "last_name": "Rodríguez Fernández",
         "username": "ana.rodriguez",
-        "role_id": 3,  # Staff
+        "role_name": models.RoleEnum.Staff,
         "store_name": "Almacén Central Madrid",
         "status": models.StatusEnum.Active,
     },
@@ -54,7 +54,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "Pedro",
         "last_name": "Sánchez García",
         "username": "pedro.sanchez",
-        "role_id": 3,  # Staff
+        "role_name": models.RoleEnum.Staff,
         "store_name": "Centro Distribución Barcelona",
         "status": models.StatusEnum.Active,
     },
@@ -62,7 +62,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "Laura",
         "last_name": "Fernández Moreno",
         "username": "laura.fernandez",
-        "role_id": 3,  # Staff
+        "role_name": models.RoleEnum.Staff,
         "store_name": "Delegación Sevilla",
         "status": models.StatusEnum.Active,
     },
@@ -70,7 +70,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "David",
         "last_name": "González Díaz",
         "username": "david.gonzalez",
-        "role_id": 3,  # Staff
+        "role_name": models.RoleEnum.Staff,
         "store_name": "Sucursal Bilbao",
         "status": models.StatusEnum.Active,
     },
@@ -78,7 +78,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
         "first_name": "Isabel",
         "last_name": "Jiménez López",
         "username": "isabel.jimenez",
-        "role_id": 3,  # Staff
+        "role_name": models.RoleEnum.Staff,
         "store_name": "Almacén Zaragoza",
         "status": models.StatusEnum.Active,
     },
@@ -91,23 +91,30 @@ def seed_employees(
     session: Session,
     report: SeedReport,
     stores_by_name: dict[str, models.Store],
+    roles_by_name: dict[models.RoleEnum, models.Role],
 ) -> None:
     """Inserta o actualiza los empleados semilla.
 
     Args:
         stores_by_name:  Mapa {store_name → Store} devuelto por seed_stores().
-                        Los role_id se especifican directamente en los datos.
+        roles_by_name:   Mapa {role_name → Role} devuelto por seed_roles().
     """
     hashed_password = security.get_password_hash(DEFAULT_PASSWORD)
 
     for data in EMPLOYEES_SEED:
         store_name = data.pop("store_name")
+        role_name = data.pop("role_name")
 
         store = stores_by_name.get(store_name)
         if store is None:
             raise ValueError(
-                f"Tienda '{store_name}' no encontrada para el empleado "
-                f"'{data['username']}'. Asegúrate de ejecutar seed_stores primero."
+                f"Tienda '{store_name}' no encontrada para el empleado '{data['username']}'."
+            )
+
+        role = roles_by_name.get(role_name)
+        if role is None:
+            raise ValueError(
+                f"Rol '{role_name}' no encontrado para el empleado '{data['username']}'."
             )
 
         _, created = upsert_by_field(
@@ -115,6 +122,11 @@ def seed_employees(
             models.Employee,
             lookup_field="username",
             lookup_value=data["username"],
-            data={**data, "store_id": store.id_store, "hashed_password": hashed_password},
+            data={
+                **data,
+                "store_id": store.id_store,
+                "role_id": role.id_role,
+                "hashed_password": hashed_password
+            },
         )
         report.register("Empleados", created=created)

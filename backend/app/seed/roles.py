@@ -31,14 +31,19 @@ ROLES_SEED: List[Dict[str, Any]] = [
 
 # ── Lógica de seed ────────────────────────────────────────────────────────────
 
-def seed_roles(session: Session, report: SeedReport) -> None:
-    """Inserta o actualiza los roles semilla."""
+def seed_roles(session: Session, report: SeedReport) -> dict[models.RoleEnum, models.Role]:
+    """Inserta o actualiza los roles semilla y devuelve un mapa por nombre."""
+    roles_by_name: dict[models.RoleEnum, models.Role] = {}
+
     for data in ROLES_SEED:
-        upsert_by_field(
+        role, created = upsert_by_field(
             session,
             models.Role,
             lookup_field="role_name",
             lookup_value=data["role_name"],
             data=data,
         )
-        report.register("Roles", created=True)
+        roles_by_name[data["role_name"]] = role
+        report.register("Roles", created=created)
+
+    return roles_by_name

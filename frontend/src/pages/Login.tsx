@@ -8,7 +8,7 @@ import { authService } from '../services/auth.service';
 export default function Login() {
   const navigate = useNavigate();
   // Pre-rellenado para facilitar el desarrollo
-  const [username, setUsername] = useState('carlos.garcia');
+  const [username, setUsername] = useState('maria.lopez');
   const [password, setPassword] = useState('stocker123');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,13 +23,13 @@ export default function Login() {
       navigate('/admin/dashboard');
     } catch (err: unknown) {
       let message = 'Error al iniciar sesión. Verifique sus credenciales.';
-      
+
       if (axios.isAxiosError(err)) {
         message = err.response?.data?.detail || message;
       } else if (err instanceof Error) {
         message = err.message;
       }
-      
+
       setError(message);
     } finally {
       setIsLoading(false);
@@ -70,7 +70,7 @@ export default function Login() {
                 {error}
               </div>
             )}
-            
+
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 Nombre de usuario

@@ -14,7 +14,6 @@ import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
 import ProductsList from './pages/admin/ProductsList';
 
-
 function App() {
   return (
     <Router>
