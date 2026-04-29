@@ -1,37 +1,13 @@
 import { useState } from 'react';
 
-// ── Tipos ────────────────────────────────────────────────────────
-type StatusType = 'done' | 'warning';
-
-interface Task {
-  id: string | number;
-  name: string;
-  tag?: string;
-  color?: string;
-  status: StatusType;
-  subtasks?: Array<{
-    id: string;
-    name: string;
-    status: StatusType;
-  }>;
-}
-
-interface Sprint {
-  id: number;
-  name: string;
-  dates: string;
-  status: StatusType;
-  focus: string;
-  tasks: Task[];
-}
-
-const sprints: Sprint[] = [
+const sprints = [
   {
     id: 1,
     name: 'Sprint 1',
     dates: '8 feb – 29 mar',
     status: 'done',
     focus: 'Infraestructura y Arquitectura',
+    points: 21,
     tasks: [
       {
         id: 'P3-63',
@@ -83,6 +59,7 @@ const sprints: Sprint[] = [
     dates: '1 mar – 15 mar',
     status: 'done',
     focus: 'Modelo de Datos y Vistas Base',
+    points: 27,
     tasks: [
       {
         id: 'P3-227',
@@ -138,9 +115,10 @@ const sprints: Sprint[] = [
   {
     id: 3,
     name: 'Sprint 3',
-    dates: '15 mar – 29 mar',
+    dates: '15 mar – 15 abr',
     status: 'done',
-    focus: 'CRUD Completo y Automatización',
+    focus: 'CRUD Core, CI y Documentación',
+    points: 30,
     tasks: [
       {
         id: 'P3-168',
@@ -148,141 +126,41 @@ const sprints: Sprint[] = [
         tag: 'GIT',
         color: '#5F5E5A',
         status: 'done',
-        subtasks: [],
       },
       {
         id: 'P3-207',
-        name: 'Sincronización de node_modules entre Docker y Local',
+        name: 'Sincronización de node_modules local',
         tag: 'TOOLING',
         color: '#5F5E5A',
         status: 'done',
-        subtasks: [],
       },
       {
         id: 'P3-216',
-        name: 'Reestructuración y Saneamiento del Backlog en Jira',
+        name: 'Saneamiento del Backlog y Tablero Jira',
         tag: 'GESTIÓN',
         color: '#854F0B',
         status: 'done',
-        subtasks: [],
-      },
-      {
-        id: 'P3-217',
-        name: 'Corrección de Syntax Error en Suite de Tests',
-        tag: 'BUG',
-        color: '#A32D2D',
-        status: 'done',
-        subtasks: [],
-      },
-      {
-        id: 'P3-234',
-        name: 'CRUD Completo de Productos (Inventario)',
-        tag: 'CORE',
-        color: '#0F6E56',
-        status: 'done',
-        subtasks: [
-          {
-            id: 'P3-270',
-            name: 'Implementación de endpoints POST, PUT y DELETE para productos',
-            status: 'done',
-          },
-          {
-            id: 'P3-271',
-            name: 'Desarrollo de formularios y lógica de creación/edición (Modales)',
-            status: 'done',
-          },
-          {
-            id: 'P3-272',
-            name: 'Lógica de validación de negocio y manejo de errores CRUD',
-            status: 'done',
-          },
-        ],
       },
       {
         id: 'P3-235',
-        name: 'Gestión Integral de Categorías',
-        tag: 'CORE',
-        color: '#0F6E56',
+        name: 'CRUDs de Gestión Core (Categorías, Tiendas, Empleados)',
+        tag: 'BACK',
+        color: '#185FA5',
         status: 'done',
-        subtasks: [
-          {
-            id: 'P3-273',
-            name: 'Endpoints CRUD completos para la entidad Category',
-            status: 'done',
-          },
-          {
-            id: 'P3-274',
-            name: 'Interfaz de gestión de categorías (Listado y Operaciones)',
-            status: 'done',
-          },
-          {
-            id: 'P3-275',
-            name: 'Implementación de integridad referencial (Protección de borrado)',
-            status: 'done',
-          },
-        ],
       },
       {
-        id: 'P3-236',
-        name: 'CRUD de Usuarios y Gestión de Roles',
-        tag: 'CORE',
-        color: '#0F6E56',
-        status: 'warning',
-        subtasks: [
-          {
-            id: 'P3-276',
-            name: 'Implementación de la tabla User y endpoints CRUD base',
-            status: 'warning',
-          },
-          {
-            id: 'P3-277',
-            name: 'Vista de administración de usuarios y asignación de roles',
-            status: 'done',
-          },
-          {
-            id: 'P3-278',
-            name: 'Lógica de validación de perfiles (Emails únicos)',
-            status: 'warning',
-          },
-        ],
+        id: 'P3-237',
+        name: 'Suite de Pruebas Unitarias para Backend',
+        tag: 'QA',
+        color: '#993556',
+        status: 'done',
       },
       {
         id: 'P3-238',
-        name: 'Automatización de Calidad con GitHub Actions',
+        name: 'Automatización de Integración Continua (CI)',
         tag: 'DEVOPS',
-        color: '#185FA5',
+        color: '#0F6E56',
         status: 'done',
-        subtasks: [
-          {
-            id: 'P3-281',
-            name: 'Configuración de Workflow CI (.yml) para el Backend (Pytest)',
-            status: 'done',
-          },
-          {
-            id: 'P3-282',
-            name: 'Configuración de Workflow CI para el Frontend (Lint/Build)',
-            status: 'done',
-          },
-        ],
-      },
-      {
-        id: 'P3-239',
-        name: 'Sesión de Formación Técnica y Code Review',
-        tag: 'ARQ',
-        color: '#534AB7',
-        status: 'done',
-        subtasks: [
-          {
-            id: 'P3-279',
-            name: 'Preparación del material didáctico sobre flujo CRUD y Arquitectura',
-            status: 'done',
-          },
-          {
-            id: 'P3-280',
-            name: 'Impartición de la sesión práctica y Live Coding para el equipo',
-            status: 'done',
-          },
-        ],
       },
       {
         id: 'P3-241',
@@ -290,89 +168,150 @@ const sprints: Sprint[] = [
         tag: 'GESTIÓN',
         color: '#854F0B',
         status: 'done',
-        subtasks: [],
       },
       {
-        id: 'P3-246',
-        name: 'RoadMap del Proyecto y Cronograma de Entregas',
-        tag: 'GESTIÓN',
+        id: 'P3-288',
+        name: 'Población de Datos y Documentación Técnica',
+        tag: 'DATA',
+        color: '#534AB7',
+        status: 'done',
+      },
+      {
+        id: 'P3-289',
+        name: 'Lógica de Integración y Servicios CRUD (Frontend)',
+        tag: 'FRONT',
+        color: '#D85A30',
+        status: 'done',
+      },
+      {
+        id: 'P3-290',
+        name: 'Interfaz de Gestión con Atomic Design',
+        tag: 'FRONT',
+        color: '#D85A30',
+        status: 'done',
+      },
+    ],
+  },
+  {
+    id: 4,
+    name: 'Sprint 4',
+    dates: '15 abr – 29 abr',
+    status: 'done',
+    focus: 'Autenticación, Seguridad y Documentación',
+    points: 35,
+    tasks: [
+      {
+        id: 'P3-243',
+        name: 'Sistema de Autenticación con JWT y Hashing',
+        tag: 'AUTH',
+        color: '#993556',
+        status: 'done',
+      },
+      {
+        id: 'P3-245',
+        name: 'Control de Acceso basado en Roles (RBAC)',
+        tag: 'AUTH',
+        color: '#993556',
+        status: 'done',
+      },
+      {
+        id: 'P3-244',
+        name: 'Gestión de Sesión y Rutas Protegidas (Frontend)',
+        tag: 'AUTH',
+        color: '#993556',
+        status: 'done',
+      },
+      {
+        id: 'P3-236',
+        name: 'CRUD de Usuarios y Gestión de Roles',
+        tag: 'BACK',
+        color: '#185FA5',
+        status: 'done',
+      },
+      {
+        id: 'P3-286',
+        name: 'Revisión y limpieza de comentarios en CRUD',
+        tag: 'DOCS',
         color: '#854F0B',
         status: 'done',
-        subtasks: [],
+      },
+      {
+        id: 'P3-242',
+        name: 'Formación Técnica y Estandarización de GitFlow',
+        tag: 'ARQ',
+        color: '#534AB7',
+        status: 'done',
+      },
+      {
+        id: 'P3-287',
+        name: 'Automatización de Estándares de Código en CI',
+        tag: 'QA',
+        color: '#0F6E56',
+        status: 'done',
+      },
+      {
+        id: 'P3-310',
+        name: 'Suite de Pruebas Frontend y Automatización CI',
+        tag: 'QA',
+        color: '#0F6E56',
+        status: 'done',
+      },
+      {
+        id: 'P3-304',
+        name: 'Elaboración de Guías Técnicas de Desarrollo',
+        tag: 'DOCS',
+        color: '#854F0B',
+        status: 'done',
+      },
+      {
+        id: 'P3-240',
+        name: 'Documentación de API (OpenAPI) y Contribución',
+        tag: 'DOCS',
+        color: '#854F0B',
+        status: 'done',
       },
     ],
   },
 ];
 
-const statusConfig: Record<
-  StatusType,
-  { label: string; bg: string; text: string; border: string }
-> = {
+const statusConfig = {
   done: { label: 'Completado', bg: '#085041', text: '#9FE1CB', border: '#1D9E75' },
-  warning: { label: 'Con incidencias', bg: '#412402', text: '#FAC775', border: '#BA7517' },
 };
 
-const TaskStatus = ({ status }: { status: StatusType }) => {
-  if (status === 'done')
-    return (
-      <div
-        style={{
-          width: 18,
-          height: 18,
-          borderRadius: '50%',
-          background: '#085041',
-          border: '1.5px solid #1D9E75',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}
-      >
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <path
-            d="M2 5L4.5 7.5L8 3"
-            stroke="#9FE1CB"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-    );
-  return (
-    <div
-      style={{
-        width: 18,
-        height: 18,
-        borderRadius: '50%',
-        background: '#412402',
-        border: '1.5px solid #BA7517',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
-    >
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <path d="M5 2.5V5.5M5 7V7.5" stroke="#FAC775" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    </div>
-  );
-};
+const TaskStatus = () => (
+  <div
+    style={{
+      width: 16,
+      height: 16,
+      borderRadius: '50%',
+      background: '#085041',
+      border: '1.5px solid #1D9E75',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0,
+    }}
+  >
+    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+      <path
+        d="M1.5 4.5L3.5 6.5L7.5 2.5"
+        stroke="#9FE1CB"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </div>
+);
 
-export default function RoadmapS3Full() {
-  const [expanded, setExpanded] = useState<number | null>(3);
-  const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
-
-  const toggleTask = (id: string | number, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedTasks((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+export default function RoadmapSprint4() {
+  const [expanded, setExpanded] = useState(4);
+  const totalSP = sprints.reduce((a, s) => a + s.points, 0);
 
   return (
     <div
       style={{
-        fontFamily: '"Source Sans 3", "Source Sans Pro", sans-serif',
+        fontFamily: "'Source Sans 3', 'Source Sans Pro', sans-serif",
         padding: '2rem 0',
         maxWidth: 720,
         margin: '0 auto',
@@ -384,19 +323,23 @@ export default function RoadmapS3Full() {
       />
 
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1
-          style={{
-            fontSize: 28,
-            fontWeight: 700,
-            color: 'var(--color-text-primary)',
-            margin: 0,
-            letterSpacing: '-0.5px',
-          }}
-        >
-          Stocker — Roadmap Sprints
-        </h1>
-        <p style={{ fontSize: 14, color: 'var(--color-text-secondary)', margin: '6px 0 0' }}>
-          Sistema de Gestión de Almacenes · Sprints
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <div style={{ width: 4, height: 28, borderRadius: 2, background: '#1D9E75' }} />
+          <h1
+            style={{
+              fontSize: 26,
+              fontWeight: 700,
+              color: 'var(--color-text-primary)',
+              margin: 0,
+              letterSpacing: '-0.5px',
+            }}
+          >
+            Stocker — Roadmap Completo
+          </h1>
+        </div>
+        <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', margin: '0 0 0 16px' }}>
+          Sistema de Gestión de Almacenes · 4 Sprints · Feb – Abr 2026 · {totalSP} Story Points
+          totales
         </p>
       </div>
 
@@ -420,7 +363,7 @@ export default function RoadmapS3Full() {
           return (
             <div
               key={sprint.id}
-              style={{ position: 'relative', marginBottom: i < sprints.length - 1 ? 32 : 0 }}
+              style={{ position: 'relative', marginBottom: i < sprints.length - 1 ? 28 : 0 }}
             >
               <div
                 style={{
@@ -438,9 +381,9 @@ export default function RoadmapS3Full() {
                   justifyContent: 'center',
                 }}
               >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
                   <path
-                    d="M2.5 6L5 8.5L9.5 3.5"
+                    d="M2 5.5L4.5 8L9 3"
                     stroke={sc.text}
                     strokeWidth="1.8"
                     strokeLinecap="round"
@@ -456,7 +399,7 @@ export default function RoadmapS3Full() {
                   background: 'var(--color-background-secondary)',
                   border: `1px solid ${isExpanded ? sc.border : 'var(--color-border-tertiary)'}`,
                   borderRadius: 12,
-                  padding: '16px 20px',
+                  padding: '14px 18px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                 }}
@@ -472,8 +415,8 @@ export default function RoadmapS3Full() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span
                       style={{
-                        fontFamily: '"JetBrains Mono", monospace',
-                        fontSize: 13,
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 12,
                         fontWeight: 500,
                         color: sc.border,
                       }}
@@ -482,10 +425,10 @@ export default function RoadmapS3Full() {
                     </span>
                     <span
                       style={{
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: 600,
-                        padding: '2px 8px',
-                        borderRadius: 6,
+                        padding: '2px 7px',
+                        borderRadius: 5,
                         background: sc.bg,
                         color: sc.text,
                         border: `1px solid ${sc.border}`,
@@ -495,12 +438,25 @@ export default function RoadmapS3Full() {
                     >
                       {sc.label}
                     </span>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        padding: '2px 7px',
+                        borderRadius: 5,
+                        background: 'var(--color-background-primary)',
+                        color: 'var(--color-text-tertiary)',
+                        border: '1px solid var(--color-border-tertiary)',
+                      }}
+                    >
+                      {sprint.points} SP
+                    </span>
                   </div>
                   <span
                     style={{
-                      fontSize: 12,
+                      fontSize: 11,
                       color: 'var(--color-text-tertiary)',
-                      fontFamily: '"JetBrains Mono", monospace',
+                      fontFamily: "'JetBrains Mono', monospace",
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -510,138 +466,74 @@ export default function RoadmapS3Full() {
 
                 <p
                   style={{
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: 600,
                     color: 'var(--color-text-primary)',
-                    margin: '8px 0 0',
+                    margin: '8px 0 4px',
                   }}
                 >
                   {sprint.focus}
                 </p>
-                <p style={{ fontSize: 12, color: 'var(--color-text-tertiary)', margin: '4px 0 0' }}>
+                <p style={{ fontSize: 11, color: 'var(--color-text-tertiary)', margin: 0 }}>
                   {sprint.tasks.length} historias
                 </p>
 
                 {isExpanded && (
-                  <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {sprint.tasks.map((task) => {
-                      const hasSubtasks = task.subtasks && task.subtasks.length > 0;
-                      const isTaskExpanded = expandedTasks[task.id];
-
-                      return (
-                        <div key={task.id}>
-                          <div
-                            onClick={hasSubtasks ? (e) => toggleTask(task.id, e) : undefined}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 10,
-                              padding: '8px 12px',
-                              background:
-                                task.status === 'warning'
-                                  ? '#41240210'
-                                  : 'var(--color-background-primary)',
-                              borderRadius: 8,
-                              border: `1px solid ${task.status === 'warning' ? '#BA751730' : 'var(--color-border-tertiary)'}`,
-                              cursor: hasSubtasks ? 'pointer' : 'default',
-                            }}
-                          >
-                            <TaskStatus status={task.status} />
-                            <span
-                              style={{
-                                fontFamily: '"JetBrains Mono", monospace',
-                                fontSize: 11,
-                                color: 'var(--color-text-tertiary)',
-                                minWidth: 52,
-                              }}
-                            >
-                              {task.id}
-                            </span>
-                            <span
-                              style={{
-                                fontSize: 11,
-                                fontWeight: 600,
-                                padding: '1px 6px',
-                                borderRadius: 4,
-                                background: task.color + '20',
-                                color: task.color,
-                                letterSpacing: '0.3px',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {task.tag}
-                            </span>
-                            <span
-                              style={{
-                                fontSize: 13,
-                                color: 'var(--color-text-primary)',
-                                fontWeight: 400,
-                                flex: 1,
-                              }}
-                            >
-                              {task.name}
-                            </span>
-                            {hasSubtasks && (
-                              <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>
-                                {isTaskExpanded ? '▲' : '▼'}
-                              </span>
-                            )}
-                          </div>
-
-                          {hasSubtasks && isTaskExpanded && (
-                            <div
-                              style={{
-                                marginLeft: 24,
-                                marginTop: 4,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 4,
-                              }}
-                            >
-                              {task.subtasks?.map((sub) => (
-                                <div
-                                  key={sub.id}
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 8,
-                                    padding: '6px 10px',
-                                    background:
-                                      sub.status === 'warning'
-                                        ? '#41240210'
-                                        : 'var(--color-background-primary)',
-                                    borderRadius: 6,
-                                    border: `1px solid ${sub.status === 'warning' ? '#BA751730' : 'var(--color-border-tertiary)'}`,
-                                  }}
-                                >
-                                  <TaskStatus status={sub.status} />
-                                  <span
-                                    style={{
-                                      fontFamily: '"JetBrains Mono", monospace',
-                                      fontSize: 10,
-                                      color: 'var(--color-text-tertiary)',
-                                      minWidth: 48,
-                                    }}
-                                  >
-                                    {sub.id}
-                                  </span>
-                                  <span
-                                    style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}
-                                  >
-                                    {sub.name}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                  <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {sprint.tasks.map((task) => (
+                      <div
+                        key={task.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 9,
+                          padding: '7px 10px',
+                          background: 'var(--color-background-primary)',
+                          borderRadius: 7,
+                          border: '1px solid var(--color-border-tertiary)',
+                        }}
+                      >
+                        <TaskStatus />
+                        <span
+                          style={{
+                            fontFamily: "'JetBrains Mono', monospace",
+                            fontSize: 10,
+                            color: 'var(--color-text-tertiary)',
+                            minWidth: 48,
+                          }}
+                        >
+                          {task.id}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 600,
+                            padding: '1px 5px',
+                            borderRadius: 4,
+                            background: task.color + '20',
+                            color: task.color,
+                            letterSpacing: '0.3px',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {task.tag}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 12,
+                            color: 'var(--color-text-primary)',
+                            fontWeight: 400,
+                          }}
+                        >
+                          {task.name}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
 
                 <div style={{ textAlign: 'center', marginTop: 8 }}>
-                  <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--color-text-tertiary)' }}>
                     {isExpanded ? '▲ Contraer' : '▼ Ver historias'}
                   </span>
                 </div>
@@ -651,9 +543,49 @@ export default function RoadmapS3Full() {
         })}
       </div>
 
-      <style>{`
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-      `}</style>
+      <div
+        style={{
+          marginTop: 32,
+          marginLeft: 48,
+          padding: '12px 18px',
+          background: 'var(--color-background-secondary)',
+          border: '1px solid var(--color-border-tertiary)',
+          borderRadius: 12,
+          display: 'flex',
+          gap: 32,
+        }}
+      >
+        {[
+          { label: 'Story Points totales', value: totalSP },
+          { label: 'Sprints completados', value: '4 / 4' },
+          { label: 'Velocity media', value: Math.round(totalSP / 4) + ' SP' },
+        ].map((stat) => (
+          <div key={stat.label}>
+            <p
+              style={{
+                fontSize: 10,
+                color: 'var(--color-text-tertiary)',
+                margin: '0 0 4px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
+              {stat.label}
+            </p>
+            <p
+              style={{
+                fontSize: 18,
+                fontWeight: 700,
+                color: '#1D9E75',
+                margin: 0,
+                fontFamily: "'JetBrains Mono', monospace",
+              }}
+            >
+              {stat.value}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
