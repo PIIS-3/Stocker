@@ -96,7 +96,17 @@ def delete_employee(db: Session, employee_id: int) -> models.Employee | None:
     if db_employee is None:
         return None  # El endpoint convierte este None en HTTP 404.
 
+    # Expulsamos el objeto de la sesión antes del commit para que sus datos
+    # permanezcan en memoria y FastAPI pueda serializarlo sin intentar
+    # recargar relaciones de una fila que ya no existe.
     db.delete(db_employee)
+    # Importante: Cargamos las relaciones antes del commit y expulsamos el objeto
+    # para evitar que FastAPI intente refrescarlo tras el borrado físico.
+    _ = db_employee.role
+    _ = db_employee.store
+    db.expunge(db_employee)
     db.commit()
-    # No se llama db.refresh: la fila ya no existe en BD.
+
     return db_employee
+
+

@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -35,8 +35,8 @@ interface NotificationState {
 
 /**
  * Página: CategoriesList
- * Gestión de categorías para la clasificación del catálogo.
- * Utiliza CrudPageTemplate para mantener la consistencia visual.
+ * Gestión de clasificaciones de productos.
+ * Implementa filtrado local y búsqueda reactiva.
  */
 export default function CategoriesList() {
   // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
@@ -55,6 +55,7 @@ export default function CategoriesList() {
   // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryApi | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<CategoryApi | null>(null);
   const [notification, setNotification] = useState<NotificationState | null>(null);
@@ -83,21 +84,32 @@ export default function CategoriesList() {
       showNotification(
         'success',
         'Categoría eliminada',
-        `${categoryToDelete.category_name} ha sido eliminada.`
+        `${categoryToDelete.category_name} ha sido borrada del sistema.`
       );
       setCategoryToDelete(null);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'No se pudo eliminar la categoría.';
-      showNotification('error', 'Error de Integridad', message);
+      const message = err instanceof Error ? err.message : 'Error al eliminar categoría.';
+      showNotification('error', 'Error', message);
     }
   };
+
+  // ── Filtrado Local ───────────────────────────────────────────────────────
+  const filteredCategories = useMemo(() => {
+    return categories.filter((cat) => {
+      const search = searchTerm.toLowerCase();
+      return (
+        cat.category_name.toLowerCase().includes(search) ||
+        (cat.description || '').toLowerCase().includes(search)
+      );
+    });
+  }, [categories, searchTerm]);
 
   // ── Renderizado ──────────────────────────────────────────────────────────
 
   return (
     <CrudPageTemplate
       title="Categorías"
-      subtitle="Organiza tu catálogo de productos por grupos lógicos."
+      subtitle="Organiza tus productos en clasificaciones lógicas para el inventario."
       headerAction={
         <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
           Nueva Categoría
@@ -123,36 +135,40 @@ export default function CategoriesList() {
       }
       table={
         <DataTable
-          columns={['ID', 'Nombre', 'Descripción', 'Estado', 'Acciones']}
+          columns={['ID', 'Nombre de Categoría', 'Descripción', 'Estado', 'Acciones']}
           isLoading={isLoading}
-          rowCount={categories.length}
+          rowCount={filteredCategories.length}
           expectedRows={pagination.pageSize}
-          emptyMessage="No hay categorías registradas."
+          emptyMessage="No se encontraron categorías con los filtros actuales."
         >
-          {categories.map((category, index) => (
+          {filteredCategories.map((category, index) => (
             <tr
               key={category.id_category}
-              className={`h-12 hover:bg-gray-100 transition-colors border-b border-gray-50 ${
+              onClick={() => {
+                setSelectedCategory(category);
+                setIsViewOpen(true);
+              }}
+              className={`h-12 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
                 index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
               }`}
             >
-              <td className="px-3 py-0 align-middle truncate max-w-16 text-gray-500">
+              <td className="px-4 py-0 align-middle text-gray-500 font-mono text-xs">
                 #{category.id_category}
               </td>
-              <td className="px-3 py-0 align-middle font-medium text-gray-900 truncate max-w-48">
-                {category.category_name}
+              <td className="px-4 py-0 align-middle">
+                <span className="font-medium text-gray-900">{category.category_name}</span>
               </td>
-              <td className="px-3 py-0 align-middle truncate max-w-xs text-gray-600">
+              <td className="px-4 py-0 align-middle text-gray-600 truncate max-w-[300px]">
                 {category.description || '-'}
               </td>
-              <td className="px-3 py-0 align-middle">
+              <td className="px-4 py-0 align-middle">
                 <StatusBadge
                   status={category.status}
                   activeLabel="Activa"
                   inactiveLabel="Inactiva"
                 />
               </td>
-              <td className="px-3 py-0 align-middle">
+              <td className="px-4 py-0 align-middle">
                 <ActionButtons
                   onEdit={() => {
                     setSelectedCategory(category);
@@ -169,7 +185,7 @@ export default function CategoriesList() {
         <TablePagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
+          totalItems={filteredCategories.length}
           pageSize={pagination.pageSize}
           onPageChange={pagination.setPage}
           isLoading={isLoading}
@@ -203,6 +219,16 @@ export default function CategoriesList() {
         mode="edit"
         initialData={selectedCategory}
         onSuccess={handleCategorySuccess}
+      />
+
+      <CategoryForm
+        isOpen={isViewOpen}
+        onClose={() => {
+          setIsViewOpen(false);
+          setSelectedCategory(null);
+        }}
+        mode="view"
+        initialData={selectedCategory}
       />
     </CrudPageTemplate>
   );

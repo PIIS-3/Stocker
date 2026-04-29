@@ -30,3 +30,7 @@ class Role(TimestampMixin, RoleBase, table=True):
     # Relación uno-a-muchos con empleados.
     employees: List["Employee"] = Relationship(back_populates="role")
 
+# ── RoleResponse ──────────────────────────────────────────────────────────
+# Schema de salida para la API.
+class RoleResponse(RoleBase):
+    id_role: int = Field(description="ID único del rol.")

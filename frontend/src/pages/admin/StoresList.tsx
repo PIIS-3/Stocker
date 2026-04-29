@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -7,7 +7,6 @@ import { Button, StatusBadge } from '../../components/atoms';
 // ── Moléculas ───────────────────────────────────────────────────────────────
 import {
   ActionButtons,
-  Modal,
   TableToolbar,
   TablePagination,
   ConfirmDeleteModal,
@@ -15,7 +14,7 @@ import {
 } from '../../components/molecules';
 
 // ── Organismos ──────────────────────────────────────────────────────────────
-import { StoreDetailsCard, StoreForm, DataTable } from '../../components/organisms';
+import { StoreForm, DataTable } from '../../components/organisms';
 
 // ── Templates ───────────────────────────────────────────────────────────────
 import { CrudPageTemplate } from '../../components/templates';
@@ -37,9 +36,7 @@ interface NotificationState {
 /**
  * Página: StoresList
  * Gestión modular de tiendas físicas.
- *
- * Implementa el patrón CrudPageTemplate y utiliza el hook useCrud
- * para desacoplar la lógica de negocio de la presentación.
+ * Implementa filtrado local y búsqueda avanzada.
  */
 export default function StoresList() {
   // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
@@ -58,25 +55,19 @@ export default function StoresList() {
   // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState<StoreApi | null>(null);
   const [storeToDelete, setStoreToDelete] = useState<StoreApi | null>(null);
-  const [storeDetail, setStoreDetail] = useState<StoreApi | null>(null);
   const [notification, setNotification] = useState<NotificationState | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
 
-  /**
-   * Muestra una notificación temporal en pantalla.
-   */
   const showNotification = useCallback((variant: ToastVariant, title: string, message: string) => {
     setNotification({ id: Date.now(), variant, title, message });
     setTimeout(() => setNotification(null), 3800);
   }, []);
 
-  /**
-   * Gestiona el éxito de las operaciones de creación y actualización.
-   */
   const handleStoreSuccess = (action: 'create' | 'update', store: StoreApi) => {
     void refresh();
     showNotification(
@@ -86,9 +77,6 @@ export default function StoresList() {
     );
   };
 
-  /**
-   * Ejecuta la eliminación definitiva tras la confirmación.
-   */
   const confirmDelete = async () => {
     if (!storeToDelete) return;
     try {
@@ -104,6 +92,17 @@ export default function StoresList() {
       showNotification('error', 'Error de Integridad', message);
     }
   };
+
+  // ── Filtrado Local ───────────────────────────────────────────────────────
+  const filteredStores = useMemo(() => {
+    return stores.filter((store) => {
+      const search = searchTerm.toLowerCase();
+      return (
+        store.store_name.toLowerCase().includes(search) ||
+        store.address.toLowerCase().includes(search)
+      );
+    });
+  }, [stores, searchTerm]);
 
   // ── Renderizado ──────────────────────────────────────────────────────────
 
@@ -138,15 +137,18 @@ export default function StoresList() {
         <DataTable
           columns={['ID', 'Nombre', 'Dirección', 'Estado', 'Acciones']}
           isLoading={isLoading}
-          rowCount={stores.length}
+          rowCount={filteredStores.length}
           expectedRows={pagination.pageSize}
-          emptyMessage="No se encontraron tiendas."
+          emptyMessage="No se encontraron tiendas con los criterios de búsqueda."
         >
-          {stores.map((store, index) => (
+          {filteredStores.map((store, index) => (
             <tr
               key={store.id_store}
-              onClick={() => setStoreDetail(store)}
-              className={`h-12 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
+              onClick={() => {
+                setSelectedStore(store);
+                setIsViewOpen(true);
+              }}
+              className={`h-14 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
                 index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
               }`}
             >
@@ -162,7 +164,7 @@ export default function StoresList() {
               <td className="px-3 py-0 align-middle">
                 <StatusBadge status={store.status} />
               </td>
-              <td className="px-3 py-0 align-middle" onClick={(e) => e.stopPropagation()}>
+              <td className="px-3 py-0 align-middle">
                 <ActionButtons
                   onEdit={() => {
                     setSelectedStore(store);
@@ -179,7 +181,7 @@ export default function StoresList() {
         <TablePagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
+          totalItems={filteredStores.length}
           pageSize={pagination.pageSize}
           onPageChange={pagination.setPage}
           isLoading={isLoading}
@@ -188,26 +190,6 @@ export default function StoresList() {
     >
       {/* ── Modales de Acción ── */}
 
-      {/* Detalle de Tienda */}
-      {storeDetail && (
-        <Modal
-          isOpen={storeDetail !== null}
-          onClose={() => setStoreDetail(null)}
-          title="Detalles de la Tienda"
-          size="lg"
-        >
-          <div className="p-6 bg-gray-50/70">
-            <StoreDetailsCard store={storeDetail} />
-            <div className="flex justify-end pt-4">
-              <Button variant="ghost" onClick={() => setStoreDetail(null)}>
-                Cerrar
-              </Button>
-            </div>
-          </div>
-        </Modal>
-      )}
-
-      {/* Confirmación de Eliminación */}
       <ConfirmDeleteModal
         isOpen={storeToDelete !== null}
         onClose={() => setStoreToDelete(null)}
@@ -217,7 +199,6 @@ export default function StoresList() {
         isLoading={isLoading}
       />
 
-      {/* Formulario de Creación */}
       <StoreForm
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -225,7 +206,6 @@ export default function StoresList() {
         onSuccess={handleStoreSuccess}
       />
 
-      {/* Formulario de Edición */}
       <StoreForm
         isOpen={isEditOpen}
         onClose={() => {
@@ -235,6 +215,16 @@ export default function StoresList() {
         mode="edit"
         initialData={selectedStore}
         onSuccess={handleStoreSuccess}
+      />
+
+      <StoreForm
+        isOpen={isViewOpen}
+        onClose={() => {
+          setIsViewOpen(false);
+          setSelectedStore(null);
+        }}
+        mode="view"
+        initialData={selectedStore}
       />
     </CrudPageTemplate>
   );

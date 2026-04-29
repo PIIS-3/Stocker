@@ -17,6 +17,20 @@ _409 = {409: {"description": "Ya existe un empleado con ese username."}}
 _409_DELETE = {409: {"description": "No se puede eliminar un empleado con registros asociados."}}
 
 
+# ── GET /employees/roles ─────────────────────────────────────────────
+
+@router.get(
+    "/roles",
+    response_model=List[models.RoleResponse],
+    summary="Listar roles",
+    description="Devuelve el catálogo de roles disponibles (SuperAdmin, Manager, Staff).",
+)
+def read_roles(db: Session = Depends(get_db)):
+    from sqlmodel import select
+    return db.exec(select(models.Role).order_by(models.Role.id_role)).all()
+
+
+
 # ── GET /employees/ ──────────────────────────────────────────────────
 
 @router.get(

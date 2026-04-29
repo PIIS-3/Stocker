@@ -10,7 +10,7 @@ type CategoryFormAction = 'create' | 'update';
 interface CategoryFormProps {
   isOpen: boolean;
   onClose: () => void;
-  mode?: 'create' | 'edit';
+  mode?: 'create' | 'edit' | 'view';
   initialData?: CategoryApi | null;
   onSuccess?: (action: CategoryFormAction, category: CategoryApi) => void;
   onError?: (message: string) => void;
@@ -18,8 +18,8 @@ interface CategoryFormProps {
 
 /**
  * Componente: CategoryForm
- * Formulario modal para crear o editar una categoría de productos.
- * Maneja el estado local del formulario y la comunicación con la API.
+ * Formulario modal para crear, editar o visualizar una categoría de productos.
+ * Soporta modo de solo lectura para visualización.
  */
 export function CategoryForm({
   isOpen,
@@ -30,9 +30,11 @@ export function CategoryForm({
   onError,
 }: CategoryFormProps) {
   const isEdit = mode === 'edit';
+  const isView = mode === 'view';
+  const isReadOnly = isView;
 
   const createInitialFormData = (): CategoryCreate => {
-    if (isEdit && initialData) {
+    if ((isEdit || isView) && initialData) {
       return {
         category_name: initialData.category_name,
         description: initialData.description || '',
@@ -57,11 +59,12 @@ export function CategoryForm({
       setFormData(createInitialFormData());
       setError(null);
     }
-  }, [isOpen, initialData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen, initialData, mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
+    if (isReadOnly) return;
     const { id, value } = e.target;
     const name = id.replace('category-', '');
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -69,6 +72,7 @@ export function CategoryForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isReadOnly) return;
     setError(null);
     setIsSubmitting(true);
 
@@ -102,18 +106,19 @@ export function CategoryForm({
     }
   };
 
+  const modalTitle = isView
+    ? 'Detalles de la Categoría'
+    : isEdit
+      ? 'Editar Categoría'
+      : 'Nueva Categoría';
+  const modalSubtitle = isView
+    ? 'Información detallada de la clasificación.'
+    : isEdit
+      ? 'Modifica los datos de la categoría.'
+      : 'Organiza tus productos creando una nueva categoría.';
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEdit ? 'Editar Categoría' : 'Nueva Categoría'}
-      subtitle={
-        isEdit
-          ? 'Modifica los datos de la categoría.'
-          : 'Organiza tus productos creando una nueva categoría.'
-      }
-      size="md"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} subtitle={modalSubtitle} size="md">
       <form className="p-6 flex flex-col gap-5" onSubmit={handleSubmit}>
         {error && (
           <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg text-sm">
@@ -125,16 +130,19 @@ export function CategoryForm({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="sm:col-span-2 flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700" htmlFor="category-category_name">
-              Nombre de Categoría <span className="text-rose-500">*</span>
+              Nombre de Categoría {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
             <input
               id="category-category_name"
               type="text"
               required
+              readOnly={isReadOnly}
               placeholder="Ej: Electrónica"
               value={formData.category_name}
               onChange={handleChange}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-900 placeholder-gray-400"
+              className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm text-gray-900 placeholder-gray-400 ${
+                isReadOnly ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-brand'
+              }`}
             />
           </div>
 
@@ -144,9 +152,12 @@ export function CategoryForm({
             </label>
             <select
               id="category-status"
+              disabled={isReadOnly}
               value={formData.status}
               onChange={handleChange}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-700 bg-white"
+              className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm text-gray-700 bg-white ${
+                isReadOnly ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-brand'
+              }`}
             >
               <option value="Active">Activa</option>
               <option value="Inactive">Inactiva</option>
@@ -162,10 +173,13 @@ export function CategoryForm({
           <textarea
             id="category-description"
             rows={3}
+            readOnly={isReadOnly}
             placeholder="Breve descripción de los productos incluidos..."
             value={formData.description}
             onChange={handleChange}
-            className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-900 placeholder-gray-400 resize-none"
+            className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm text-gray-900 placeholder-gray-400 resize-none ${
+              isReadOnly ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-brand'
+            }`}
           />
         </div>
 
@@ -175,19 +189,21 @@ export function CategoryForm({
             variant="ghost"
             type="button"
             onClick={onClose}
-            icon={<X size={16} />}
+            icon={isView ? undefined : <X size={16} />}
             disabled={isSubmitting}
           >
-            Cancelar
+            {isView ? 'Cerrar' : 'Cancelar'}
           </Button>
-          <Button
-            variant="primary"
-            type="submit"
-            isLoading={isSubmitting}
-            icon={<Save size={16} />}
-          >
-            {isEdit ? 'Guardar Cambios' : 'Crear Categoría'}
-          </Button>
+          {!isView && (
+            <Button
+              variant="primary"
+              type="submit"
+              isLoading={isSubmitting}
+              icon={<Save size={16} />}
+            >
+              {isEdit ? 'Guardar Cambios' : 'Crear Categoría'}
+            </Button>
+          )}
         </div>
       </form>
     </Modal>
