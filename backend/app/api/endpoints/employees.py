@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from ... import models
@@ -13,6 +14,7 @@ router = APIRouter(tags=["Empleados"], dependencies=[Depends(get_current_employe
 # Respuestas comunes documentadas en Swagger.
 _404 = {404: {"description": "Empleado no encontrado."}}
 _409 = {409: {"description": "Ya existe un empleado con ese username."}}
+_409_DELETE = {409: {"description": "No se puede eliminar un empleado con registros asociados."}}
 
 
 # ── GET /employees/ ──────────────────────────────────────────────────
@@ -123,13 +125,21 @@ def update_employee(
 @router.delete(
     "/{employee_id}",
     response_model=models.EmployeeResponse,
-    responses=_404,
+    responses={**_404, **_409_DELETE},
     summary="Eliminar empleado",
     description="Borra definitivamente el registro de un empleado mediante su ID.",
     dependencies=[Depends(get_current_admin)],
 )
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
-    deleted = crud_employees.delete_employee(db, employee_id=employee_id)
+    try:
+        deleted = crud_employees.delete_employee(db, employee_id=employee_id)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No se puede eliminar el empleado porque tiene registros asociados.",
+        )
+
     if deleted is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Empleado no encontrado.")
     return deleted

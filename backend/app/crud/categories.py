@@ -18,7 +18,9 @@ def get_categories(db: Session, skip: int = 0, limit: int = 100) -> list[models.
         skip:  Registros a saltar (offset). Ej: página 2 con limit=10 → skip=10.
         limit: Máximo de registros a devolver.
     """
-    return db.exec(select(models.Category).offset(skip).limit(limit)).all()
+    return db.exec(
+        select(models.Category).order_by(models.Category.id_category).offset(skip).limit(limit)
+    ).all()
 
 
 def get_category_by_id(db: Session, category_id: int) -> models.Category | None:
