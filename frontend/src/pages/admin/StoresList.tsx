@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -35,13 +35,25 @@ interface NotificationState {
 
 /**
  * Página: StoresList
- * Gestión modular de tiendas físicas.
- * Implementa filtrado local y búsqueda avanzada.
+ * Gestión modular de tiendas físicas con filtrado reactivo.
  */
 export default function StoresList() {
+  const [searchTerm, setSearchTerm] = useState('');
+
   // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
   const fetchStores = useCallback(() => storesService.getStores(0, 1000), []);
   const deleteStore = useCallback((id: number) => storesService.deleteStore(id), []);
+
+  const filterFn = useCallback(
+    (store: StoreApi) => {
+      const search = searchTerm.toLowerCase();
+      return (
+        store.store_name.toLowerCase().includes(search) ||
+        store.address.toLowerCase().includes(search)
+      );
+    },
+    [searchTerm]
+  );
 
   const {
     items: stores,
@@ -50,7 +62,7 @@ export default function StoresList() {
     pagination,
     refresh,
     remove,
-  } = useCrud<StoreApi>(fetchStores, deleteStore);
+  } = useCrud<StoreApi>(fetchStores, deleteStore, { filterFn });
 
   // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -59,7 +71,6 @@ export default function StoresList() {
   const [selectedStore, setSelectedStore] = useState<StoreApi | null>(null);
   const [storeToDelete, setStoreToDelete] = useState<StoreApi | null>(null);
   const [notification, setNotification] = useState<NotificationState | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
   // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
 
@@ -93,19 +104,6 @@ export default function StoresList() {
     }
   };
 
-  // ── Filtrado Local ───────────────────────────────────────────────────────
-  const filteredStores = useMemo(() => {
-    return stores.filter((store) => {
-      const search = searchTerm.toLowerCase();
-      return (
-        store.store_name.toLowerCase().includes(search) ||
-        store.address.toLowerCase().includes(search)
-      );
-    });
-  }, [stores, searchTerm]);
-
-  // ── Renderizado ──────────────────────────────────────────────────────────
-
   return (
     <CrudPageTemplate
       title="Tiendas Físicas"
@@ -137,11 +135,11 @@ export default function StoresList() {
         <DataTable
           columns={['ID', 'Nombre', 'Dirección', 'Estado', 'Acciones']}
           isLoading={isLoading}
-          rowCount={filteredStores.length}
+          rowCount={stores.length}
           expectedRows={pagination.pageSize}
-          emptyMessage="No se encontraron tiendas con los criterios de búsqueda."
+          emptyMessage="No se encontraron tiendas con los criterios actuales."
         >
-          {filteredStores.map((store, index) => (
+          {stores.map((store, index) => (
             <tr
               key={store.id_store}
               onClick={() => {
@@ -152,15 +150,11 @@ export default function StoresList() {
                 index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
               }`}
             >
-              <td className="px-3 py-0 align-middle truncate max-w-16 text-gray-500">
-                #{store.id_store}
-              </td>
-              <td className="px-3 py-0 align-middle font-medium text-gray-900 truncate max-w-48">
+              <td className="px-3 py-0 align-middle text-gray-500">#{store.id_store}</td>
+              <td className="px-3 py-0 align-middle font-medium text-gray-900">
                 {store.store_name}
               </td>
-              <td className="px-3 py-0 align-middle truncate max-w-xs text-gray-600">
-                {store.address}
-              </td>
+              <td className="px-3 py-0 align-middle text-gray-600">{store.address}</td>
               <td className="px-3 py-0 align-middle">
                 <StatusBadge status={store.status} />
               </td>
@@ -181,15 +175,13 @@ export default function StoresList() {
         <TablePagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
-          totalItems={filteredStores.length}
+          totalItems={pagination.totalItems}
           pageSize={pagination.pageSize}
           onPageChange={pagination.setPage}
           isLoading={isLoading}
         />
       }
     >
-      {/* ── Modales de Acción ── */}
-
       <ConfirmDeleteModal
         isOpen={storeToDelete !== null}
         onClose={() => setStoreToDelete(null)}

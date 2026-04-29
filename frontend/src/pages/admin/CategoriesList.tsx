@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -35,13 +35,25 @@ interface NotificationState {
 
 /**
  * Página: CategoriesList
- * Gestión de clasificaciones de productos.
- * Implementa filtrado local y búsqueda reactiva.
+ * Gestión de clasificaciones de productos con filtrado reactivo.
  */
 export default function CategoriesList() {
+  const [searchTerm, setSearchTerm] = useState('');
+
   // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
   const fetchCategories = useCallback(() => categoriesService.getCategories(0, 1000), []);
   const deleteCategory = useCallback((id: number) => categoriesService.deleteCategory(id), []);
+
+  const filterFn = useCallback(
+    (cat: CategoryApi) => {
+      const search = searchTerm.toLowerCase();
+      return (
+        cat.category_name.toLowerCase().includes(search) ||
+        (cat.description || '').toLowerCase().includes(search)
+      );
+    },
+    [searchTerm]
+  );
 
   const {
     items: categories,
@@ -50,7 +62,7 @@ export default function CategoriesList() {
     pagination,
     refresh,
     remove,
-  } = useCrud<CategoryApi>(fetchCategories, deleteCategory);
+  } = useCrud<CategoryApi>(fetchCategories, deleteCategory, { filterFn });
 
   // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -59,7 +71,6 @@ export default function CategoriesList() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryApi | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<CategoryApi | null>(null);
   const [notification, setNotification] = useState<NotificationState | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
   // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
 
@@ -93,19 +104,6 @@ export default function CategoriesList() {
     }
   };
 
-  // ── Filtrado Local ───────────────────────────────────────────────────────
-  const filteredCategories = useMemo(() => {
-    return categories.filter((cat) => {
-      const search = searchTerm.toLowerCase();
-      return (
-        cat.category_name.toLowerCase().includes(search) ||
-        (cat.description || '').toLowerCase().includes(search)
-      );
-    });
-  }, [categories, searchTerm]);
-
-  // ── Renderizado ──────────────────────────────────────────────────────────
-
   return (
     <CrudPageTemplate
       title="Categorías"
@@ -137,11 +135,11 @@ export default function CategoriesList() {
         <DataTable
           columns={['ID', 'Nombre de Categoría', 'Descripción', 'Estado', 'Acciones']}
           isLoading={isLoading}
-          rowCount={filteredCategories.length}
+          rowCount={categories.length}
           expectedRows={pagination.pageSize}
           emptyMessage="No se encontraron categorías con los filtros actuales."
         >
-          {filteredCategories.map((category, index) => (
+          {categories.map((category, index) => (
             <tr
               key={category.id_category}
               onClick={() => {
@@ -155,8 +153,8 @@ export default function CategoriesList() {
               <td className="px-4 py-0 align-middle text-gray-500 font-mono text-xs">
                 #{category.id_category}
               </td>
-              <td className="px-4 py-0 align-middle">
-                <span className="font-medium text-gray-900">{category.category_name}</span>
+              <td className="px-4 py-0 align-middle font-medium text-gray-900">
+                {category.category_name}
               </td>
               <td className="px-4 py-0 align-middle text-gray-600 truncate max-w-[300px]">
                 {category.description || '-'}
@@ -185,15 +183,13 @@ export default function CategoriesList() {
         <TablePagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
-          totalItems={filteredCategories.length}
+          totalItems={pagination.totalItems}
           pageSize={pagination.pageSize}
           onPageChange={pagination.setPage}
           isLoading={isLoading}
         />
       }
     >
-      {/* Modales de Acción */}
-
       <ConfirmDeleteModal
         isOpen={categoryToDelete !== null}
         onClose={() => setCategoryToDelete(null)}

@@ -37,12 +37,29 @@ interface NotificationState {
 /**
  * Página: UsersList
  * Gestión de empleados y usuarios del sistema.
- * Implementa filtros por rol y búsqueda por nombre/usuario.
  */
 export default function UsersList() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<number>(0);
+  const [roles, setRoles] = useState<RoleApi[]>([]);
+
   // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
   const fetchEmployees = useCallback(() => employeesService.getEmployees(0, 1000), []);
   const deleteEmployee = useCallback((id: number) => employeesService.deleteEmployee(id), []);
+
+  // Definimos la función de filtro memorizada para que useCrud reaccione correctamente
+  const filterFn = useCallback(
+    (emp: EmployeeApi) => {
+      const matchesSearch =
+        emp.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.last_name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesRole = roleFilter === 0 || emp.role_id === roleFilter;
+      return matchesSearch && matchesRole;
+    },
+    [searchTerm, roleFilter]
+  );
 
   const {
     items: employees,
@@ -51,7 +68,12 @@ export default function UsersList() {
     pagination,
     refresh,
     remove,
-  } = useCrud<EmployeeApi>(fetchEmployees, deleteEmployee);
+  } = useCrud<EmployeeApi>(fetchEmployees, deleteEmployee, { filterFn });
+
+  // ── Carga de Roles para Filtro ──
+  useEffect(() => {
+    void rolesService.getRoles().then(setRoles);
+  }, []);
 
   // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -60,14 +82,6 @@ export default function UsersList() {
   const [selectedUser, setSelectedUser] = useState<EmployeeApi | null>(null);
   const [userToDelete, setUserToDelete] = useState<EmployeeApi | null>(null);
   const [notification, setNotification] = useState<NotificationState | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<number>(0);
-  const [roles, setRoles] = useState<RoleApi[]>([]);
-
-  // ── Carga de Roles para Filtro ──
-  useEffect(() => {
-    void rolesService.getRoles().then(setRoles);
-  }, []);
 
   // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
 
@@ -101,20 +115,6 @@ export default function UsersList() {
     }
   };
 
-  // ── Filtrado Local ───────────────────────────────────────────────────────
-  const filteredEmployees = employees.filter((emp) => {
-    const matchesSearch =
-      emp.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.last_name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesRole = roleFilter === 0 || emp.role_id === roleFilter;
-
-    return matchesSearch && matchesRole;
-  });
-
-  // ── Renderizado ──────────────────────────────────────────────────────────
-
   return (
     <CrudPageTemplate
       title="Empleados"
@@ -141,7 +141,6 @@ export default function UsersList() {
           onRefresh={refresh}
           isLoading={isLoading}
         >
-          {/* Filtro de Rol Adicional */}
           <div className="flex items-center gap-2">
             <UsersIcon size={16} className="text-gray-400" />
             <select
@@ -163,11 +162,11 @@ export default function UsersList() {
         <DataTable
           columns={['Usuario', 'Nombre Completo', 'Rol', 'Tienda', 'Estado', 'Acciones']}
           isLoading={isLoading}
-          rowCount={filteredEmployees.length}
+          rowCount={employees.length}
           expectedRows={pagination.pageSize}
           emptyMessage="No se encontraron empleados con los filtros actuales."
         >
-          {filteredEmployees.map((emp, index) => (
+          {employees.map((emp, index) => (
             <tr
               key={emp.id_employee}
               onClick={() => {
@@ -181,12 +180,8 @@ export default function UsersList() {
               <td className="px-4 py-0 align-middle">
                 <span className="font-medium text-brand">@{emp.username}</span>
               </td>
-              <td className="px-4 py-0 align-middle">
-                <div className="flex flex-col">
-                  <span className="text-gray-900 font-medium">
-                    {emp.first_name} {emp.last_name}
-                  </span>
-                </div>
+              <td className="px-4 py-0 align-middle text-gray-900 font-medium">
+                {emp.first_name} {emp.last_name}
               </td>
               <td className="px-4 py-0 align-middle">
                 <RoleBadge role={emp.role?.role_name || 'Sin Rol'} />
@@ -214,15 +209,13 @@ export default function UsersList() {
         <TablePagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
-          totalItems={filteredEmployees.length} // Usamos el total filtrado para la UI
+          totalItems={pagination.totalItems}
           pageSize={pagination.pageSize}
           onPageChange={pagination.setPage}
           isLoading={isLoading}
         />
       }
     >
-      {/* Modales de Acción */}
-
       <ConfirmDeleteModal
         isOpen={userToDelete !== null}
         onClose={() => setUserToDelete(null)}
