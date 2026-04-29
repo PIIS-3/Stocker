@@ -8,7 +8,7 @@ import { authService } from '../services/auth.service';
 export default function Login() {
   const navigate = useNavigate();
   // Pre-rellenado para facilitar el desarrollo
-  const [username, setUsername] = useState('carlos.garcia');
+  const [username, setUsername] = useState('maria.lopez');
   const [password, setPassword] = useState('stocker123');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
