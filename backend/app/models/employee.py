@@ -104,10 +104,14 @@ class EmployeeUpdate(SQLModel):
 
 # ── Employee ─────────────────────────────────────────────────────────
 # Modelo ORM — representa la tabla 'employee' en PostgreSQL.
+# No se usa directamente en request/response de la API.
 class Employee(TimestampMixin, EmployeeBase, table=True):
+    # None antes de persistir; PostgreSQL asigna el ID vía secuencia SERIAL.
     id_employee: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
 
+    # Relaciones lazy: FastAPI las serializa en EmployeeResponse como RoleBase / StoreBase
+    # (solo los campos de negocio, sin recursión).
     role: Optional[Role] = Relationship(back_populates="employees")
     store: Optional[Store] = Relationship(back_populates="employees")
 
