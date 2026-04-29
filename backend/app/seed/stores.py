@@ -54,14 +54,12 @@ STORES_SEED: List[Dict[str, Any]] = [
 # ── Lógica de seed ────────────────────────────────────────────────────────────
 
 def seed_stores(session: Session, report: SeedReport) -> dict[str, models.Store]:
-    """Inserta o actualiza las tiendas semilla.
+    """Inserta o actualiza las tiendas (sucursales) semilla.
 
-    Usa `store_name` como campo de unicidad (igual que el CRUD de la API).
-    Es idempotente: ejecutar varias veces no genera duplicados.
+    Usa `store_name` como campo de unicidad. Es un proceso idempotente.
 
     Returns:
-        Mapa {store_name → Store} para que otros módulos
-        (ej: seed_employees) puedan resolver FKs sin consultas extra.
+        Mapa {store_name → Store} para resolución de dependencias.
     """
     stores_by_name: dict[str, models.Store] = {}
 

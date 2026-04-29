@@ -66,11 +66,10 @@ def seed_products(
     report: SeedReport,
     categories_by_name: dict[str, models.Category],
 ) -> None:
-    """Inserta o actualiza los productos semilla.
+    """Inserta o actualiza las plantillas de producto semilla.
 
-    Args:
-        categories_by_name: Mapa {category_name → Category} devuelto por
-                            seed_categories(). Necesario para resolver las FKs.
+    Resuelve la categoría de cada producto utilizando el mapa proporcionado
+    antes de realizar la inserción.
     """
     for data in PRODUCTS_SEED:
         category_name = data.pop("category_name")
