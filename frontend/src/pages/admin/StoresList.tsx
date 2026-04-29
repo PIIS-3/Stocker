@@ -148,7 +148,8 @@ export default function StoresList() {
   };
 
   const pageStart = stores.length === 0 ? 0 : (visiblePage - 1) * selectedPageSize + 1;
-  const pageEnd = Math.min(pageStart + paginatedStores.length - 1, stores.length);
+  const pageEnd =
+    stores.length === 0 ? 0 : Math.min(pageStart + paginatedStores.length - 1, stores.length);
 
   return (
     <div className="p-6 max-w-7xl mx-auto h-full min-h-0 flex flex-col gap-4 overflow-hidden scrollbar-gutter-stable">
