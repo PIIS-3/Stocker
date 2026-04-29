@@ -13,7 +13,7 @@ from .mixins import TimestampMixin
 from .category import CategoryBase, CategoryCreate, CategoryUpdate, Category, CategoryResponse
 
 # ── Producto ─────────────────────────────────────────────────────────
-from .product import ProductTemplateBase, ProductTemplate, ProductTemplateResponse
+from .product import ProductTemplateBase, ProductTemplateCreate, ProductTemplateUpdate, ProductTemplate, ProductTemplateResponse
 
 # ── Tienda ───────────────────────────────────────────────────────────
 from .store import StoreBase, StoreCreate, StoreUpdate, Store, StoreResponse
@@ -41,6 +41,8 @@ __all__ = [
     "CategoryResponse",
     # Producto
     "ProductTemplateBase",
+    "ProductTemplateCreate",
+    "ProductTemplateUpdate",
     "ProductTemplate",
     "ProductTemplateResponse",
     # Tienda
