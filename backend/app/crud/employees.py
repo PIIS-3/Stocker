@@ -104,8 +104,10 @@ def delete_employee(db: Session, employee_id: int) -> models.Employee | None:
     # para evitar que FastAPI intente refrescarlo tras el borrado físico.
     _ = db_employee.role
     _ = db_employee.store
+    db.flush()
     db.expunge(db_employee)
     db.commit()
+
 
     return db_employee
 

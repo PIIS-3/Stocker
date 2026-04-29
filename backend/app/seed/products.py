@@ -17,6 +17,7 @@ PRODUCTS_SEED: List[Dict[str, Any]] = [
     {
         "product_name": "Monitor 24 Pulgadas LED",
         "sku": "ELEC-MON-001",
+        "brand": "LG",
         "fixed_selling_price": 150.00,
         "category_name": "Electrónica",
         "status": models.StatusEnum.Active,
@@ -24,6 +25,7 @@ PRODUCTS_SEED: List[Dict[str, Any]] = [
     {
         "product_name": "Teclado Mecánico RGB",
         "sku": "ELEC-TEC-002",
+        "brand": "Corsair",
         "fixed_selling_price": 85.50,
         "category_name": "Electrónica",
         "status": models.StatusEnum.Active,
@@ -31,6 +33,7 @@ PRODUCTS_SEED: List[Dict[str, Any]] = [
     {
         "product_name": "Taladro Percutor 18V",
         "sku": "TOOL-TAL-045",
+        "brand": "Bosch",
         "fixed_selling_price": 120.00,
         "category_name": "Herramientas",
         "status": models.StatusEnum.Active,
@@ -38,6 +41,7 @@ PRODUCTS_SEED: List[Dict[str, Any]] = [
     {
         "product_name": "Caja de Folios A4 (500h)",
         "sku": "PAP-FOL-100",
+        "brand": "Navigator",
         "fixed_selling_price": 5.95,
         "category_name": "Papelería",
         "status": models.StatusEnum.Active,
@@ -45,6 +49,7 @@ PRODUCTS_SEED: List[Dict[str, Any]] = [
     {
         "product_name": "Destornillador de Precisión Set",
         "sku": "TOOL-DES-230",
+        "brand": "Wera",
         "fixed_selling_price": 24.90,
         "category_name": "Herramientas",
         "status": models.StatusEnum.Active,
@@ -52,6 +57,7 @@ PRODUCTS_SEED: List[Dict[str, Any]] = [
     {
         "product_name": "Desinfectante Multiusos 1L",
         "sku": "LIMP-DES-010",
+        "brand": "Sanytol",
         "fixed_selling_price": 3.75,
         "category_name": "Limpieza",
         "status": models.StatusEnum.Active,

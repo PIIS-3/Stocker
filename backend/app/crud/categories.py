@@ -107,6 +107,9 @@ def delete_category(db: Session, category_id: int) -> models.Category | None:
         return None  # El endpoint convierte este None en HTTP 404.
 
     db.delete(db_category)
+    db.flush()
+    db.expunge(db_category)
     db.commit()
-    # No se llama db.refresh: la fila ya no existe en BD.
     return db_category
+
+

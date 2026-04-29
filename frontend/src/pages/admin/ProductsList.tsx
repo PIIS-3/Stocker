@@ -1,172 +1,276 @@
-import { Plus, Image as ImageIcon } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { Button } from '../../components/atoms/Button';
-import { StatusBadge } from '../../components/atoms/StatusBadge';
-import { PageHeader } from '../../components/molecules/PageHeader';
-import { SearchInput } from '../../components/molecules/SearchInput';
-import { ActionButtons } from '../../components/molecules/ActionButtons';
-import { ProductForm } from '../../components/organisms/ProductForm';
-import { productsService } from '../../services/products.service';
+import { Plus, Package, Tag as TagIcon, Filter } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
 
-interface ProductItem {
+// ── Átomos ──────────────────────────────────────────────────────────────────
+import { Button, StatusBadge } from '../../components/atoms';
+
+// ── Moléculas ───────────────────────────────────────────────────────────────
+import {
+  ActionButtons,
+  TableToolbar,
+  TablePagination,
+  ConfirmDeleteModal,
+  type ToastVariant,
+} from '../../components/molecules';
+
+// ── Organismos ──────────────────────────────────────────────────────────────
+import { ProductForm, DataTable } from '../../components/organisms';
+
+// ── Templates ───────────────────────────────────────────────────────────────
+import { CrudPageTemplate } from '../../components/templates';
+
+// ── Servicios y Hooks ───────────────────────────────────────────────────────
+import { productsService, type ProductApi } from '../../services/products.service';
+import { categoriesService, type CategoryApi } from '../../services/categories.service';
+import { useCrud } from '../../hooks/useCrud';
+
+// ── Configuración ───────────────────────────────────────────────────────────
+const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
+
+interface NotificationState {
   id: number;
-  sku: string;
-  name: string;
-  brand: string;
-  category: string;
-  price: number;
-  status: string;
+  title: string;
+  message: string;
+  variant: ToastVariant;
 }
 
+/**
+ * Página: ProductsList
+ * Gestión del catálogo maestro de productos (Plantillas).
+ * Implementa filtrado local y búsqueda avanzada por SKU/Nombre/Marca.
+ */
 export default function ProductsList() {
-  const [products, setProducts] = useState<ProductItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<number>(0);
+  const [categories, setCategories] = useState<CategoryApi[]>([]);
 
+  // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
+  const fetchProducts = useCallback(() => productsService.getProducts(0, 1000), []);
+  const deleteProduct = useCallback((id: number) => productsService.deleteProduct(id), []);
+
+  const filterFn = useCallback(
+    (prod: ProductApi) => {
+      const search = searchTerm.toLowerCase();
+      const matchesSearch =
+        prod.product_name.toLowerCase().includes(search) ||
+        prod.sku.toLowerCase().includes(search) ||
+        (prod.brand || '').toLowerCase().includes(search);
+
+      const matchesCategory = categoryFilter === 0 || prod.category_id === categoryFilter;
+
+      return matchesSearch && matchesCategory;
+    },
+    [searchTerm, categoryFilter]
+  );
+
+  const {
+    items: products,
+    isLoading,
+    errorMessage,
+    pagination,
+    refresh,
+    remove,
+  } = useCrud<ProductApi>(fetchProducts, deleteProduct, { filterFn });
+
+  // ── Carga de Categorías para Filtro ──
+  useEffect(() => {
+    void categoriesService.getCategories(0, 1000).then(setCategories);
+  }, []);
+
+  // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductApi | null>(null);
+  const [productToDelete, setProductToDelete] = useState<ProductApi | null>(null);
+  const [notification, setNotification] = useState<NotificationState | null>(null);
 
-  const loadProducts = async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
+  // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
 
+  const showNotification = useCallback((variant: ToastVariant, title: string, message: string) => {
+    setNotification({ id: Date.now(), variant, title, message });
+    setTimeout(() => setNotification(null), 3800);
+  }, []);
+
+  const handleProductSuccess = (action: 'create' | 'update', product: ProductApi) => {
+    void refresh();
+    showNotification(
+      'success',
+      action === 'create' ? 'Producto creado' : 'Producto actualizado',
+      `El producto ${product.product_name} ha sido guardado.`
+    );
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
     try {
-      const data = await productsService.getProducts();
-      const formattedData: ProductItem[] = data.map((item) => ({
-        id: item.id_product,
-        sku: item.sku,
-        name: item.product_name,
-        brand: item.brand || 'N/A',
-        category: item.category?.category_name || 'Sin Categoría',
-        price: item.fixed_selling_price,
-        status: item.status,
-      }));
-
-      setProducts(formattedData);
-    } catch {
-      setErrorMessage('No se pudieron cargar los productos. Reintenta en unos segundos.');
-    } finally {
-      setIsLoading(false);
+      await remove(productToDelete.id_product);
+      showNotification(
+        'success',
+        'Producto eliminado',
+        `${productToDelete.product_name} ha sido retirado del catálogo.`
+      );
+      setProductToDelete(null);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al eliminar producto.';
+      showNotification('error', 'Error', message);
     }
   };
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadProducts();
-  }, []);
-
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <PageHeader
-        title="Catálogo de Productos"
-        subtitle="Gestión de plantillas maestras y referencias SKU."
-        action={
-          <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
-            Nuevo Producto
-          </Button>
-        }
+    <CrudPageTemplate
+      title="Catálogo maestro"
+      subtitle="Define las especificaciones de tus productos, precios base y categorías."
+      headerAction={
+        <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
+          Nuevo Producto
+        </Button>
+      }
+      // Búsqueda
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
+      searchPlaceholder="Buscar por SKU, nombre o marca..."
+      // Notificaciones
+      notification={notification}
+      onNotificationClose={() => setNotification(null)}
+      errorMessage={errorMessage}
+      // Configuración de Tabla
+      tableToolbar={
+        <TableToolbar
+          pageSize={pagination.pageSize}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
+          onPageSizeChange={pagination.setPageSize}
+          onRefresh={refresh}
+          isLoading={isLoading}
+        >
+          <div className="flex items-center gap-2">
+            <Filter size={16} className="text-gray-400" />
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(Number(e.target.value))}
+              className="px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-colors outline-none focus:ring-2 focus:ring-brand"
+            >
+              <option value={0}>Todas las categorías</option>
+              {categories.map((cat) => (
+                <option key={cat.id_category} value={cat.id_category}>
+                  {cat.category_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </TableToolbar>
+      }
+      table={
+        <DataTable
+          columns={['SKU', 'Producto / Marca', 'Categoría', 'Precio Venta', 'Estado', 'Acciones']}
+          isLoading={isLoading}
+          rowCount={products.length}
+          expectedRows={pagination.pageSize}
+          emptyMessage="No se encontraron productos con los filtros actuales."
+        >
+          {products.map((prod, index) => (
+            <tr
+              key={prod.id_product}
+              onClick={() => {
+                setSelectedProduct(prod);
+                setIsViewOpen(true);
+              }}
+              className={`h-14 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
+                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+              }`}
+            >
+              <td className="px-4 py-0 align-middle">
+                <span className="font-mono text-xs text-brand font-semibold tracking-wider">
+                  {prod.sku}
+                </span>
+              </td>
+              <td className="px-4 py-0 align-middle">
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-900">{prod.product_name}</span>
+                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <Package size={10} /> {prod.brand || 'Marca genérica'}
+                  </span>
+                </div>
+              </td>
+              <td className="px-4 py-0 align-middle">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200 flex items-center gap-1.5 w-fit">
+                  <TagIcon size={12} />
+                  {prod.category?.category_name || 'Sin categoría'}
+                </span>
+              </td>
+              <td className="px-4 py-0 align-middle font-semibold text-gray-900">
+                {prod.fixed_selling_price.toLocaleString('es-ES', {
+                  style: 'currency',
+                  currency: 'EUR',
+                })}
+              </td>
+              <td className="px-4 py-0 align-middle">
+                <StatusBadge
+                  status={prod.status}
+                  activeLabel="Disponible"
+                  inactiveLabel="Descatalogado"
+                />
+              </td>
+              <td className="px-4 py-0 align-middle">
+                <ActionButtons
+                  onEdit={() => {
+                    setSelectedProduct(prod);
+                    setIsEditOpen(true);
+                  }}
+                  onDelete={() => setProductToDelete(prod)}
+                />
+              </td>
+            </tr>
+          ))}
+        </DataTable>
+      }
+      tablePagination={
+        <TablePagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          onPageChange={pagination.setPage}
+          isLoading={isLoading}
+        />
+      }
+    >
+      <ConfirmDeleteModal
+        isOpen={productToDelete !== null}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Eliminar del Catálogo"
+        itemName={productToDelete?.product_name}
+        isLoading={isLoading}
       />
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4 flex-wrap">
-          <SearchInput placeholder="Buscar por Nombre, SKU o Marca..." className="w-full md:w-80" />
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">
-              {isLoading ? 'Cargando...' : `${products.length} productos`}
-            </span>
-            <button
-              type="button"
-              onClick={loadProducts}
-              className="px-3 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              Actualizar
-            </button>
-          </div>
-        </div>
+      <ProductForm
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        mode="create"
+        onSuccess={handleProductSuccess}
+      />
 
-        {errorMessage && (
-          <div className="mx-4 mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 flex items-center justify-between gap-3">
-            <span>{errorMessage}</span>
-            <button
-              type="button"
-              onClick={loadProducts}
-              className="px-3 py-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors"
-            >
-              Reintentar
-            </button>
-          </div>
-        )}
+      <ProductForm
+        isOpen={isEditOpen}
+        onClose={() => {
+          setIsEditOpen(false);
+          setSelectedProduct(null);
+        }}
+        mode="edit"
+        initialData={selectedProduct}
+        onSuccess={handleProductSuccess}
+      />
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[860px] text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 text-gray-500 text-sm">
-                <th className="p-4 font-medium border-b border-gray-100 w-16">Img</th>
-                <th className="p-4 font-medium border-b border-gray-100">SKU</th>
-                <th className="p-4 font-medium border-b border-gray-100">Producto</th>
-                <th className="p-4 font-medium border-b border-gray-100">Marca</th>
-                <th className="p-4 font-medium border-b border-gray-100">Categoría</th>
-                <th className="p-4 font-medium border-b border-gray-100 text-right">
-                  Precio Venta
-                </th>
-                <th className="p-4 font-medium border-b border-gray-100">Estado</th>
-                <th className="p-4 font-medium border-b border-gray-100 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-700 text-sm">
-              {isLoading && (
-                <tr>
-                  <td colSpan={8} className="p-8 text-center text-gray-500">
-                    Cargando productos...
-                  </td>
-                </tr>
-              )}
-
-              {!isLoading && !errorMessage && products.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="p-8 text-center text-gray-500">
-                    No hay productos para mostrar.
-                  </td>
-                </tr>
-              )}
-
-              {products.map((product) => (
-                <tr
-                  key={product.id}
-                  className="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-none"
-                >
-                  <td className="p-4">
-                    <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
-                      <ImageIcon size={18} />
-                    </div>
-                  </td>
-                  <td className="p-4 font-mono text-xs text-brand font-semibold">{product.sku}</td>
-                  <td className="p-4 font-medium text-gray-900">{product.name}</td>
-                  <td className="p-4">{product.brand}</td>
-                  <td className="p-4 text-gray-500">{product.category}</td>
-                  <td className="p-4 text-right font-medium text-gray-900">
-                    {product.price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })}
-                  </td>
-                  <td className="p-4">
-                    <StatusBadge status={product.status} />
-                  </td>
-                  <td className="p-4">
-                    <ActionButtons onEdit={() => setIsEditOpen(true)} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="px-4 py-3 border-t border-gray-100 text-xs text-gray-500 bg-gray-50/70">
-          Vista optimizada para escritorio y scroll horizontal en pantallas pequeñas.
-        </div>
-      </div>
-
-      {/* Modales */}
-      <ProductForm isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} mode="create" />
-      <ProductForm isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} mode="edit" />
-    </div>
+      <ProductForm
+        isOpen={isViewOpen}
+        onClose={() => {
+          setIsViewOpen(false);
+          setSelectedProduct(null);
+        }}
+        mode="view"
+        initialData={selectedProduct}
+      />
+    </CrudPageTemplate>
   );
 }
