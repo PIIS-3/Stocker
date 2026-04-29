@@ -107,7 +107,10 @@ def delete_store(db: Session, store_id: int) -> models.Store | None:
         return None  # El endpoint convierte este None en HTTP 404.
 
     db.delete(db_store)
+    db.flush()
+    db.expunge(db_store)
     db.commit()
-    # No se llama db.refresh: la fila ya no existe en BD.
     return db_store
+
+
 

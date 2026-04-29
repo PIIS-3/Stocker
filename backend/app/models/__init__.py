@@ -22,7 +22,8 @@ from .product import (
 from .store import StoreBase, StoreCreate, StoreUpdate, Store, StoreResponse
 
 # ── Rol ──────────────────────────────────────────────────────────────
-from .role import RoleBase, Role
+from .role import RoleBase, Role, RoleResponse
+
 
 # ── Empleado ─────────────────────────────────────────────────────────
 from .employee import EmployeeBase, EmployeeCreate, EmployeeUpdate, Employee, EmployeeResponse
@@ -57,6 +58,8 @@ __all__ = [
     # Rol
     "RoleBase",
     "Role",
+    "RoleResponse",
+
     # Empleado
     "EmployeeBase",
     "EmployeeCreate",

@@ -16,26 +16,36 @@ from .products import seed_products
 from .employees import seed_employees
 
 def run_seed() -> None:
-    """Ejecuta todos los seeders en una única transacción global."""
+    """Ejecuta todos los seeders en una única transacción global.
+
+    Este proceso interactúa directamente con la base de datos mediante SQLModel,
+    por lo que NO requiere tokens de autenticación ni pasar por la capa API.
+    """
     report = SeedReport()
 
     with Session(engine) as session:
         try:
-            # 0. Roles (necesarios para empleados)
+            # ── 0. Roles ──────────────────────────────────────────────────────
+            # Base jerárquica necesaria para crear empleados.
             roles_map = seed_roles(session, report)
 
-            # 1. Categorías (necesarias para productos)
+            # ── 1. Categorías ─────────────────────────────────────────────────
+            # Necesarias para clasificar los productos.
             categories_map = seed_categories(session, report)
 
-            # 2. Tiendas (necesarias para empleados)
+            # ── 2. Tiendas ────────────────────────────────────────────────────
+            # Lugar físico de trabajo para los empleados.
             stores_map = seed_stores(session, report)
 
-            # 3. Productos
+            # ── 3. Productos ──────────────────────────────────────────────────
+            # Plantillas de productos vinculadas a sus categorías.
             seed_products(session, report, categories_map)
 
-            # 4. Empleados
+            # ── 4. Empleados ──────────────────────────────────────────────────
+            # Personal del sistema vinculado a roles y tiendas específicas.
             seed_employees(session, report, stores_map, roles_map)
 
+            # Confirmación de todos los cambios.
             session.commit()
             report.print_summary()
 
@@ -43,6 +53,7 @@ def run_seed() -> None:
             session.rollback()
             print(f"\n❌ Error ejecutando seed: {exc}")
             raise SystemExit(1) from exc
+
 
 if __name__ == "__main__":
     run_seed()

@@ -131,8 +131,11 @@ def delete_product(db: Session, product_id: int) -> models.ProductTemplate | Non
         return None  # El endpoint convierte este None en HTTP 404.
 
     db.delete(db_product)
+    # Cargamos la relación category antes de expulsar para que sea serializable
+    _ = db_product.category
+    db.flush()
+    db.expunge(db_product)
     db.commit()
-    # No se llama db.refresh: la fila ya no existe en BD.
     return db_product
 
 

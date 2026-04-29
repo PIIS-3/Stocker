@@ -10,7 +10,7 @@ type StoreFormAction = 'create' | 'update';
 interface StoreFormProps {
   isOpen: boolean;
   onClose: () => void;
-  mode?: 'create' | 'edit';
+  mode?: 'create' | 'edit' | 'view';
   initialData?: StoreApi | null;
   onSuccess?: (action: StoreFormAction, store: StoreApi) => void;
   onError?: (message: string) => void;
@@ -18,8 +18,8 @@ interface StoreFormProps {
 
 /**
  * Componente: StoreForm
- * Formulario modal para crear o editar una tienda física.
- * Maneja el estado local del formulario, validaciones básicas y llamadas al servicio de tiendas.
+ * Formulario modal para crear, editar o visualizar una tienda física.
+ * Maneja el estado local del formulario y soporta modo de solo lectura.
  */
 export function StoreForm({
   isOpen,
@@ -30,9 +30,11 @@ export function StoreForm({
   onError,
 }: StoreFormProps) {
   const isEdit = mode === 'edit';
+  const isView = mode === 'view';
+  const isReadOnly = isView;
 
   const createInitialFormData = (): StoreCreate => {
-    if (isEdit && initialData) {
+    if ((isEdit || isView) && initialData) {
       return {
         store_name: initialData.store_name,
         address: initialData.address,
@@ -57,9 +59,10 @@ export function StoreForm({
       setFormData(createInitialFormData());
       setError(null);
     }
-  }, [isOpen, initialData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen, initialData, mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    if (isReadOnly) return;
     const { id, value } = e.target;
     const name = id.replace('store-', '');
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -67,6 +70,7 @@ export function StoreForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isReadOnly) return;
     setError(null);
     setIsSubmitting(true);
 
@@ -103,18 +107,15 @@ export function StoreForm({
     }
   };
 
+  const modalTitle = isView ? 'Detalles de la Tienda' : isEdit ? 'Editar Tienda' : 'Nueva Tienda';
+  const modalSubtitle = isView
+    ? 'Información de la sucursal seleccionada.'
+    : isEdit
+      ? 'Modifica los datos de la sucursal.'
+      : 'Registra una nueva sucursal o punto de venta.';
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEdit ? 'Editar Tienda' : 'Nueva Tienda'}
-      subtitle={
-        isEdit
-          ? 'Modifica los datos de la sucursal.'
-          : 'Registra una nueva sucursal o punto de venta.'
-      }
-      size="lg"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} subtitle={modalSubtitle} size="lg">
       <form className="p-5 sm:p-6 flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
         {error && (
           <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg text-sm">
@@ -125,16 +126,19 @@ export function StoreForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700" htmlFor="store-store_name">
-              Nombre de la Tienda <span className="text-rose-500">*</span>
+              Nombre de la Tienda {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
             <input
               id="store-store_name"
               type="text"
               required
+              readOnly={isReadOnly}
               placeholder="Ej: Madrid Centro"
               value={formData.store_name}
               onChange={handleChange}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-900 placeholder-gray-400"
+              className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm text-gray-900 placeholder-gray-400 ${
+                isReadOnly ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-brand'
+              }`}
             />
           </div>
 
@@ -144,9 +148,12 @@ export function StoreForm({
             </label>
             <select
               id="store-status"
+              disabled={isReadOnly}
               value={formData.status}
               onChange={handleChange}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-700 bg-white"
+              className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm text-gray-700 bg-white ${
+                isReadOnly ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-brand'
+              }`}
             >
               <option value="Active">Activa</option>
               <option value="Inactive">Inactiva</option>
@@ -157,16 +164,19 @@ export function StoreForm({
         {/* Dirección */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-gray-700" htmlFor="store-address">
-            Dirección <span className="text-rose-500">*</span>
+            Dirección {!isReadOnly && <span className="text-rose-500">*</span>}
           </label>
           <input
             id="store-address"
             type="text"
             required
+            readOnly={isReadOnly}
             placeholder="Ej: Gran Vía 12, Madrid"
             value={formData.address}
             onChange={handleChange}
-            className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm text-gray-900 placeholder-gray-400"
+            className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm text-gray-900 placeholder-gray-400 ${
+              isReadOnly ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-brand'
+            }`}
           />
         </div>
 
@@ -176,14 +186,21 @@ export function StoreForm({
             variant="ghost"
             type="button"
             onClick={onClose}
-            icon={<X size={16} />}
+            icon={isView ? undefined : <X size={16} />}
             disabled={isSubmitting}
           >
-            Cancelar
+            {isView ? 'Cerrar' : 'Cancelar'}
           </Button>
-          <Button variant="primary" type="submit" icon={<Save size={16} />} disabled={isSubmitting}>
-            {isSubmitting ? 'Guardando...' : isEdit ? 'Guardar Cambios' : 'Crear Tienda'}
-          </Button>
+          {!isView && (
+            <Button
+              variant="primary"
+              type="submit"
+              icon={<Save size={16} />}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Guardando...' : isEdit ? 'Guardar Cambios' : 'Crear Tienda'}
+            </Button>
+          )}
         </div>
       </form>
     </Modal>

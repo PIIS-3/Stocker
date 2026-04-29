@@ -52,7 +52,7 @@ CATEGORIES_SEED: List[Dict[str, Any]] = [
 def seed_categories(
     session: Session, report: SeedReport
 ) -> dict[str, models.Category]:
-    """Inserta o actualiza las categorías semilla.
+    """Inserta o actualiza las categorías semilla del inventario.
 
     Returns:
         Mapa {category_name → Category} para que otros módulos

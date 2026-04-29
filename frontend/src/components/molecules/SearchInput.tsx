@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react';
+import { type InputHTMLAttributes } from 'react';
 
-interface SearchInputProps {
+interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
   className?: string;
 }
@@ -8,6 +9,7 @@ interface SearchInputProps {
 export function SearchInput({
   placeholder = 'Buscar...',
   className = 'w-full md:w-72',
+  ...rest
 }: SearchInputProps) {
   return (
     <div className={`relative ${className}`}>
@@ -15,7 +17,8 @@ export function SearchInput({
       <input
         type="text"
         placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+        className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all text-sm"
+        {...rest}
       />
     </div>
   );

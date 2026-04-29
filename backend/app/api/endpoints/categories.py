@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 from typing import List
 
@@ -12,6 +13,7 @@ router = APIRouter(tags=["Categorías"], dependencies=[Depends(get_current_emplo
 # Respuestas comunes documentadas en Swagger para todos los endpoints.
 _404 = {404: {"description": "Categoría no encontrada."}}
 _409 = {409: {"description": "Ya existe una categoría con ese nombre."}}
+_409_DELETE = {409: {"description": "No se puede eliminar una categoría con registros asociados."}}
 
 
 # ── GET /categories/ ─────────────────────────────────────────────────
@@ -135,16 +137,24 @@ def update_category(
 @router.delete(
     "/{category_id}",
     response_model=models.CategoryResponse,
-    responses=_404,
+    responses={**_404, **_409_DELETE},
     summary="Eliminar categoría",
     description=(
         "Borra una categoría del sistema utilizando su ID. "
-        "No se recomienda borrar categorías que ya tengan productos asociados."
+        "No se puede eliminar si ya existen productos asociados."
     ),
     dependencies=[Depends(get_current_admin)],
 )
 def delete_category(category_id: int, db: Session = Depends(get_db)):
-    deleted = crud_categories.delete_category(db, category_id=category_id)
+    try:
+        deleted = crud_categories.delete_category(db, category_id=category_id)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No se puede eliminar la categoría porque tiene productos asociados.",
+        )
+
     if deleted is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada."

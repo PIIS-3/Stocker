@@ -7,3 +7,4 @@ export { Modal } from './Modal';
 export { ToastNotification, type ToastVariant } from './ToastNotification';
 export { TableToolbar } from './TableToolbar';
 export { TablePagination } from './TablePagination';
+export { ConfirmDeleteModal } from './ConfirmDeleteModal';

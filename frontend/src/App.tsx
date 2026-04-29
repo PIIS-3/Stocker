@@ -12,6 +12,7 @@ import Dashboard from './pages/admin/Dashboard';
 import StoresList from './pages/admin/StoresList';
 import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
+
 import ProductsList from './pages/admin/ProductsList';
 
 function App() {

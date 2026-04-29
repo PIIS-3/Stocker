@@ -32,8 +32,12 @@ ROLES_SEED: List[Dict[str, Any]] = [
 # ── Lógica de seed ────────────────────────────────────────────────────────────
 
 def seed_roles(session: Session, report: SeedReport) -> dict[models.RoleEnum, models.Role]:
-    """Inserta o actualiza los roles semilla y devuelve un mapa por nombre."""
+    """Inserta o actualiza los roles semilla y devuelve un mapa por nombre.
+
+    Garantiza que existan los niveles de acceso base (SuperAdmin, Manager, Staff).
+    """
     roles_by_name: dict[models.RoleEnum, models.Role] = {}
+
 
     for data in ROLES_SEED:
         role, created = upsert_by_field(

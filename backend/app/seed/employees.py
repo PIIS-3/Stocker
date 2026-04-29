@@ -93,13 +93,13 @@ def seed_employees(
     stores_by_name: dict[str, models.Store],
     roles_by_name: dict[models.RoleEnum, models.Role],
 ) -> None:
-    """Inserta o actualiza los empleados semilla.
+    """Inserta o actualiza los empleados semilla con sus dependencias.
 
-    Args:
-        stores_by_name:  Mapa {store_name → Store} devuelto por seed_stores().
-        roles_by_name:   Mapa {role_name → Role} devuelto por seed_roles().
+    Calcula el hash de la contraseña por defecto una sola vez para optimizar
+    el rendimiento durante la inserción masiva.
     """
     hashed_password = security.get_password_hash(DEFAULT_PASSWORD)
+
 
     for data in EMPLOYEES_SEED:
         store_name = data.pop("store_name")
