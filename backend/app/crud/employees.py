@@ -3,8 +3,10 @@ from sqlmodel import Session, select
 from .. import models
 
 
-# El CRUD devuelve el modelo ORM `Employee`, nunca `EmployeeResponse`.
-# FastAPI convierte ORM → schema mediante response_model en los endpoints.
+# El CRUD siempre devuelve el modelo ORM `Employee`, nunca `EmployeeResponse`.
+# La conversión ORM → schema de respuesta la hace FastAPI automáticamente
+# a través del parámetro response_model=EmployeeResponse declarado en cada endpoint.
+# Esto mantiene el CRUD agnóstico de la capa de presentación (principio SRP).
 
 
 # ── Read ─────────────────────────────────────────────────────────────
@@ -29,7 +31,12 @@ def get_employee_by_id(db: Session, employee_id: int) -> models.Employee | None:
 
 
 def get_employee_by_username(db: Session, username: str) -> models.Employee | None:
-    """Devuelve un empleado por su username exacto, o None si no existe."""
+    """Devuelve un empleado por su username exacto, o None si no existe.
+
+    Se usa para dos propósitos:
+    - Validar unicidad de username antes de crear o actualizar.
+    - Búsqueda directa en el flujo de autenticación (login / JWT).
+    """
     return db.exec(
         select(models.Employee).where(models.Employee.username == username)
     ).first()
@@ -44,8 +51,10 @@ def create_employee(db: Session, employee_in: models.EmployeeCreate) -> models.E
     db.add(db_employee)
     db.commit()
     # db.refresh sincroniza el objeto Python con la fila en BD:
-    # recoge el id_employee (SERIAL), created_at y updated_at (DEFAULT NOW())
-    # que PostgreSQL asignó durante el INSERT.
+    # recoge el id_employee (SERIAL), created_at y updated_at (DEFAULT CURRENT_TIMESTAMP)
+    # que PostgreSQL/SQLite asignó durante el INSERT. Employee hereda estos campos
+    # de TimestampMixin — existen en el modelo, pero su valor es None
+    # hasta que la BD los rellena y el refresh los trae de vuelta.
     db.refresh(db_employee)
     return db_employee
 
@@ -71,7 +80,8 @@ def update_employee(
         return None  # El endpoint convierte este None en HTTP 404.
 
     # exclude_unset=True garantiza que solo se modifican los campos que el
-    # cliente envió en el JSON.
+    # cliente envió en el JSON. Si manda {"status": "Inactive"}, el resto de
+    # campos (first_name, role_id, etc.) quedan intactos.
     update_data = employee_in.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(db_employee, field, value)
@@ -107,8 +117,5 @@ def delete_employee(db: Session, employee_id: int) -> models.Employee | None:
     db.flush()
     db.expunge(db_employee)
     db.commit()
-
-
+    # No se llama db.refresh: la fila ya no existe en BD.
     return db_employee
-
-
