@@ -1,5 +1,5 @@
 import { Save, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../atoms/Button';
 import { Modal } from '../molecules/Modal';
 import { storesService } from '../../services/stores.service';
@@ -50,6 +50,14 @@ export function StoreForm({
   const [formData, setFormData] = useState<StoreCreate>(createInitialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Sincronizar datos cuando el modal se abre o cambian los datos iniciales
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(createInitialFormData());
+      setError(null);
+    }
+  }, [isOpen, initialData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;

@@ -10,3 +10,4 @@ export { StoreForm } from './StoreForm';
 export { StoreDetailsCard } from './StoreDetailsCard';
 export { UserForm } from './UserForm';
 export { RoadmapCTA } from './RoadmapCTA';
+export { DataTable } from './DataTable';

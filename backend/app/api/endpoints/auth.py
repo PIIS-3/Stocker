@@ -30,14 +30,16 @@ class LoginRequest(SQLModel):
 )
 def login(login_in: LoginRequest, db: Session = Depends(get_db)):
     employee = crud_employees.get_employee_by_username(db, username=login_in.username)
-    if employee is None or not security.verify_password(login_in.password, employee.hashed_password):
+    is_valid = employee and security.verify_password(login_in.password, employee.hashed_password)
+    if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos.",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    role_name = str(employee.role.role_name) if employee.role else ""
+    db.refresh(employee)
+    role_name = employee.role.role_name.value if employee.role else ""
     token_data = {
         "id_employee": employee.id_employee,
         "username": employee.username,

@@ -78,7 +78,7 @@ def client_fixture(session: Session):
     3. Llama a POST /api/auth/login para obtener un token JWT real.
     4. Elimina el empleado de auth de la BD para no afectar las aserciones.
     5. Sustituye get_current_employee por una versión que valida la firma JWT
-       sin consultar la BD (el empleado ya no existe en ella).
+        sin consultar la BD (el empleado ya no existe en ella).
     6. Devuelve un TestClient que envía el token Bearer en cada petición.
     """
     def get_db_override():

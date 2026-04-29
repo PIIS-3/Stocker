@@ -1,8 +1,41 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import logoUrl from '../assets/logo_no_bg.png';
+import { authService } from '../services/auth.service';
 
 export default function Login() {
+  const navigate = useNavigate();
+  // Pre-rellenado para facilitar el desarrollo
+  const [username, setUsername] = useState('maria.lopez');
+  const [password, setPassword] = useState('stocker123');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      await authService.login(username, password);
+      navigate('/admin/dashboard');
+    } catch (err: unknown) {
+      let message = 'Error al iniciar sesión. Verifique sus credenciales.';
+
+      if (axios.isAxiosError(err)) {
+        message = err.response?.data?.detail || message;
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -31,7 +64,13 @@ export default function Login() {
         className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
       >
         <div className="bg-white py-8 px-4 shadow-xl shadow-brand/5 sm:rounded-2xl sm:px-10 border border-gray-100">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="p-3 rounded-lg bg-rose-50 border border-rose-100 text-rose-700 text-sm">
+                {error}
+              </div>
+            )}
+
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 Nombre de usuario
@@ -43,6 +82,8 @@ export default function Login() {
                   type="text"
                   autoComplete="username"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="appearance-none block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent sm:text-sm transition-all"
                   placeholder="Ej. alopez"
                 />
@@ -60,6 +101,8 @@ export default function Login() {
                   type="password"
                   autoComplete="current-password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent sm:text-sm transition-all"
                   placeholder="••••••••"
                 />
@@ -103,12 +146,13 @@ export default function Login() {
             </div>
 
             <div>
-              <Link
-                to="/admin/dashboard"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-md shadow-brand/20 text-sm font-medium text-white bg-brand hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand transition-all"
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-md shadow-brand/20 text-sm font-medium text-white bg-brand hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Ingresar al Sistema
-              </Link>
+                {isLoading ? 'Cargando...' : 'Ingresar al Sistema'}
+              </button>
             </div>
           </form>
         </div>

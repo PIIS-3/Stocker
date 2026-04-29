@@ -13,7 +13,6 @@ import StoresList from './pages/admin/StoresList';
 import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
 import ProductsList from './pages/admin/ProductsList';
-import Roadmap from './pages/Roadmap';
 
 function App() {
   return (
