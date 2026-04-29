@@ -194,21 +194,24 @@ export default function StoresListRefactored() {
         </div>
       </Modal>
 
-      <Modal
-        isOpen={storeDetail !== null}
-        onClose={() => setStoreDetail(null)}
-        title="Detalle"
-        size="lg"
-      >
-        <div className="p-6 bg-gray-50/70">
-          <StoreDetailsCard store={storeDetail} />
-          <div className="flex justify-end pt-4">
-            <Button variant="ghost" onClick={() => setStoreDetail(null)}>
-              Cerrar
-            </Button>
+      {/* Detalle */}
+      {storeDetail && (
+        <Modal
+          isOpen={storeDetail !== null}
+          onClose={() => setStoreDetail(null)}
+          title="Detalle"
+          size="lg"
+        >
+          <div className="p-6 bg-gray-50/70">
+            <StoreDetailsCard store={storeDetail} />
+            <div className="flex justify-end pt-4">
+              <Button variant="ghost" onClick={() => setStoreDetail(null)}>
+                Cerrar
+              </Button>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
 
       <StoreForm
         isOpen={isCreateOpen}
