@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Guía de Implementación CRUD</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 1.5rem 0 0.75rem;
+        }
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--brand-bg);
+            border: 2px solid var(--brand-color);
+            color: var(--brand-dark);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-family: monospace;
+        }
+        .step-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .step-file {
+            font-family: monospace;
+            font-size: 12px;
+            color: #64748b;
+            margin-left: auto;
+            padding: 3px 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+        }
+        .file-tree {
+            background: #1e293b;
+            color: #94a3b8;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 2;
+            margin: 0.75rem 0;
+        }
+        .file-tree .new { color: #4ade80; }
+        .file-tree .mod { color: #fbbf24; }
+        .kw  { color: #38bdf8; }
+        .cm  { color: #64748b; }
+        .str { color: #fbbf24; }
+        .fn  { color: #a78bfa; }
+        .cl  { color: #7dd3fc; }
+        .dec { color: #f472b6; }
+        .checklist-table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; font-size: 0.9rem; }
+        .checklist-table th { background: #0f172a; color: white; padding: 0.6rem 1rem; text-align: left; }
+        .checklist-table td { padding: 0.6rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .checklist-table tr:last-child td { border-bottom: none; }
+        .checklist-table code { background: #e2e8f0; color: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>🗄️ Guía de Implementación CRUD</h1>
+        <p>Paso a paso para crear un módulo CRUD completo en el backend, siguiendo el patrón estándar del proyecto.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>Archivos a crear o modificar</h2>
+        <p>El ejemplo usa el módulo <strong>Store</strong> como referencia. Adapta los nombres a tu recurso.</p>
+        <div class="file-tree">
+backend/app/<br>
+├── models/<br>
+│   ├── <span class="new">+ store.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#475569">← Modelo ORM + schemas</span><br>
+│   └── <span class="mod">~ __init__.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#475569">← Exportar schemas nuevos</span><br>
+├── crud/<br>
+│   └── <span class="new">+ stores.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#475569">← Funciones de base de datos</span><br>
+├── api/<br>
+│   ├── endpoints/<br>
+│   │   └── <span class="new">+ stores.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#475569">← Endpoints FastAPI</span><br>
+│   └── <span class="mod">~ router.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#475569">← Registrar nuevo router</span>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="step-header">
+            <div class="step-circle">1</div>
+            <div class="step-title">Crear el modelo y los schemas</div>
+            <div class="step-file">models/store.py</div>
+        </div>
+        <p>Define las 4 clases: <code>StoreBase</code> (validaciones compartidas), <code>StoreCreate</code> (payload POST), <code>StoreUpdate</code> (payload PATCH, todo opcional) y <code>Store</code> (tabla ORM).</p>
+        <pre><code><span class="kw">from</span> typing <span class="kw">import</span> Optional, List, TYPE_CHECKING
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> sqlmodel <span class="kw">import</span> SQLModel, Field, Relationship
+<span class="kw">from</span> .enums <span class="kw">import</span> StatusEnum
+<span class="kw">from</span> .mixins <span class="kw">import</span> TimestampMixin
+
+<span class="kw">if</span> TYPE_CHECKING:
+    <span class="kw">from</span> .employee <span class="kw">import</span> Employee
+
+<span class="kw">class</span> <span class="cl">StoreBase</span>(SQLModel):
+    store_name: str = Field(min_length=1, description=<span class="str">"Nombre único de la tienda."</span>)
+    address:    str = Field(min_length=1, description=<span class="str">"Dirección física."</span>)
+    status: StatusEnum = Field(default=StatusEnum.Active, description=<span class="str">"Estado operativo."</span>)
+
+<span class="kw">class</span> <span class="cl">StoreCreate</span>(StoreBase):
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cl">StoreUpdate</span>(SQLModel):
+    store_name: Optional[str]        = Field(default=<span class="kw">None</span>, min_length=1)
+    address:    Optional[str]        = Field(default=<span class="kw">None</span>, min_length=1)
+    status:     Optional[StatusEnum] = <span class="kw">None</span>
+
+<span class="kw">class</span> <span class="cl">Store</span>(StoreBase, TimestampMixin, table=<span class="kw">True</span>):
+    id_store: Optional[int] = Field(default=<span class="kw">None</span>, primary_key=<span class="kw">True</span>)
+    employees: List[<span class="str">"Employee"</span>] = Relationship(back_populates=<span class="str">"store"</span>)
+
+<span class="kw">class</span> <span class="cl">StoreResponse</span>(StoreBase):
+    id_store:   int
+    created_at: Optional[datetime] = <span class="kw">None</span>
+    updated_at: Optional[datetime] = <span class="kw">None</span></code></pre>
+    </div>
+
+    <div class="section-card">
+        <div class="step-header">
+            <div class="step-circle">2</div>
+            <div class="step-title">Exportar en el __init__ de modelos</div>
+            <div class="step-file">models/__init__.py</div>
+        </div>
+        <pre><code><span class="kw">from</span> .store <span class="kw">import</span> StoreBase, StoreCreate, StoreUpdate, Store, StoreResponse</code></pre>
+    </div>
+
+    <div class="section-card">
+        <div class="step-header">
+            <div class="step-circle">3</div>
+            <div class="step-title">Crear las funciones CRUD</div>
+            <div class="step-file">crud/stores.py</div>
+        </div>
+        <p>6 funciones estándar. Siempre devolver <code>None</code> cuando no se encuentra el recurso — el endpoint decide el código HTTP.</p>
+        <pre><code><span class="kw">from</span> sqlmodel <span class="kw">import</span> Session, select
+<span class="kw">from</span> .. <span class="kw">import</span> models
+
+<span class="kw">def</span> <span class="fn">get_stores</span>(db: Session, skip: int = 0, limit: int = 100) -> list[models.Store]:
+    <span class="str">"""Lista paginada ordenada por id_store."""</span>
+    <span class="kw">return</span> db.exec(select(models.Store).offset(skip).limit(limit)).all()
+
+<span class="kw">def</span> <span class="fn">get_store_by_id</span>(db: Session, store_id: int) -> models.Store | <span class="kw">None</span>:
+    <span class="kw">return</span> db.get(models.Store, store_id)
+
+<span class="kw">def</span> <span class="fn">get_store_by_name</span>(db: Session, store_name: str) -> models.Store | <span class="kw">None</span>:
+    <span class="kw">return</span> db.exec(
+        select(models.Store).where(models.Store.store_name == store_name)
+    ).first()
+
+<span class="kw">def</span> <span class="fn">create_store</span>(db: Session, store_in: models.StoreCreate) -> models.Store:
+    db_store = models.Store.model_validate(store_in)
+    db.add(db_store)
+    db.commit()
+    db.refresh(db_store)  <span class="cm"># Necesario para recoger id y timestamps de PostgreSQL</span>
+    <span class="kw">return</span> db_store
+
+<span class="kw">def</span> <span class="fn">update_store</span>(db: Session, store_id: int, store_in: models.StoreUpdate) -> models.Store | <span class="kw">None</span>:
+    db_store = db.get(models.Store, store_id)
+    <span class="kw">if not</span> db_store:
+        <span class="kw">return None</span>
+    <span class="cm"># exclude_unset=True: solo actualiza los campos que el cliente envió explícitamente</span>
+    data = store_in.model_dump(exclude_unset=<span class="kw">True</span>)
+    <span class="kw">for</span> key, val <span class="kw">in</span> data.items():
+        setattr(db_store, key, val)
+    db.add(db_store)
+    db.commit()
+    db.refresh(db_store)
+    <span class="kw">return</span> db_store
+
+<span class="kw">def</span> <span class="fn">delete_store</span>(db: Session, store_id: int) -> models.Store | <span class="kw">None</span>:
+    db_store = db.get(models.Store, store_id)
+    <span class="kw">if not</span> db_store:
+        <span class="kw">return None</span>
+    db.delete(db_store)
+    db.commit()
+    <span class="kw">return</span> db_store  <span class="cm"># Devolvemos el objeto antes de borrarlo para la respuesta</span></code></pre>
+    </div>
+
+    <div class="section-card">
+        <div class="step-header">
+            <div class="step-circle">4</div>
+            <div class="step-title">Crear los endpoints</div>
+            <div class="step-file">api/endpoints/stores.py</div>
+        </div>
+        <p>Los GET usan <code>get_current_employee</code> (cualquier empleado autenticado). Los POST, PATCH y DELETE usan <code>get_current_admin</code> (solo SuperAdmin o Manager).</p>
+        <pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> APIRouter, Depends, HTTPException, status
+<span class="kw">from</span> sqlmodel <span class="kw">import</span> Session
+<span class="kw">from</span> typing <span class="kw">import</span> List
+<span class="kw">from</span> ... <span class="kw">import</span> models
+<span class="kw">from</span> ...crud <span class="kw">import</span> stores <span class="kw">as</span> crud_stores
+<span class="kw">from</span> ...database <span class="kw">import</span> get_db
+<span class="kw">from</span> ..deps <span class="kw">import</span> get_current_employee, get_current_admin
+
+<span class="cm"># Router con auth mínima (cualquier empleado) para todos los endpoints</span>
+router = APIRouter(tags=[<span class="str">"Tiendas"</span>], dependencies=[Depends(get_current_employee)])
+
+<span class="cm"># Respuestas documentadas en Swagger</span>
+_404 = {404: {<span class="str">"description"</span>: <span class="str">"Tienda no encontrada."</span>}}
+_409 = {409: {<span class="str">"description"</span>: <span class="str">"Ya existe una tienda con ese nombre."</span>}}
+
+<span class="dec">@router.get</span>(<span class="str">"/"</span>, response_model=List[models.StoreResponse], summary=<span class="str">"Listar tiendas"</span>)
+<span class="kw">def</span> <span class="fn">read_stores</span>(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    <span class="kw">return</span> crud_stores.get_stores(db, skip=skip, limit=limit)
+
+<span class="dec">@router.post</span>(
+    <span class="str">"/"</span>,
+    response_model=models.StoreResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses=_409,
+    summary=<span class="str">"Registrar nueva tienda"</span>,
+    dependencies=[Depends(get_current_admin)],  <span class="cm"># Solo admins pueden crear</span>
+)
+<span class="kw">def</span> <span class="fn">create_store</span>(store_in: models.StoreCreate, db: Session = Depends(get_db)):
+    <span class="kw">if</span> crud_stores.get_store_by_name(db, store_name=store_in.store_name):
+        <span class="kw">raise</span> HTTPException(status_code=409, detail=<span class="str">"Ya existe una tienda con ese nombre."</span>)
+    <span class="kw">return</span> crud_stores.create_store(db, store_in=store_in)
+
+<span class="dec">@router.get</span>(<span class="str">"/{store_id}"</span>, response_model=models.StoreResponse, responses=_404)
+<span class="kw">def</span> <span class="fn">read_store</span>(store_id: int, db: Session = Depends(get_db)):
+    db_store = crud_stores.get_store_by_id(db, store_id=store_id)
+    <span class="kw">if not</span> db_store:
+        <span class="kw">raise</span> HTTPException(status_code=404, detail=<span class="str">"Tienda no encontrada."</span>)
+    <span class="kw">return</span> db_store
+
+<span class="dec">@router.patch</span>(<span class="str">"/{store_id}"</span>, response_model=models.StoreResponse,
+              responses={**_404, **_409}, dependencies=[Depends(get_current_admin)])
+<span class="kw">def</span> <span class="fn">update_store</span>(store_id: int, store_in: models.StoreUpdate, db: Session = Depends(get_db)):
+    <span class="kw">if</span> store_in.store_name:
+        existing = crud_stores.get_store_by_name(db, store_name=store_in.store_name)
+        <span class="kw">if</span> existing <span class="kw">and</span> existing.id_store != store_id:
+            <span class="kw">raise</span> HTTPException(status_code=409, detail=<span class="str">"Ya existe una tienda con ese nombre."</span>)
+    updated = crud_stores.update_store(db, store_id=store_id, store_in=store_in)
+    <span class="kw">if not</span> updated:
+        <span class="kw">raise</span> HTTPException(status_code=404, detail=<span class="str">"Tienda no encontrada."</span>)
+    <span class="kw">return</span> updated
+
+<span class="dec">@router.delete</span>(<span class="str">"/{store_id}"</span>, response_model=models.StoreResponse,
+               responses=_404, dependencies=[Depends(get_current_admin)])
+<span class="kw">def</span> <span class="fn">delete_store</span>(store_id: int, db: Session = Depends(get_db)):
+    deleted = crud_stores.delete_store(db, store_id=store_id)
+    <span class="kw">if not</span> deleted:
+        <span class="kw">raise</span> HTTPException(status_code=404, detail=<span class="str">"Tienda no encontrada."</span>)
+    <span class="kw">return</span> deleted</code></pre>
+    </div>
+
+    <div class="section-card">
+        <div class="step-header">
+            <div class="step-circle">5</div>
+            <div class="step-title">Registrar en el router central</div>
+            <div class="step-file">api/router.py</div>
+        </div>
+        <pre><code><span class="kw">from</span> .endpoints <span class="kw">import</span> stores  <span class="cm"># Añadir este import</span>
+
+api_router.include_router(stores.router, prefix=<span class="str">"/stores"</span>, tags=[<span class="str">"Tiendas"</span>])</code></pre>
+
+        <div class="alert alert-ok" style="margin-top: 1.5rem;">
+            <strong>✓ Verificar que funciona</strong><br>
+            Después de completar los 5 pasos, abre <code>localhost:8000/docs</code> y verifica que aparece la sección "Tiendas" con todos los endpoints documentados.
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Checklist de implementación</h2>
+        <table class="checklist-table">
+            <thead>
+                <tr><th>Paso</th><th>Archivo</th><th>Qué incluye</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>✓ 1</td><td><code>models/recurso.py</code></td><td>RecursoBase, RecursoCreate, RecursoUpdate, Recurso (ORM), RecursoResponse</td></tr>
+                <tr><td>✓ 2</td><td><code>models/__init__.py</code></td><td>Exportar todos los schemas nuevos</td></tr>
+                <tr><td>✓ 3</td><td><code>crud/recursos.py</code></td><td>get_all, get_by_id, get_by_name, create, update, delete</td></tr>
+                <tr><td>✓ 4</td><td><code>api/endpoints/recursos.py</code></td><td>GET lista, GET by-name, GET por ID, POST, PATCH, DELETE con auth y Swagger</td></tr>
+                <tr><td>✓ 5</td><td><code>api/router.py</code></td><td>import + include_router con prefix y tags</td></tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-info" style="margin-top: 1.5rem;">
+            <strong>ℹ Módulos de referencia en el proyecto</strong><br>
+            Puedes ver implementaciones completas en: <code>models/store.py</code>, <code>crud/stores.py</code>, <code>api/endpoints/stores.py</code> — estos son los archivos más completos y documentados del proyecto.
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
