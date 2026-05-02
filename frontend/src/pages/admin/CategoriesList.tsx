@@ -1,5 +1,7 @@
 import { Plus } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { createColumnHelper } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -10,221 +12,188 @@ import {
   TableToolbar,
   TablePagination,
   ConfirmDeleteModal,
-  type ToastVariant,
 } from '../../components/molecules';
 
 // ── Organismos ──────────────────────────────────────────────────────────────
-import { CategoryForm, DataTable } from '../../components/organisms';
+import { CategoryForm, CrudTable } from '../../components/organisms';
 
 // ── Templates ───────────────────────────────────────────────────────────────
 import { CrudPageTemplate } from '../../components/templates';
 
-// ── Servicios y Hooks ───────────────────────────────────────────────────────
-import { categoriesService, type CategoryApi } from '../../services/categories.service';
+// ── Queries y Hooks ────────────────────────────────────────────────────────
+import { categoriesListOptions, useDeleteCategory } from '../../queries/categories.queries';
 import { useCrud } from '../../hooks/useCrud';
+import type { CategoryApi } from '../../services/categories.service';
 
-// ── Configuración ───────────────────────────────────────────────────────────
+const columnHelper = createColumnHelper<CategoryApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
-
-interface NotificationState {
-  id: number;
-  title: string;
-  message: string;
-  variant: ToastVariant;
-}
 
 /**
  * Página: CategoriesList
- * Gestión de clasificaciones de productos con filtrado reactivo.
+ * Refactorizada con useCrud hook.
  */
 export default function CategoriesList() {
-  const [searchTerm, setSearchTerm] = useState('');
+  // ── Lógica de Datos ──────────────────────────────────────────────────────
+  const { data: allCategories = [], isLoading, error } = useQuery(categoriesListOptions());
 
-  // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
-  const fetchCategories = useCallback(() => categoriesService.getCategories(0, 1000), []);
-  const deleteCategory = useCallback((id: number) => categoriesService.deleteCategory(id), []);
-
-  const filterFn = useCallback(
-    (cat: CategoryApi) => {
-      const search = searchTerm.toLowerCase();
-      return (
-        cat.category_name.toLowerCase().includes(search) ||
-        (cat.description || '').toLowerCase().includes(search)
-      );
-    },
-    [searchTerm]
-  );
+  const deleteMutation = useDeleteCategory();
 
   const {
-    items: categories,
-    isLoading,
-    errorMessage,
+    searchTerm,
     pagination,
-    refresh,
-    remove,
-  } = useCrud<CategoryApi>(fetchCategories, deleteCategory, { filterFn });
+    selectedItem,
+    itemToDelete,
+    isDeleting,
+    notification,
+    modalStates,
+    setSearchTerm,
+    setPagination,
+    setItemToDelete,
+    openCreate,
+    openEdit,
+    openView,
+    openDelete,
+    closeModals,
+    closeNotification,
+    handleSuccess,
+    confirmDelete,
+    paginationData,
+  } = useCrud<CategoryApi>({
+    moduleKey: 'categories',
+    itemNameKey: 'category_name',
+    data: allCategories,
+    onDelete: async (item) => {
+      await deleteMutation.mutateAsync(item.id_category);
+    },
+  });
 
-  // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isViewOpen, setIsViewOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryApi | null>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<CategoryApi | null>(null);
-  const [notification, setNotification] = useState<NotificationState | null>(null);
+  const { totalPages, totalItems } = paginationData;
 
-  // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
-
-  const showNotification = useCallback((variant: ToastVariant, title: string, message: string) => {
-    setNotification({ id: Date.now(), variant, title, message });
-    setTimeout(() => setNotification(null), 3800);
-  }, []);
-
-  const handleCategorySuccess = (action: 'create' | 'update', category: CategoryApi) => {
-    void refresh();
-    showNotification(
-      'success',
-      action === 'create' ? 'Categoría creada' : 'Categoría actualizada',
-      `${category.category_name} ha sido guardada correctamente.`
-    );
-  };
-
-  const confirmDelete = async () => {
-    if (!categoryToDelete) return;
-    try {
-      await remove(categoryToDelete.id_category);
-      showNotification(
-        'success',
-        'Categoría eliminada',
-        `${categoryToDelete.category_name} ha sido borrada del sistema.`
-      );
-      setCategoryToDelete(null);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error al eliminar categoría.';
-      showNotification('error', 'Error', message);
-    }
-  };
+  // ── Columnas ─────────────────────────────────────────────────────────────
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('category_name', {
+        header: 'Nombre de Categoría',
+        cell: (info) => (
+          <span className="font-medium text-gray-900" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('description', {
+        header: 'Descripción',
+        size: 350,
+        cell: (info) => (
+          <span
+            className="text-gray-600 truncate max-w-[300px] block"
+            title={info.getValue() || ''}
+          >
+            {info.getValue() || '-'}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('status', {
+        header: 'Estado',
+        size: 130,
+        cell: (info) => (
+          <StatusBadge status={info.getValue()} activeLabel="Activa" inactiveLabel="Inactiva" />
+        ),
+      }),
+      columnHelper.display({
+        id: 'actions',
+        size: 100,
+        header: 'Acciones',
+        cell: (info) => (
+          <ActionButtons
+            onEdit={() => openEdit(info.row.original)}
+            onDelete={() => openDelete(info.row.original)}
+          />
+        ),
+      }),
+    ],
+    [openEdit, openDelete]
+  );
 
   return (
     <CrudPageTemplate
       title="Categorías"
       subtitle="Organiza tus productos en clasificaciones lógicas para el inventario."
       headerAction={
-        <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
+        <Button icon={<Plus size={20} />} onClick={openCreate}>
           Nueva Categoría
         </Button>
       }
-      // Búsqueda
       searchValue={searchTerm}
       onSearchChange={setSearchTerm}
       searchPlaceholder="Buscar por nombre o descripción..."
-      // Notificaciones
       notification={notification}
-      onNotificationClose={() => setNotification(null)}
-      errorMessage={errorMessage}
-      // Configuración de Tabla
+      onNotificationClose={closeNotification}
+      errorMessage={error ? 'No se pudieron cargar las categorías.' : null}
       tableToolbar={
         <TableToolbar
+          id="categories-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={pagination.setPageSize}
-          onRefresh={refresh}
-          isLoading={isLoading}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         />
       }
       table={
-        <DataTable
-          columns={['ID', 'Nombre de Categoría', 'Descripción', 'Estado', 'Acciones']}
+        <CrudTable
+          data={allCategories}
+          columns={columns}
           isLoading={isLoading}
-          rowCount={categories.length}
-          expectedRows={pagination.pageSize}
-          emptyMessage="No se encontraron categorías con los filtros actuales."
-        >
-          {categories.map((category, index) => (
-            <tr
-              key={category.id_category}
-              onClick={() => {
-                setSelectedCategory(category);
-                setIsViewOpen(true);
-              }}
-              className={`h-12 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
-                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-              }`}
-            >
-              <td className="px-4 py-0 align-middle text-gray-500 font-mono text-xs">
-                #{category.id_category}
-              </td>
-              <td className="px-4 py-0 align-middle font-medium text-gray-900">
-                {category.category_name}
-              </td>
-              <td className="px-4 py-0 align-middle text-gray-600 truncate max-w-[300px]">
-                {category.description || '-'}
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <StatusBadge
-                  status={category.status}
-                  activeLabel="Activa"
-                  inactiveLabel="Inactiva"
-                />
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <ActionButtons
-                  onEdit={() => {
-                    setSelectedCategory(category);
-                    setIsEditOpen(true);
-                  }}
-                  onDelete={() => setCategoryToDelete(category)}
-                />
-              </td>
-            </tr>
-          ))}
-        </DataTable>
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          globalFilter={searchTerm}
+          onRowClick={openView}
+        />
       }
       tablePagination={
         <TablePagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
+          currentPage={pagination.pageIndex + 1}
+          totalPages={totalPages}
+          totalItems={totalItems}
           pageSize={pagination.pageSize}
-          onPageChange={pagination.setPage}
+          onPageChange={(updater) => {
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
+          }}
           isLoading={isLoading}
         />
       }
     >
       <ConfirmDeleteModal
-        isOpen={categoryToDelete !== null}
-        onClose={() => setCategoryToDelete(null)}
+        isOpen={itemToDelete !== null}
+        onClose={() => setItemToDelete(null)}
         onConfirm={confirmDelete}
         title="Eliminar Categoría"
-        itemName={categoryToDelete?.category_name}
-        isLoading={isLoading}
+        itemName={itemToDelete?.category_name}
+        isLoading={isDeleting}
       />
 
       <CategoryForm
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
+        isOpen={modalStates.isCreateOpen}
+        onClose={closeModals}
         mode="create"
-        onSuccess={handleCategorySuccess}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Categoría')}
       />
 
       <CategoryForm
-        isOpen={isEditOpen}
-        onClose={() => {
-          setIsEditOpen(false);
-          setSelectedCategory(null);
-        }}
+        isOpen={modalStates.isEditOpen}
+        onClose={closeModals}
         mode="edit"
-        initialData={selectedCategory}
-        onSuccess={handleCategorySuccess}
+        initialData={selectedItem}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Categoría')}
       />
 
       <CategoryForm
-        isOpen={isViewOpen}
-        onClose={() => {
-          setIsViewOpen(false);
-          setSelectedCategory(null);
-        }}
+        isOpen={modalStates.isViewOpen}
+        onClose={closeModals}
         mode="view"
-        initialData={selectedCategory}
+        initialData={selectedItem}
       />
     </CrudPageTemplate>
   );

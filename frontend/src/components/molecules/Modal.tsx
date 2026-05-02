@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -7,22 +7,92 @@ interface ModalProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 const sizeClasses = {
   sm: 'max-w-md',
-  md: 'max-w-lg',
-  lg: 'max-w-2xl',
+  md: 'max-w-xl',
+  lg: 'max-w-3xl',
+  xl: 'max-w-5xl',
+  '2xl': 'max-w-7xl',
 };
 
 export function Modal({ isOpen, onClose, title, subtitle, children, size = 'md' }: ModalProps) {
-  // Close on Escape key
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
+
+  // Restaurar el foco al cerrar
+  useEffect(() => {
+    if (isOpen) {
+      previousFocus.current = document.activeElement as HTMLElement;
+    }
+
+    return () => {
+      if (previousFocus.current) {
+        previousFocus.current.focus();
+        previousFocus.current = null;
+      }
+    };
+  }, [isOpen]);
+
+  // Close on Escape key and handle Focus Trap
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        if (!modalRef.current) return;
+
+        const focusableElements = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        ) as NodeListOf<HTMLElement>;
+
+        if (focusableElements.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        // Ensure focus stays within the modal
+        if (!modalRef.current.contains(document.activeElement)) {
+          firstElement.focus();
+          e.preventDefault();
+          return;
+        }
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
     };
-    if (isOpen) document.addEventListener('keydown', handleKey);
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKey);
+      // Optional: auto-focus the modal or first element when it opens
+      setTimeout(() => {
+        if (modalRef.current && !modalRef.current.contains(document.activeElement)) {
+          const focusable = modalRef.current.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          ) as HTMLElement;
+          if (focusable) focusable.focus();
+        }
+      }, 50);
+    }
+
     return () => document.removeEventListener('keydown', handleKey);
   }, [isOpen, onClose]);
 
@@ -33,6 +103,7 @@ export function Modal({ isOpen, onClose, title, subtitle, children, size = 'md' 
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       aria-modal="true"
       role="dialog"
+      ref={modalRef}
     >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={onClose} />

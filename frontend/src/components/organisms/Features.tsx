@@ -24,7 +24,7 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="py-24 bg-white relative">
+    <section id="features" className="min-h-screen flex items-center bg-white relative">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.h2

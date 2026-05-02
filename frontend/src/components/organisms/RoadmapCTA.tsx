@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export const RoadmapCTA = () => {
   return (
-    <section className="py-24 bg-white border-t border-gray-100">
+    <section className="min-h-screen flex items-center bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
         <div className="inline-flex items-center justify-center p-4 bg-brand-50 rounded-2xl mb-8 text-brand-600 ring-1 ring-brand-100">
           <Map size={32} strokeWidth={1.5} />

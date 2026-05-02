@@ -25,8 +25,64 @@ export const authService = {
     localStorage.removeItem('token');
   },
 
-  /** Verifica si hay una sesión activa */
+  /** Verifica si hay una sesión activa y el token es válido */
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    return !this.isTokenExpired(token);
+  },
+
+  /** Verifica si el token JWT ha expirado */
+  isTokenExpired(token: string): boolean {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(this.decodeBase64(payload));
+      if (!decoded.exp) return false;
+
+      const now = Math.floor(Date.now() / 1000);
+      return decoded.exp < now;
+    } catch {
+      return true;
+    }
+  },
+
+  /** Decodifica base64 manejando caracteres especiales y padding */
+  decodeBase64(str: string): string {
+    try {
+      // Reemplazar caracteres de base64url a base64 estándar
+      const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+      // Añadir padding si falta
+      const pad = base64.length % 4;
+      const paddedBase64 = pad ? base64 + '='.repeat(4 - pad) : base64;
+
+      return decodeURIComponent(
+        atob(paddedBase64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+    } catch {
+      return atob(str); // Fallback al atob estándar
+    }
+  },
+
+  /** Obtiene datos del usuario decodificados del token */
+  getUser(): { username: string; role?: string } | null {
+    const token = localStorage.getItem('token');
+    if (!token || this.isTokenExpired(token)) return null;
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(this.decodeBase64(payload));
+
+      // Intentar obtener el nombre de usuario de 'sub' (estándar JWT) o 'username'
+      const username = decoded.sub || decoded.username || decoded.name || 'Usuario';
+
+      return {
+        username,
+        role: decoded.role || 'Admin',
+      };
+    } catch {
+      return null;
+    }
   },
 };

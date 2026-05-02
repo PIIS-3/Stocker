@@ -9,6 +9,8 @@ import { SoundToggle } from '../../components/atoms/SoundToggle';
  * y permite gestionar preferencias del sistema como el sonido.
  */
 export default function Dashboard() {
+  // TODO: Implementar llamadas a API para obtener estadísticas reales del servidor.
+  // Los valores actuales son marcadores de posición (placeholders) para la maqueta.
   const stats = [
     {
       label: 'Tiendas Activas',

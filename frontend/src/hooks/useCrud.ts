@@ -1,112 +1,142 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { PaginationState } from '@tanstack/react-table';
+import { useNotification } from './useNotification';
 
-interface UseCrudConfig<T> {
-  initialPageSize?: number;
-  filterFn?: (item: T) => boolean;
+interface UseCrudOptions<T> {
+  moduleKey: string;
+  onDelete?: (item: T) => Promise<void>;
+  itemNameKey: keyof T;
+  data?: T[];
 }
 
 /**
- * Hook personalizado para gestionar la lógica de un CRUD con paginación local.
- * Soporta filtrado reactivo que reinicia la paginación automáticamente.
+ * Hook genérico useCrud
+ * Centraliza la lógica de paginación, búsqueda, modales y notificaciones para los módulos CRUD.
  */
-export function useCrud<T>(
-  fetchFn: () => Promise<T[]>,
-  deleteFn?: (id: number) => Promise<unknown>,
-  config: UseCrudConfig<T> = {}
-) {
-  const { initialPageSize = 5, filterFn } = config;
+export function useCrud<T>({ moduleKey, onDelete, itemNameKey, data = [] }: UseCrudOptions<T>) {
+  // ── Notificaciones ────────────────────────────────────────────────────────
+  const { notification, show: showNotification, close: closeNotification } = useNotification();
 
-  const [allItems, setAllItems] = useState<T[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(initialPageSize);
+  // ── Estado de Búsqueda y Paginación ──────────────────────────────────────
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const refresh = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-    try {
-      const data = await fetchFn();
-      setAllItems(data);
-    } catch {
-      setErrorMessage('No se pudieron cargar los datos.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchFn]);
+  const [pagination, setPagination] = useState<PaginationState>(() => {
+    const saved = localStorage.getItem(`stocker_page_size_${moduleKey}`);
+    return {
+      pageIndex: 0,
+      pageSize: saved ? Number(saved) : 5,
+    };
+  });
 
+  // Guardar preferencia de tamaño de página específica del módulo
   useEffect(() => {
-    let isIgnore = false;
-    const startFetch = async () => {
-      try {
-        const data = await fetchFn();
-        if (!isIgnore) {
-          setAllItems(data);
-          setIsLoading(false);
-        }
-      } catch {
-        if (!isIgnore) {
-          setErrorMessage('No se pudieron cargar los datos.');
-          setIsLoading(false);
-        }
-      }
-    };
-    void startFetch();
-    return () => {
-      isIgnore = true;
-    };
-  }, [fetchFn]);
+    localStorage.setItem(`stocker_page_size_${moduleKey}`, pagination.pageSize.toString());
+  }, [pagination.pageSize, moduleKey]);
 
-  // 1. Aplicar filtro si existe
-  const filteredItems = useMemo(() => {
-    if (!filterFn) return allItems;
-    return allItems.filter(filterFn);
-  }, [allItems, filterFn]);
+  // Resetear a página 1 cuando cambia la búsqueda
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchTerm(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, []);
 
-  // 2. Reiniciar a página 1 si el filtro cambia (y la página actual queda fuera de rango)
-  const totalItems = filteredItems.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  // ── Estado de Modales y Selección ─────────────────────────────────────────
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<T | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<T | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Reiniciar a página 1 si el filtro cambia (Patrón recomendado por React para evitar renders en cascada)
-  // Nota: Envolvemos la función en otra función para que useState no la ejecute como inicializador.
-  const [prevFilter, setPrevFilter] = useState<((item: T) => boolean) | undefined>(() => filterFn);
+  // ── Handlers de Acción ────────────────────────────────────────────────────
+  const openCreate = useCallback(() => setIsCreateOpen(true), []);
 
-  if (filterFn !== prevFilter) {
-    setPrevFilter(() => filterFn);
-    setCurrentPage(1);
-  }
+  const openEdit = useCallback((item: T) => {
+    setSelectedItem(item);
+    setIsEditOpen(true);
+  }, []);
 
-  const visiblePage = Math.min(currentPage, totalPages);
+  const openView = useCallback((item: T) => {
+    setSelectedItem(item);
+    setIsViewOpen(true);
+  }, []);
 
-  // 3. Paginar los elementos filtrados
-  const paginatedItems = useMemo(() => {
-    const startIndex = (visiblePage - 1) * pageSize;
-    return filteredItems.slice(startIndex, startIndex + pageSize);
-  }, [filteredItems, visiblePage, pageSize]);
+  const openDelete = useCallback((item: T) => {
+    setItemToDelete(item);
+  }, []);
 
-  const remove = async (id: number) => {
-    if (!deleteFn) return;
-    await deleteFn(id);
-    await refresh();
+  const closeModals = useCallback(() => {
+    setIsCreateOpen(false);
+    setIsEditOpen(false);
+    setIsViewOpen(false);
+    setSelectedItem(null);
+  }, []);
+
+  const handleSuccess = useCallback(
+    (action: 'create' | 'update', item: T, entityLabel: string) => {
+      const itemName = String(item[itemNameKey]);
+      showNotification(
+        'success',
+        action === 'create' ? `${entityLabel} creado` : `${entityLabel} actualizado`,
+        `El registro "${itemName}" ha sido guardado correctamente.`
+      );
+    },
+    [itemNameKey, showNotification]
+  );
+
+  const confirmDelete = async () => {
+    if (!itemToDelete || !onDelete) return;
+    setIsDeleting(true);
+    try {
+      await onDelete(itemToDelete);
+      const itemName = String(itemToDelete[itemNameKey]);
+      showNotification(
+        'success',
+        'Registro eliminado',
+        `"${itemName}" ha sido eliminado del sistema.`
+      );
+      setItemToDelete(null);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'No se pudo eliminar el registro.';
+      showNotification('error', 'Error', message);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
+  // ── Cálculos de Paginación ────────────────────────────────────────────────
+  const paginationData = useMemo(() => {
+    const totalItems = data.length;
+    const totalPages = Math.ceil(totalItems / pagination.pageSize) || 1;
+    return { totalPages, totalItems };
+  }, [data.length, pagination.pageSize]);
+
   return {
-    items: paginatedItems,
-    allItems, // Por si se necesita el original
-    isLoading,
-    errorMessage,
-    pagination: {
-      currentPage: visiblePage,
-      totalPages,
-      pageSize,
-      totalItems,
-      setPage: setCurrentPage,
-      setPageSize: (size: number) => {
-        setPageSize(size);
-        setCurrentPage(1);
-      },
+    // Estado
+    searchTerm,
+    pagination,
+    selectedItem,
+    itemToDelete,
+    isDeleting,
+    notification,
+    modalStates: {
+      isCreateOpen,
+      isEditOpen,
+      isViewOpen,
     },
-    refresh,
-    remove,
+
+    // Setters / Acciones
+    setSearchTerm: handleSearchChange,
+    setPagination,
+    setSelectedItem,
+    setItemToDelete,
+    openCreate,
+    openEdit,
+    openView,
+    openDelete,
+    closeModals,
+    closeNotification,
+    handleSuccess,
+    confirmDelete,
+    paginationData,
   };
 }

@@ -9,6 +9,7 @@ export function ActionButtons({ onEdit, onDelete }: ActionButtonsProps) {
   return (
     <div className="flex items-center justify-end gap-2">
       <button
+        title="Editar"
         onClick={(_e) => {
           _e.stopPropagation();
           onEdit?.();
@@ -18,6 +19,7 @@ export function ActionButtons({ onEdit, onDelete }: ActionButtonsProps) {
         <Edit2 size={18} />
       </button>
       <button
+        title="Eliminar"
         onClick={(_e) => {
           _e.stopPropagation();
           onDelete?.();

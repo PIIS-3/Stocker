@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import logoUrl from '../assets/logo_no_bg.png';
 import { authService } from '../services/auth.service';
 
@@ -24,7 +24,7 @@ export default function Login() {
     } catch (err: unknown) {
       let message = 'Error al iniciar sesión. Verifique sus credenciales.';
 
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         message = err.response?.data?.detail || message;
       } else if (err instanceof Error) {
         message = err.message;

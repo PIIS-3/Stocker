@@ -1,5 +1,7 @@
 import { Plus } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { createColumnHelper } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -10,213 +12,183 @@ import {
   TableToolbar,
   TablePagination,
   ConfirmDeleteModal,
-  type ToastVariant,
 } from '../../components/molecules';
 
 // ── Organismos ──────────────────────────────────────────────────────────────
-import { StoreForm, DataTable } from '../../components/organisms';
+import { StoreForm, CrudTable } from '../../components/organisms';
 
 // ── Templates ───────────────────────────────────────────────────────────────
 import { CrudPageTemplate } from '../../components/templates';
 
-// ── Servicios y Hooks ───────────────────────────────────────────────────────
-import { storesService, type StoreApi } from '../../services/stores.service';
+// ── Queries y Hooks ────────────────────────────────────────────────────────
+import { storesListOptions, useDeleteStore } from '../../queries/stores.queries';
 import { useCrud } from '../../hooks/useCrud';
+import type { StoreApi } from '../../services/stores.service';
 
-// ── Configuración ───────────────────────────────────────────────────────────
+const columnHelper = createColumnHelper<StoreApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
-
-interface NotificationState {
-  id: number;
-  title: string;
-  message: string;
-  variant: ToastVariant;
-}
 
 /**
  * Página: StoresList
- * Gestión modular de tiendas físicas con filtrado reactivo.
+ * Gestión modular de tiendas físicas refactorizada con useCrud.
  */
 export default function StoresList() {
-  const [searchTerm, setSearchTerm] = useState('');
+  // ── Lógica de Datos ──────────────────────────────────────────────────────
+  const { data: allStores = [], isLoading, error } = useQuery(storesListOptions());
 
-  // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
-  const fetchStores = useCallback(() => storesService.getStores(0, 1000), []);
-  const deleteStore = useCallback((id: number) => storesService.deleteStore(id), []);
-
-  const filterFn = useCallback(
-    (store: StoreApi) => {
-      const search = searchTerm.toLowerCase();
-      return (
-        store.store_name.toLowerCase().includes(search) ||
-        store.address.toLowerCase().includes(search)
-      );
-    },
-    [searchTerm]
-  );
+  const deleteMutation = useDeleteStore();
 
   const {
-    items: stores,
-    isLoading,
-    errorMessage,
+    searchTerm,
     pagination,
-    refresh,
-    remove,
-  } = useCrud<StoreApi>(fetchStores, deleteStore, { filterFn });
+    selectedItem,
+    itemToDelete,
+    isDeleting,
+    notification,
+    modalStates,
+    setSearchTerm,
+    setPagination,
+    setItemToDelete,
+    openCreate,
+    openEdit,
+    openView,
+    openDelete,
+    closeModals,
+    closeNotification,
+    handleSuccess,
+    confirmDelete,
+    paginationData,
+  } = useCrud<StoreApi>({
+    moduleKey: 'stores',
+    itemNameKey: 'store_name',
+    data: allStores,
+    onDelete: async (item) => {
+      await deleteMutation.mutateAsync(item.id_store);
+    },
+  });
 
-  // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isViewOpen, setIsViewOpen] = useState(false);
-  const [selectedStore, setSelectedStore] = useState<StoreApi | null>(null);
-  const [storeToDelete, setStoreToDelete] = useState<StoreApi | null>(null);
-  const [notification, setNotification] = useState<NotificationState | null>(null);
+  const { totalPages, totalItems } = paginationData;
 
-  // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
-
-  const showNotification = useCallback((variant: ToastVariant, title: string, message: string) => {
-    setNotification({ id: Date.now(), variant, title, message });
-    setTimeout(() => setNotification(null), 3800);
-  }, []);
-
-  const handleStoreSuccess = (action: 'create' | 'update', store: StoreApi) => {
-    void refresh();
-    showNotification(
-      'success',
-      action === 'create' ? 'Tienda creada' : 'Tienda actualizada',
-      `${store.store_name} ha sido guardada correctamente.`
-    );
-  };
-
-  const confirmDelete = async () => {
-    if (!storeToDelete) return;
-    try {
-      await remove(storeToDelete.id_store);
-      showNotification(
-        'success',
-        'Tienda eliminada',
-        `${storeToDelete.store_name} ha sido eliminada del sistema.`
-      );
-      setStoreToDelete(null);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'No se pudo completar la operación.';
-      showNotification('error', 'Error de Integridad', message);
-    }
-  };
+  // ── Columnas ─────────────────────────────────────────────────────────────
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('store_name', {
+        header: 'Nombre',
+        size: 250,
+        cell: (info) => (
+          <span className="font-medium text-gray-900" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('address', {
+        header: 'Dirección',
+        cell: (info) => (
+          <span className="text-gray-600 truncate block" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('status', {
+        header: 'Estado',
+        size: 130,
+        cell: (info) => <StatusBadge status={info.getValue()} />,
+      }),
+      columnHelper.display({
+        id: 'actions',
+        size: 100,
+        header: 'Acciones',
+        cell: (info) => (
+          <ActionButtons
+            onEdit={() => openEdit(info.row.original)}
+            onDelete={() => openDelete(info.row.original)}
+          />
+        ),
+      }),
+    ],
+    [openEdit, openDelete]
+  );
 
   return (
     <CrudPageTemplate
       title="Tiendas Físicas"
       subtitle="Administra las sucursales, almacenes y puntos de venta del sistema."
       headerAction={
-        <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
+        <Button icon={<Plus size={20} />} onClick={openCreate}>
           Nueva Tienda
         </Button>
       }
-      // Búsqueda
       searchValue={searchTerm}
       onSearchChange={setSearchTerm}
       searchPlaceholder="Buscar por nombre o dirección..."
-      // Notificaciones y Errores
       notification={notification}
-      onNotificationClose={() => setNotification(null)}
-      errorMessage={errorMessage}
-      // Estructura de la Tabla
+      onNotificationClose={closeNotification}
+      errorMessage={error ? 'No se pudieron cargar las tiendas.' : null}
       tableToolbar={
         <TableToolbar
+          id="stores-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={pagination.setPageSize}
-          onRefresh={refresh}
-          isLoading={isLoading}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         />
       }
       table={
-        <DataTable
-          columns={['ID', 'Nombre', 'Dirección', 'Estado', 'Acciones']}
+        <CrudTable
+          data={allStores}
+          columns={columns}
           isLoading={isLoading}
-          rowCount={stores.length}
-          expectedRows={pagination.pageSize}
-          emptyMessage="No se encontraron tiendas con los criterios actuales."
-        >
-          {stores.map((store, index) => (
-            <tr
-              key={store.id_store}
-              onClick={() => {
-                setSelectedStore(store);
-                setIsViewOpen(true);
-              }}
-              className={`h-14 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
-                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-              }`}
-            >
-              <td className="px-3 py-0 align-middle text-gray-500">#{store.id_store}</td>
-              <td className="px-3 py-0 align-middle font-medium text-gray-900">
-                {store.store_name}
-              </td>
-              <td className="px-3 py-0 align-middle text-gray-600">{store.address}</td>
-              <td className="px-3 py-0 align-middle">
-                <StatusBadge status={store.status} />
-              </td>
-              <td className="px-3 py-0 align-middle">
-                <ActionButtons
-                  onEdit={() => {
-                    setSelectedStore(store);
-                    setIsEditOpen(true);
-                  }}
-                  onDelete={() => setStoreToDelete(store)}
-                />
-              </td>
-            </tr>
-          ))}
-        </DataTable>
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          globalFilter={searchTerm}
+          onRowClick={openView}
+        />
       }
       tablePagination={
         <TablePagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
+          currentPage={pagination.pageIndex + 1}
+          totalPages={totalPages}
+          totalItems={totalItems}
           pageSize={pagination.pageSize}
-          onPageChange={pagination.setPage}
+          onPageChange={(updater) => {
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
+          }}
           isLoading={isLoading}
         />
       }
     >
       <ConfirmDeleteModal
-        isOpen={storeToDelete !== null}
-        onClose={() => setStoreToDelete(null)}
+        isOpen={itemToDelete !== null}
+        onClose={() => setItemToDelete(null)}
         onConfirm={confirmDelete}
         title="Eliminar Tienda"
-        itemName={storeToDelete?.store_name}
-        isLoading={isLoading}
+        itemName={itemToDelete?.store_name}
+        isLoading={isDeleting}
       />
 
       <StoreForm
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
+        isOpen={modalStates.isCreateOpen}
+        onClose={closeModals}
         mode="create"
-        onSuccess={handleStoreSuccess}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Tienda')}
       />
 
       <StoreForm
-        isOpen={isEditOpen}
-        onClose={() => {
-          setIsEditOpen(false);
-          setSelectedStore(null);
-        }}
+        isOpen={modalStates.isEditOpen}
+        onClose={closeModals}
         mode="edit"
-        initialData={selectedStore}
-        onSuccess={handleStoreSuccess}
+        initialData={selectedItem}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Tienda')}
       />
 
       <StoreForm
-        isOpen={isViewOpen}
-        onClose={() => {
-          setIsViewOpen(false);
-          setSelectedStore(null);
-        }}
+        isOpen={modalStates.isViewOpen}
+        onClose={closeModals}
         mode="view"
-        initialData={selectedStore}
+        initialData={selectedItem}
       />
     </CrudPageTemplate>
   );

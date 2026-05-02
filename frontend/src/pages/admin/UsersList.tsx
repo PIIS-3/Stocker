@@ -1,5 +1,7 @@
 import { Plus, Users as UsersIcon } from 'lucide-react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { createColumnHelper } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge, RoleBadge } from '../../components/atoms';
@@ -10,143 +12,176 @@ import {
   TableToolbar,
   TablePagination,
   ConfirmDeleteModal,
-  type ToastVariant,
 } from '../../components/molecules';
 
 // ── Organismos ──────────────────────────────────────────────────────────────
-import { UserForm, DataTable } from '../../components/organisms';
+import { UserForm, CrudTable } from '../../components/organisms';
 
 // ── Templates ───────────────────────────────────────────────────────────────
 import { CrudPageTemplate } from '../../components/templates';
 
-// ── Servicios y Hooks ───────────────────────────────────────────────────────
-import { employeesService, type EmployeeApi } from '../../services/employees.service';
-import { rolesService, type RoleApi } from '../../services/roles.service';
+// ── Queries y Hooks ────────────────────────────────────────────────────────
+import {
+  employeesListOptions,
+  useDeleteEmployee,
+  rolesListOptions,
+} from '../../queries/employees.queries';
 import { useCrud } from '../../hooks/useCrud';
+import type { EmployeeApi } from '../../services/employees.service';
 
-// ── Configuración ───────────────────────────────────────────────────────────
+const columnHelper = createColumnHelper<EmployeeApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
-
-interface NotificationState {
-  id: number;
-  title: string;
-  message: string;
-  variant: ToastVariant;
-}
 
 /**
  * Página: UsersList
- * Gestión de empleados y usuarios del sistema.
+ * Gestión de empleados y usuarios del sistema refactorizada con useCrud.
  */
 export default function UsersList() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<number>(0);
-  const [roles, setRoles] = useState<RoleApi[]>([]);
 
-  // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
-  const fetchEmployees = useCallback(() => employeesService.getEmployees(0, 1000), []);
-  const deleteEmployee = useCallback((id: number) => employeesService.deleteEmployee(id), []);
+  // ── Lógica de Datos ──────────────────────────────────────────────────────
+  const { data: allEmployees = [], isLoading, error } = useQuery(employeesListOptions());
+  const { data: roles = [] } = useQuery(rolesListOptions());
 
-  // Definimos la función de filtro memorizada para que useCrud reaccione correctamente
-  const filterFn = useCallback(
-    (emp: EmployeeApi) => {
-      const matchesSearch =
-        emp.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.last_name.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredEmployees = useMemo(() => {
+    let result = allEmployees;
+    if (roleFilter !== 0) {
+      result = result.filter((e) => e.role_id === roleFilter);
+    }
+    return result;
+  }, [allEmployees, roleFilter]);
 
-      const matchesRole = roleFilter === 0 || emp.role_id === roleFilter;
-      return matchesSearch && matchesRole;
-    },
-    [searchTerm, roleFilter]
-  );
+  const deleteMutation = useDeleteEmployee();
 
   const {
-    items: employees,
-    isLoading,
-    errorMessage,
+    searchTerm,
     pagination,
-    refresh,
-    remove,
-  } = useCrud<EmployeeApi>(fetchEmployees, deleteEmployee, { filterFn });
+    selectedItem,
+    itemToDelete,
+    isDeleting,
+    notification,
+    modalStates,
+    setSearchTerm,
+    setPagination,
+    setItemToDelete,
+    openCreate,
+    openEdit,
+    openView,
+    openDelete,
+    closeModals,
+    closeNotification,
+    handleSuccess,
+    confirmDelete,
+    paginationData,
+  } = useCrud<EmployeeApi>({
+    moduleKey: 'users',
+    itemNameKey: 'username',
+    data: filteredEmployees,
+    onDelete: async (item) => {
+      await deleteMutation.mutateAsync(item.id_employee);
+    },
+  });
 
-  // ── Carga de Roles para Filtro ──
-  useEffect(() => {
-    void rolesService.getRoles().then(setRoles);
-  }, []);
+  const { totalPages, totalItems } = paginationData;
 
-  // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isViewOpen, setIsViewOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<EmployeeApi | null>(null);
-  const [userToDelete, setUserToDelete] = useState<EmployeeApi | null>(null);
-  const [notification, setNotification] = useState<NotificationState | null>(null);
-
-  // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
-
-  const showNotification = useCallback((variant: ToastVariant, title: string, message: string) => {
-    setNotification({ id: Date.now(), variant, title, message });
-    setTimeout(() => setNotification(null), 3800);
-  }, []);
-
-  const handleUserSuccess = (action: 'create' | 'update', user: EmployeeApi) => {
-    void refresh();
-    showNotification(
-      'success',
-      action === 'create' ? 'Usuario creado' : 'Usuario actualizado',
-      `${user.first_name} ${user.last_name} ha sido guardado correctamente.`
-    );
-  };
-
-  const confirmDelete = async () => {
-    if (!userToDelete) return;
-    try {
-      await remove(userToDelete.id_employee);
-      showNotification(
-        'success',
-        'Usuario eliminado',
-        `El acceso de ${userToDelete.username} ha sido revocado.`
-      );
-      setUserToDelete(null);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error al eliminar usuario.';
-      showNotification('error', 'Error', message);
-    }
-  };
+  // ── Columnas ─────────────────────────────────────────────────────────────
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('username', {
+        header: 'Usuario',
+        size: 150,
+        cell: (info) => (
+          <span className="font-medium text-brand" title={info.getValue()}>
+            @{info.getValue()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor((row) => `${row.first_name} ${row.last_name}`, {
+        id: 'full_name',
+        header: 'Nombre Completo',
+        size: 200,
+        cell: (info) => (
+          <span className="text-gray-900 font-medium" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor((row) => row.role?.role_name, {
+        id: 'role_name',
+        header: 'Rol',
+        size: 120,
+        cell: (info) => (
+          <div title={info.getValue() || 'Sin Rol'}>
+            <RoleBadge role={info.getValue() || 'Sin Rol'} />
+          </div>
+        ),
+      }),
+      columnHelper.accessor((row) => row.store?.store_name, {
+        id: 'store_name',
+        header: 'Tienda',
+        size: 180,
+        cell: (info) => (
+          <span className="text-gray-600" title={info.getValue() || ''}>
+            {info.getValue() || '-'}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('status', {
+        header: 'Estado',
+        size: 120,
+        cell: (info) => (
+          <StatusBadge status={info.getValue()} activeLabel="Activo" inactiveLabel="Inactivo" />
+        ),
+      }),
+      columnHelper.display({
+        id: 'actions',
+        size: 100,
+        header: 'Acciones',
+        cell: (info) => (
+          <ActionButtons
+            onEdit={() => openEdit(info.row.original)}
+            onDelete={() => openDelete(info.row.original)}
+          />
+        ),
+      }),
+    ],
+    [openEdit, openDelete]
+  );
 
   return (
     <CrudPageTemplate
       title="Empleados"
       subtitle="Administra las cuentas de acceso, roles y asignaciones de tienda."
       headerAction={
-        <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
+        <Button icon={<Plus size={20} />} onClick={openCreate}>
           Nuevo Empleado
         </Button>
       }
-      // Búsqueda
       searchValue={searchTerm}
       onSearchChange={setSearchTerm}
       searchPlaceholder="Buscar por nombre o @usuario..."
-      // Notificaciones
       notification={notification}
-      onNotificationClose={() => setNotification(null)}
-      errorMessage={errorMessage}
-      // Configuración de Tabla
+      onNotificationClose={closeNotification}
+      errorMessage={error ? 'No se pudieron cargar los empleados.' : null}
       tableToolbar={
         <TableToolbar
+          id="users-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={pagination.setPageSize}
-          onRefresh={refresh}
-          isLoading={isLoading}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         >
           <div className="flex items-center gap-2">
             <UsersIcon size={16} className="text-gray-400" />
             <select
+              title="Filtrar por rol"
               value={roleFilter}
-              onChange={(e) => setRoleFilter(Number(e.target.value))}
-              className="px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-colors outline-none focus:ring-2 focus:ring-brand"
+              onChange={(e) => {
+                setRoleFilter(Number(e.target.value));
+                setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+              }}
+              className="px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 outline-none focus:ring-2 focus:ring-brand"
             >
               <option value={0}>Todos los roles</option>
               {roles.map((role) => (
@@ -159,98 +194,60 @@ export default function UsersList() {
         </TableToolbar>
       }
       table={
-        <DataTable
-          columns={['Usuario', 'Nombre Completo', 'Rol', 'Tienda', 'Estado', 'Acciones']}
+        <CrudTable
+          data={filteredEmployees}
+          columns={columns}
           isLoading={isLoading}
-          rowCount={employees.length}
-          expectedRows={pagination.pageSize}
-          emptyMessage="No se encontraron empleados con los filtros actuales."
-        >
-          {employees.map((emp, index) => (
-            <tr
-              key={emp.id_employee}
-              onClick={() => {
-                setSelectedUser(emp);
-                setIsViewOpen(true);
-              }}
-              className={`h-14 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
-                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-              }`}
-            >
-              <td className="px-4 py-0 align-middle">
-                <span className="font-medium text-brand">@{emp.username}</span>
-              </td>
-              <td className="px-4 py-0 align-middle text-gray-900 font-medium">
-                {emp.first_name} {emp.last_name}
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <RoleBadge role={emp.role?.role_name || 'Sin Rol'} />
-              </td>
-              <td className="px-4 py-0 align-middle text-gray-600">
-                {emp.store?.store_name || '-'}
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <StatusBadge status={emp.status} activeLabel="Activo" inactiveLabel="Inactivo" />
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <ActionButtons
-                  onEdit={() => {
-                    setSelectedUser(emp);
-                    setIsEditOpen(true);
-                  }}
-                  onDelete={() => setUserToDelete(emp)}
-                />
-              </td>
-            </tr>
-          ))}
-        </DataTable>
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          globalFilter={searchTerm}
+          onRowClick={openView}
+        />
       }
       tablePagination={
         <TablePagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
+          currentPage={pagination.pageIndex + 1}
+          totalPages={totalPages}
+          totalItems={totalItems}
           pageSize={pagination.pageSize}
-          onPageChange={pagination.setPage}
+          onPageChange={(updater) => {
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
+          }}
           isLoading={isLoading}
         />
       }
     >
       <ConfirmDeleteModal
-        isOpen={userToDelete !== null}
-        onClose={() => setUserToDelete(null)}
+        isOpen={itemToDelete !== null}
+        onClose={() => setItemToDelete(null)}
         onConfirm={confirmDelete}
         title="Revocar Acceso"
-        itemName={`@${userToDelete?.username}`}
-        isLoading={isLoading}
+        itemName={itemToDelete ? `@${itemToDelete.username}` : ''}
+        isLoading={isDeleting}
       />
 
       <UserForm
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
+        isOpen={modalStates.isCreateOpen}
+        onClose={closeModals}
         mode="create"
-        onSuccess={handleUserSuccess}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Usuario')}
       />
 
       <UserForm
-        isOpen={isEditOpen}
-        onClose={() => {
-          setIsEditOpen(false);
-          setSelectedUser(null);
-        }}
+        isOpen={modalStates.isEditOpen}
+        onClose={closeModals}
         mode="edit"
-        initialData={selectedUser}
-        onSuccess={handleUserSuccess}
+        initialData={selectedItem}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Usuario')}
       />
 
       <UserForm
-        isOpen={isViewOpen}
-        onClose={() => {
-          setIsViewOpen(false);
-          setSelectedUser(null);
-        }}
+        isOpen={modalStates.isViewOpen}
+        onClose={closeModals}
         mode="view"
-        initialData={selectedUser}
+        initialData={selectedItem}
       />
     </CrudPageTemplate>
   );
