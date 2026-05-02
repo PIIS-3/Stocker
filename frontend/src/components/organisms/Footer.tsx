@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="bg-gray-900 text-gray-300 py-12 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
         <div className="mb-6">
-          <Logo showBg />
+          <Logo showBg to="/" />
         </div>
 
         <p className="text-gray-400 max-w-lg mb-8 leading-relaxed">

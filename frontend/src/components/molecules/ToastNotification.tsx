@@ -8,7 +8,7 @@
 // WebAudio) y atrapar errores silenciosamente para no romper la UX.
 import { AlertTriangle, CheckCircle2, Info, X } from 'lucide-react';
 import { useEffect } from 'react';
-import { isSoundEnabled } from '../../utils/audio';
+import { isSoundEnabled, playTone, playSoundFromUrl } from '../../utils/audio';
 
 export type ToastVariant = 'success' | 'error' | 'info';
 
@@ -53,95 +53,7 @@ function renderIcon(variant: ToastVariant) {
   );
 }
 
-function playNotificationTone(variant: ToastVariant) {
-  if (typeof window === 'undefined') return;
 
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-
-  const context = new AudioContextClass();
-  if (context.state === 'suspended') {
-    void context.resume();
-  }
-
-  const oscillator = context.createOscillator();
-  const gainNode = context.createGain();
-
-  oscillator.type = variant === 'error' ? 'sawtooth' : 'sine';
-  oscillator.frequency.value = variant === 'success' ? 840 : variant === 'error' ? 320 : 620;
-
-  gainNode.gain.setValueAtTime(0.0001, context.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.08, context.currentTime + 0.02);
-  gainNode.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.24);
-
-  oscillator.connect(gainNode);
-  gainNode.connect(context.destination);
-
-  oscillator.start();
-  oscillator.stop(context.currentTime + 0.24);
-
-  oscillator.onended = () => {
-    void context.close();
-  };
-}
-
-async function playNotificationSoundFromUrl(soundUrl: string) {
-  if (typeof window === 'undefined') return;
-
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-  // Try using HTMLAudioElement first (more likely to comply with autoplay policies)
-  try {
-    const audio = new window.Audio(soundUrl);
-    audio.preload = 'auto';
-    // attempt to play and await the promise (may reject due to autoplay policies)
-    const p = audio.play();
-    if (p !== undefined) {
-      await p;
-      return;
-    }
-  } catch {
-    // fall through to WebAudio fallback
-  }
-
-  const context = new AudioContextClass();
-  try {
-    if (context.state === 'suspended') {
-      await context.resume();
-    }
-
-    const response = await fetch(soundUrl);
-    if (!response.ok) {
-      throw new Error('No se pudo cargar el archivo de sonido.');
-    }
-
-    const data = await response.arrayBuffer();
-    const buffer = await context.decodeAudioData(data);
-    const source = context.createBufferSource();
-    const gainNode = context.createGain();
-
-    source.buffer = buffer;
-    gainNode.gain.value = 0.22;
-    source.connect(gainNode);
-    gainNode.connect(context.destination);
-    source.start(0);
-
-    source.onended = () => {
-      void context.close();
-    };
-  } catch (e) {
-    try {
-      void context.close();
-    } catch {
-      /* ignore */
-    }
-    throw new Error('No se pudo reproducir el sonido de notificacion.', { cause: e });
-  }
-}
 
 export function ToastNotification({
   variant,
@@ -163,12 +75,12 @@ export function ToastNotification({
     const playAudio = async () => {
       try {
         if (soundUrl) {
-          await playNotificationSoundFromUrl(soundUrl);
+          await playSoundFromUrl(soundUrl);
           return;
         }
 
         // Si no se proporcionó URL, usamos un tono sintetizado corto.
-        playNotificationTone(variant);
+        playTone(variant);
       } catch {
         // Ignorar errores de audio (políticas del navegador, recursos faltantes, etc.).
       }

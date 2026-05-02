@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 export default function Contact() {
   return (
-    <div className="pt-32 pb-24 px-6 max-w-4xl mx-auto">
+    <div className="pt-32 pb-24 px-6 max-w-4xl mx-auto min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

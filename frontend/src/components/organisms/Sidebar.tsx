@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Store, Users, Tags, Box, LogOut } from 'lucide-react';
 import { Logo } from '../atoms/Logo';
 import { NavItem } from '../molecules/NavItem';
+import { authService } from '../../services/auth.service';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
@@ -17,6 +18,13 @@ const navItems = [
  * Define las rutas principales y permite cerrar la sesión.
  */
 export function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/');
+  };
+
   return (
     <div className="w-64 bg-white border-r border-gray-100 flex flex-col h-full shadow-sm">
       <div className="h-20 flex items-center px-6 border-b border-gray-50">
@@ -30,13 +38,13 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-gray-50">
-        <Link
-          to="/login"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
         >
           <LogOut size={20} />
           <span className="font-medium">Cerrar sesión</span>
-        </Link>
+        </button>
       </div>
     </div>
   );

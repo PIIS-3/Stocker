@@ -37,6 +37,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           variant="ghost"
           size="sm"
           type="button"
+          title="Página Anterior"
           onClick={() => onPageChange((page) => Math.max(1, page - 1))}
           disabled={currentPage === 1 || isLoading || totalItems === 0}
           className="disabled:cursor-not-allowed disabled:opacity-40"
@@ -53,6 +54,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           variant="ghost"
           size="sm"
           type="button"
+          title="Página Siguiente"
           onClick={() => onPageChange((page) => Math.min(totalPages, page + 1))}
           disabled={currentPage >= totalPages || isLoading || totalItems === 0}
           className="disabled:cursor-not-allowed disabled:opacity-40"
