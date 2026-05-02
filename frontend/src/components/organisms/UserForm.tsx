@@ -1,14 +1,16 @@
 import { Save, Shield, Store as StoreIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useForm } from '@tanstack/react-form';
 import { Button } from '../atoms/Button';
 import { Modal } from '../molecules/Modal';
+import { useQuery } from '@tanstack/react-query';
 import {
-  employeesService,
-  type EmployeeCreate,
-  type EmployeeApi,
-} from '../../services/employees.service';
-import { rolesService, type RoleApi } from '../../services/roles.service';
-import { storesService, type StoreApi } from '../../services/stores.service';
+  useCreateEmployee,
+  useUpdateEmployee,
+  rolesListOptions,
+} from '../../queries/employees.queries';
+import { storesListOptions } from '../../queries/stores.queries';
+import type { EmployeeCreate, EmployeeApi } from '../../services/employees.service';
 
 type UserFormAction = 'create' | 'update';
 
@@ -34,52 +36,84 @@ export function UserForm({
   onSuccess,
   onError,
 }: UserFormProps) {
+  const [error, setError] = useState<string | null>(null);
+
   const isEdit = mode === 'edit';
   const isView = mode === 'view';
   const isReadOnly = isView;
 
-  // ── Estados de Datos ──
-  const [formData, setFormData] = useState<EmployeeCreate & { confirm_password?: string }>({
-    first_name: '',
-    last_name: '',
-    username: '',
-    status: 'Active',
-    role_id: 0,
-    store_id: 0,
-    hashed_password: '',
-    confirm_password: '',
+  // ── Configuración de TanStack Form ──
+  const form = useForm({
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      username: '',
+      status: 'Active',
+      role_id: 0,
+      store_id: 0,
+      hashed_password: '',
+      confirm_password: '',
+    },
+    onSubmit: async ({ value }) => {
+      if (isReadOnly) return;
+      setError(null);
+
+      try {
+        const action: UserFormAction = isEdit ? 'update' : 'create';
+        let savedEmployee: EmployeeApi;
+
+        const payload = { ...value } as Record<string, unknown>;
+        if (isEdit) {
+          delete payload.hashed_password;
+          delete payload.confirm_password;
+        }
+
+        if (isEdit && initialData) {
+          savedEmployee = await updateMutation.mutateAsync({
+            id: initialData.id_employee,
+            data: payload as unknown as EmployeeCreate,
+          });
+        } else {
+          savedEmployee = await createMutation.mutateAsync(payload as unknown as EmployeeCreate);
+        }
+
+        onSuccess?.(action, savedEmployee);
+        onClose();
+      } catch (err: unknown) {
+        const message = (() => {
+          const detail =
+            typeof err === 'object' && err !== null && 'response' in err
+              ? (err as { response?: { data?: { detail?: unknown } } }).response?.data?.detail
+              : undefined;
+
+          return typeof detail === 'string' ? detail : 'Error al guardar el empleado.';
+        })();
+        setError(message);
+        onError?.(message);
+      }
+    },
   });
 
-  const [roles, setRoles] = useState<RoleApi[]>([]);
-  const [stores, setStores] = useState<StoreApi[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const createMutation = useCreateEmployee();
+  const updateMutation = useUpdateEmployee();
 
-  // ── Carga de Dependencias ──
-  useEffect(() => {
-    const loadDependencies = async () => {
-      try {
-        const [rolesRes, storesRes] = await Promise.all([
-          rolesService.getRoles(),
-          storesService.getStores(0, 1000),
-        ]);
-        setRoles(rolesRes);
-        setStores(storesRes);
-      } catch (err) {
-        console.error('Error cargando dependencias de usuario:', err);
-      }
-    };
+  // ── Carga de Dependencias con TanStack Query ──
+  const { data: roles = [] } = useQuery({
+    ...rolesListOptions(),
+    enabled: isOpen,
+  });
 
-    if (isOpen) {
-      void loadDependencies();
-    }
-  }, [isOpen]);
+  const { data: stores = [] } = useQuery({
+    ...storesListOptions(0, 1000),
+    enabled: isOpen,
+  });
+
 
   // ── Sincronización de Datos Iniciales ──
   useEffect(() => {
     if (isOpen) {
       if ((isEdit || isView) && initialData) {
-        setFormData({
+        form.reset({
           first_name: initialData.first_name,
           last_name: initialData.last_name,
           username: initialData.username,
@@ -87,9 +121,10 @@ export function UserForm({
           role_id: initialData.role_id,
           store_id: initialData.store_id,
           hashed_password: '',
+          confirm_password: '',
         });
       } else {
-        setFormData({
+        form.reset({
           first_name: '',
           last_name: '',
           username: '',
@@ -102,74 +137,9 @@ export function UserForm({
       }
       setError(null);
     }
-  }, [isOpen, initialData, isEdit, isView]);
+  }, [isOpen, initialData, isEdit, isView, form]);
 
-  // ── Handlers ──
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    if (isReadOnly) return;
-    const { id, value } = e.target;
-    const name = id.replace('user-', '');
-    setFormData((prev) => ({
-      ...prev,
-      [name]: id.includes('id') ? Number(value) : value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isReadOnly) return;
-    setError(null);
-
-    // Validaciones básicas
-    if (!isEdit && formData.hashed_password !== formData.confirm_password) {
-      setError('Las contraseñas no coinciden.');
-      return;
-    }
-
-    if (formData.role_id === 0) {
-      setError('Debes seleccionar un rol.');
-      return;
-    }
-
-    if (formData.store_id === 0) {
-      setError('Debes seleccionar una tienda.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const action: UserFormAction = isEdit ? 'update' : 'create';
-      let savedEmployee: EmployeeApi;
-
-      const { confirm_password: _, ...payload } = formData;
-      if (isEdit) {
-        delete payload.hashed_password;
-      }
-
-      if (isEdit && initialData) {
-        savedEmployee = await employeesService.updateEmployee(initialData.id_employee, payload);
-      } else {
-        savedEmployee = await employeesService.createEmployee(payload as EmployeeCreate);
-      }
-
-      onSuccess?.(action, savedEmployee);
-      onClose();
-    } catch (err: unknown) {
-      const message = (() => {
-        const detail =
-          typeof err === 'object' && err !== null && 'response' in err
-            ? (err as { response?: { data?: { detail?: unknown } } }).response?.data?.detail
-            : undefined;
-
-        return typeof detail === 'string' ? detail : 'Error al guardar el empleado.';
-      })();
-      setError(message);
-      onError?.(message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const modalTitle = isView
     ? 'Detalles del Empleado'
@@ -184,51 +154,99 @@ export function UserForm({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} subtitle={modalSubtitle} size="lg">
-      <form className="p-6 flex flex-col gap-5" onSubmit={handleSubmit}>
+      <form 
+        className="p-6 flex flex-col gap-5" 
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
         {error && (
           <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        {/* Nombre y Apellidos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
+        {/* ID + Datos Personales */}
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+          {initialData && (
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <label className="text-sm font-medium text-gray-700">ID</label>
+              <input
+                type="text"
+                readOnly
+                value={`#${initialData.id_employee}`}
+                className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50 text-gray-500 font-mono outline-none w-full"
+              />
+            </div>
+          )}
+          <div className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-5' : 'sm:col-span-6'}`}>
             <label className="text-sm font-medium text-gray-700" htmlFor="user-first_name">
               Nombre {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
-            <input
-              id="user-first_name"
-              type="text"
-              required
-              readOnly={isReadOnly}
-              placeholder="Ej: Juan"
-              value={formData.first_name}
-              onChange={handleChange}
-              className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm ${
-                isReadOnly
-                  ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
-                  : 'focus:ring-2 focus:ring-brand'
-              }`}
+            <form.Field
+              name="first_name"
+              validators={{
+                onChange: ({ value }) => !value ? 'El nombre es requerido' : undefined,
+              }}
+              children={(field) => (
+                <>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type="text"
+                    required
+                    readOnly={isReadOnly}
+                    placeholder="Ej: Juan"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm ${
+                      isReadOnly
+                        ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
+                        : 'focus:ring-2 focus:ring-brand'
+                    }`}
+                  />
+                  {field.state.meta.errors ? (
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                  ) : null}
+                </>
+              )}
             />
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-5' : 'sm:col-span-6'}`}>
             <label className="text-sm font-medium text-gray-700" htmlFor="user-last_name">
               Apellidos {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
-            <input
-              id="user-last_name"
-              type="text"
-              required
-              readOnly={isReadOnly}
-              placeholder="Ej: García Pérez"
-              value={formData.last_name}
-              onChange={handleChange}
-              className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm ${
-                isReadOnly
-                  ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
-                  : 'focus:ring-2 focus:ring-brand'
-              }`}
+            <form.Field
+              name="last_name"
+              validators={{
+                onChange: ({ value }) => !value ? 'Los apellidos son requeridos' : undefined,
+              }}
+              children={(field) => (
+                <>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type="text"
+                    required
+                    readOnly={isReadOnly}
+                    placeholder="Ej: García Pérez"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm ${
+                      isReadOnly
+                        ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
+                        : 'focus:ring-2 focus:ring-brand'
+                    }`}
+                  />
+                  {field.state.meta.errors ? (
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                  ) : null}
+                </>
+              )}
             />
           </div>
         </div>
@@ -239,44 +257,66 @@ export function UserForm({
             <label className="text-sm font-medium text-gray-700" htmlFor="user-username">
               Nombre de Usuario {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
-                @
-              </span>
-              <input
-                id="user-username"
-                type="text"
-                required
-                readOnly={isReadOnly}
-                placeholder="jgarcia"
-                value={formData.username}
-                onChange={handleChange}
-                className={`pl-8 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:outline-none text-sm ${
-                  isReadOnly
-                    ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
-                    : 'focus:ring-2 focus:ring-brand'
-                }`}
-              />
-            </div>
+            <form.Field
+              name="username"
+              validators={{
+                onChange: ({ value }) => !value ? 'El nombre de usuario es requerido' : undefined,
+              }}
+              children={(field) => (
+                <>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                      @
+                    </span>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      type="text"
+                      required
+                      readOnly={isReadOnly}
+                      placeholder="jgarcia"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className={`pl-8 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:outline-none text-sm ${
+                        isReadOnly
+                          ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
+                          : 'focus:ring-2 focus:ring-brand'
+                      }`}
+                    />
+                  </div>
+                  {field.state.meta.errors ? (
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                  ) : null}
+                </>
+              )}
+            />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700" htmlFor="user-status">
               Estado de la Cuenta
             </label>
-            <select
-              id="user-status"
-              disabled={isReadOnly}
-              value={formData.status}
-              onChange={handleChange}
-              className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm bg-white ${
-                isReadOnly
-                  ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
-                  : 'focus:ring-2 focus:ring-brand'
-              }`}
-            >
-              <option value="Active">Activo</option>
-              <option value="Inactive">Inactivo</option>
-            </select>
+            <form.Field
+              name="status"
+              children={(field) => (
+                <select
+                  id={field.name}
+                  name={field.name}
+                  disabled={isReadOnly}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  className={`px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm bg-white ${
+                    isReadOnly
+                      ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
+                      : 'focus:ring-2 focus:ring-brand'
+                  }`}
+                >
+                  <option value="Active">Activo</option>
+                  <option value="Inactive">Inactivo</option>
+                </select>
+              )}
+            />
           </div>
         </div>
 
@@ -287,28 +327,64 @@ export function UserForm({
               <label className="text-sm font-medium text-gray-700" htmlFor="user-hashed_password">
                 Contraseña <span className="text-rose-500">*</span>
               </label>
-              <input
-                id="user-hashed_password"
-                type="password"
-                required
-                placeholder="Mínimo 8 caracteres"
-                value={formData.hashed_password}
-                onChange={handleChange}
-                className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
+              <form.Field
+                name="hashed_password"
+                validators={{
+                  onChange: ({ value }) => !value ? 'La contraseña es requerida' : value.length < 8 ? 'Mínimo 8 caracteres' : undefined,
+                }}
+                children={(field) => (
+                  <>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      type="password"
+                      required
+                      placeholder="Mínimo 8 caracteres"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
+                    />
+                    {field.state.meta.errors ? (
+                      <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    ) : null}
+                  </>
+                )}
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700" htmlFor="user-confirm_password">
                 Confirmar Contraseña <span className="text-rose-500">*</span>
               </label>
-              <input
-                id="user-confirm_password"
-                type="password"
-                required
-                placeholder="Repite la contraseña"
-                value={formData.confirm_password}
-                onChange={handleChange}
-                className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
+              <form.Field
+                name="confirm_password"
+                validators={{
+                  onChange: ({ value, fieldApi }) => {
+                    if (!value) return 'Debes confirmar la contraseña'
+                    if (value !== fieldApi.form.getFieldValue('hashed_password')) {
+                      return 'Las contraseñas no coinciden'
+                    }
+                    return undefined
+                  }
+                }}
+                children={(field) => (
+                  <>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      type="password"
+                      required
+                      placeholder="Repite la contraseña"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
+                    />
+                    {field.state.meta.errors ? (
+                      <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    ) : null}
+                  </>
+                )}
               />
             </div>
           </div>
@@ -320,65 +396,91 @@ export function UserForm({
             <label className="text-sm font-medium text-gray-700" htmlFor="user-role_id">
               Rol de Acceso {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
-            <div className="relative">
-              <Shield
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                size={16}
-              />
-              <select
-                id="user-role_id"
-                required
-                disabled={isReadOnly}
-                value={formData.role_id}
-                onChange={handleChange}
-                className={`pl-10 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:outline-none text-sm bg-white ${
-                  isReadOnly
-                    ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
-                    : 'focus:ring-2 focus:ring-brand'
-                }`}
-              >
-                <option value={0} disabled>
-                  Seleccionar rol...
-                </option>
-                {roles.map((role) => (
-                  <option key={role.id_role} value={role.id_role}>
-                    {role.role_name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <form.Field
+              name="role_id"
+              validators={{
+                onChange: ({ value }) => value === 0 ? 'El rol es requerido' : undefined,
+              }}
+              children={(field) => (
+                <div className="relative">
+                  <Shield
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={16}
+                  />
+                  <select
+                    id={field.name}
+                    name={field.name}
+                    required
+                    disabled={isReadOnly}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(Number(e.target.value))}
+                    className={`pl-10 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:outline-none text-sm bg-white ${
+                      isReadOnly
+                        ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
+                        : 'focus:ring-2 focus:ring-brand'
+                    }`}
+                  >
+                    <option value={0} disabled>
+                      Seleccionar rol...
+                    </option>
+                    {roles.map((role) => (
+                      <option key={role.id_role} value={role.id_role}>
+                        {role.role_name}
+                      </option>
+                    ))}
+                  </select>
+                  {field.state.meta.errors ? (
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                  ) : null}
+                </div>
+              )}
+            />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700" htmlFor="user-store_id">
               Tienda Asignada {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
-            <div className="relative">
-              <StoreIcon
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                size={16}
-              />
-              <select
-                id="user-store_id"
-                required
-                disabled={isReadOnly}
-                value={formData.store_id}
-                onChange={handleChange}
-                className={`pl-10 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:outline-none text-sm bg-white ${
-                  isReadOnly
-                    ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
-                    : 'focus:ring-2 focus:ring-brand'
-                }`}
-              >
-                <option value={0} disabled>
-                  Seleccionar tienda...
-                </option>
-                {stores.map((store) => (
-                  <option key={store.id_store} value={store.id_store}>
-                    {store.store_name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <form.Field
+              name="store_id"
+              validators={{
+                onChange: ({ value }) => value === 0 ? 'La tienda es requerida' : undefined,
+              }}
+              children={(field) => (
+                <div className="relative">
+                  <StoreIcon
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={16}
+                  />
+                  <select
+                    id={field.name}
+                    name={field.name}
+                    required
+                    disabled={isReadOnly}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(Number(e.target.value))}
+                    className={`pl-10 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:outline-none text-sm bg-white ${
+                      isReadOnly
+                        ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
+                        : 'focus:ring-2 focus:ring-brand'
+                    }`}
+                  >
+                    <option value={0} disabled>
+                      Seleccionar tienda...
+                    </option>
+                    {stores.map((store) => (
+                      <option key={store.id_store} value={store.id_store}>
+                        {store.store_name}
+                      </option>
+                    ))}
+                  </select>
+                  {field.state.meta.errors ? (
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                  ) : null}
+                </div>
+              )}
+            />
           </div>
         </div>
 
