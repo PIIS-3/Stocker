@@ -1,5 +1,9 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { employeesService, type EmployeeCreate, type EmployeeUpdate } from '../services/employees.service';
+import {
+  employeesService,
+  type EmployeeCreate,
+  type EmployeeUpdate,
+} from '../services/employees.service';
 import { rolesService } from '../services/roles.service';
 
 export const employeeKeys = {

@@ -3,8 +3,7 @@ import { storesService, type StoreCreate, type StoreUpdate } from '../services/s
 
 export const storeKeys = {
   all: ['stores'] as const,
-  list: (params?: { skip?: number; limit?: number }) =>
-    [...storeKeys.all, 'list', params] as const,
+  list: (params?: { skip?: number; limit?: number }) => [...storeKeys.all, 'list', params] as const,
   detail: (id: number) => [...storeKeys.all, 'detail', id] as const,
 };
 

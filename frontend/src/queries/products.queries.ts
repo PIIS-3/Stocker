@@ -1,5 +1,9 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { productsService, type ProductCreate, type ProductUpdate } from '../services/products.service';
+import {
+  productsService,
+  type ProductCreate,
+  type ProductUpdate,
+} from '../services/products.service';
 
 export const productKeys = {
   all: ['products'] as const,

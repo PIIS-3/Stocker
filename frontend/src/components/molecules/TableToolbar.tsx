@@ -46,9 +46,7 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
 
       {/* Slot para filtros adicionales u otros componentes */}
       {children && (
-        <div className="flex items-center gap-4 border-l border-gray-100 pl-4">
-          {children}
-        </div>
+        <div className="flex items-center gap-4 border-l border-gray-100 pl-4">{children}</div>
       )}
     </div>
   );

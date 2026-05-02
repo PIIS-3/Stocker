@@ -19,7 +19,7 @@ export function useCrud<T>({ moduleKey, onDelete, itemNameKey, data = [] }: UseC
 
   // ── Estado de Búsqueda y Paginación ──────────────────────────────────────
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const [pagination, setPagination] = useState<PaginationState>(() => {
     const saved = localStorage.getItem(`stocker_page_size_${moduleKey}`);
     return {
@@ -49,7 +49,7 @@ export function useCrud<T>({ moduleKey, onDelete, itemNameKey, data = [] }: UseC
 
   // ── Handlers de Acción ────────────────────────────────────────────────────
   const openCreate = useCallback(() => setIsCreateOpen(true), []);
-  
+
   const openEdit = useCallback((item: T) => {
     setSelectedItem(item);
     setIsEditOpen(true);
@@ -71,14 +71,17 @@ export function useCrud<T>({ moduleKey, onDelete, itemNameKey, data = [] }: UseC
     setSelectedItem(null);
   }, []);
 
-  const handleSuccess = useCallback((action: 'create' | 'update', item: T, entityLabel: string) => {
-    const itemName = String(item[itemNameKey]);
-    showNotification(
-      'success',
-      action === 'create' ? `${entityLabel} creado` : `${entityLabel} actualizado`,
-      `El registro "${itemName}" ha sido guardado correctamente.`
-    );
-  }, [itemNameKey, showNotification]);
+  const handleSuccess = useCallback(
+    (action: 'create' | 'update', item: T, entityLabel: string) => {
+      const itemName = String(item[itemNameKey]);
+      showNotification(
+        'success',
+        action === 'create' ? `${entityLabel} creado` : `${entityLabel} actualizado`,
+        `El registro "${itemName}" ha sido guardado correctamente.`
+      );
+    },
+    [itemNameKey, showNotification]
+  );
 
   const confirmDelete = async () => {
     if (!itemToDelete || !onDelete) return;
@@ -120,7 +123,7 @@ export function useCrud<T>({ moduleKey, onDelete, itemNameKey, data = [] }: UseC
       isEditOpen,
       isViewOpen,
     },
-    
+
     // Setters / Acciones
     setSearchTerm: handleSearchChange,
     setPagination,

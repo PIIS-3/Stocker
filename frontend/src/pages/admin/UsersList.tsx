@@ -90,25 +90,41 @@ export default function UsersList() {
       columnHelper.accessor('username', {
         header: 'Usuario',
         size: 150,
-        cell: (info) => <span className="font-medium text-brand" title={info.getValue()}>@{info.getValue()}</span>,
+        cell: (info) => (
+          <span className="font-medium text-brand" title={info.getValue()}>
+            @{info.getValue()}
+          </span>
+        ),
       }),
       columnHelper.accessor((row) => `${row.first_name} ${row.last_name}`, {
         id: 'full_name',
         header: 'Nombre Completo',
         size: 200,
-        cell: (info) => <span className="text-gray-900 font-medium" title={info.getValue()}>{info.getValue()}</span>,
+        cell: (info) => (
+          <span className="text-gray-900 font-medium" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
       }),
       columnHelper.accessor((row) => row.role?.role_name, {
         id: 'role_name',
         header: 'Rol',
         size: 120,
-        cell: (info) => <div title={info.getValue() || 'Sin Rol'}><RoleBadge role={info.getValue() || 'Sin Rol'} /></div>,
+        cell: (info) => (
+          <div title={info.getValue() || 'Sin Rol'}>
+            <RoleBadge role={info.getValue() || 'Sin Rol'} />
+          </div>
+        ),
       }),
       columnHelper.accessor((row) => row.store?.store_name, {
         id: 'store_name',
         header: 'Tienda',
         size: 180,
-        cell: (info) => <span className="text-gray-600" title={info.getValue() || ''}>{info.getValue() || '-'}</span>,
+        cell: (info) => (
+          <span className="text-gray-600" title={info.getValue() || ''}>
+            {info.getValue() || '-'}
+          </span>
+        ),
       }),
       columnHelper.accessor('status', {
         header: 'Estado',
@@ -152,7 +168,9 @@ export default function UsersList() {
           id="users-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={(size) => setPagination({ ...pagination, pageSize: size, pageIndex: 0 })}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         >
           <div className="flex items-center gap-2">
             <UsersIcon size={16} className="text-gray-400" />
@@ -193,7 +211,8 @@ export default function UsersList() {
           totalItems={totalItems}
           pageSize={pagination.pageSize}
           onPageChange={(updater) => {
-            const nextPageIndex = typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
             setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
           }}
           isLoading={isLoading}

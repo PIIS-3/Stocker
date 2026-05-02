@@ -21,10 +21,7 @@ import { StoreForm, CrudTable } from '../../components/organisms';
 import { CrudPageTemplate } from '../../components/templates';
 
 // ── Queries y Hooks ────────────────────────────────────────────────────────
-import {
-  storesListOptions,
-  useDeleteStore,
-} from '../../queries/stores.queries';
+import { storesListOptions, useDeleteStore } from '../../queries/stores.queries';
 import { useCrud } from '../../hooks/useCrud';
 import type { StoreApi } from '../../services/stores.service';
 
@@ -78,11 +75,19 @@ export default function StoresList() {
       columnHelper.accessor('store_name', {
         header: 'Nombre',
         size: 250,
-        cell: (info) => <span className="font-medium text-gray-900" title={info.getValue()}>{info.getValue()}</span>,
+        cell: (info) => (
+          <span className="font-medium text-gray-900" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
       }),
       columnHelper.accessor('address', {
         header: 'Dirección',
-        cell: (info) => <span className="text-gray-600 truncate block" title={info.getValue()}>{info.getValue()}</span>,
+        cell: (info) => (
+          <span className="text-gray-600 truncate block" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
       }),
       columnHelper.accessor('status', {
         header: 'Estado',
@@ -124,7 +129,9 @@ export default function StoresList() {
           id="stores-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={(size) => setPagination({ ...pagination, pageSize: size, pageIndex: 0 })}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         />
       }
       table={
@@ -145,7 +152,8 @@ export default function StoresList() {
           totalItems={totalItems}
           pageSize={pagination.pageSize}
           onPageChange={(updater) => {
-            const nextPageIndex = typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
             setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
           }}
           isLoading={isLoading}

@@ -3,6 +3,7 @@ import { LayoutDashboard, Store, Users, Tags, Box, LogOut } from 'lucide-react';
 import { Logo } from '../atoms/Logo';
 import { NavItem } from '../molecules/NavItem';
 import { authService } from '../../services/auth.service';
+import { Button } from '../atoms/Button';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
@@ -22,7 +23,7 @@ export function Sidebar() {
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/');
+    navigate('/login');
   };
 
   return (
@@ -38,13 +39,14 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-gray-50">
-        <button
+        <Button
+          variant="ghost"
           onClick={handleLogout}
-          className="flex items-center w-full gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
+          className="w-full justify-start text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl px-4 py-3"
+          icon={<LogOut size={20} />}
         >
-          <LogOut size={20} />
           <span className="font-medium">Cerrar sesión</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

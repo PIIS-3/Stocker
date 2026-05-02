@@ -105,7 +105,9 @@ export function CrudTable<T>({
                     onClick={header.column.getToggleSortingHandler()}
                     style={{ width: header.column.columnDef.size || 'auto' }}
                   >
-                    <div className={`flex items-center gap-1.5 ${isActions ? 'justify-end w-full' : ''}`}>
+                    <div
+                      className={`flex items-center gap-1.5 ${isActions ? 'justify-end w-full' : ''}`}
+                    >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {canSort && (
                         <span className="text-gray-400" title={getSortTooltip(sortState)}>

@@ -21,10 +21,7 @@ import { ProductForm, CrudTable } from '../../components/organisms';
 import { CrudPageTemplate } from '../../components/templates';
 
 // ── Queries y Hooks ────────────────────────────────────────────────────────
-import {
-  productsListOptions,
-  useDeleteProduct,
-} from '../../queries/products.queries';
+import { productsListOptions, useDeleteProduct } from '../../queries/products.queries';
 import { categoriesListOptions } from '../../queries/categories.queries';
 import { useCrud } from '../../hooks/useCrud';
 import type { ProductApi } from '../../services/products.service';
@@ -91,7 +88,10 @@ export default function ProductsList() {
         header: 'SKU',
         size: 110,
         cell: (info) => (
-          <span className="font-mono text-xs text-brand font-semibold tracking-wider" title={info.getValue()}>
+          <span
+            className="font-mono text-xs text-brand font-semibold tracking-wider"
+            title={info.getValue()}
+          >
             {info.getValue()}
           </span>
         ),
@@ -101,8 +101,13 @@ export default function ProductsList() {
         size: 300,
         cell: (info) => (
           <div className="flex flex-col">
-            <span className="font-medium text-gray-900" title={info.getValue()}>{info.getValue()}</span>
-            <span className="text-xs text-gray-500 flex items-center gap-1" title={info.row.original.brand || 'Marca genérica'}>
+            <span className="font-medium text-gray-900" title={info.getValue()}>
+              {info.getValue()}
+            </span>
+            <span
+              className="text-xs text-gray-500 flex items-center gap-1"
+              title={info.row.original.brand || 'Marca genérica'}
+            >
               <Package size={10} /> {info.row.original.brand || 'Marca genérica'}
             </span>
           </div>
@@ -113,7 +118,10 @@ export default function ProductsList() {
         header: 'Categoría',
         size: 180,
         cell: (info) => (
-          <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200 flex items-center gap-1.5 w-fit" title={info.getValue() || 'Sin categoría'}>
+          <span
+            className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200 flex items-center gap-1.5 w-fit"
+            title={info.getValue() || 'Sin categoría'}
+          >
             <TagIcon size={12} />
             {info.getValue() || 'Sin categoría'}
           </span>
@@ -123,8 +131,8 @@ export default function ProductsList() {
         header: 'Precio Venta',
         size: 120,
         cell: (info) => (
-          <span 
-            className="font-semibold text-gray-900" 
+          <span
+            className="font-semibold text-gray-900"
             title={info.getValue().toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })}
           >
             {info.getValue().toLocaleString('es-ES', {
@@ -180,7 +188,9 @@ export default function ProductsList() {
           id="products-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={(size) => setPagination({ ...pagination, pageSize: size, pageIndex: 0 })}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         >
           <div className="flex items-center gap-2">
             <Filter size={16} className="text-gray-400" />
@@ -221,7 +231,8 @@ export default function ProductsList() {
           totalItems={totalItems}
           pageSize={pagination.pageSize}
           onPageChange={(updater) => {
-            const nextPageIndex = typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
             setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
           }}
           isLoading={isLoading}

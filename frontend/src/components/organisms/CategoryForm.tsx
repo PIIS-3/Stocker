@@ -3,10 +3,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { Button } from '../atoms/Button';
 import { Modal } from '../molecules/Modal';
-import {
-  useCreateCategory,
-  useUpdateCategory,
-} from '../../queries/categories.queries';
+import { useCreateCategory, useUpdateCategory } from '../../queries/categories.queries';
 import type { CategoryCreate, CategoryApi } from '../../services/categories.service';
 
 type CategoryFormAction = 'create' | 'update';
@@ -147,10 +144,12 @@ export function CategoryForm({
           <form.Field
             name="category_name"
             validators={{
-              onChange: ({ value }) => !value ? 'El nombre es requerido' : undefined,
+              onChange: ({ value }) => (!value ? 'El nombre es requerido' : undefined),
             }}
             children={(field) => (
-              <div className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-2' : 'sm:col-span-3'}`}>
+              <div
+                className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-2' : 'sm:col-span-3'}`}
+              >
                 <label className="text-sm font-medium text-gray-700" htmlFor={field.name}>
                   Nombre de Categoría {!isReadOnly && <span className="text-rose-500">*</span>}
                 </label>
@@ -164,7 +163,9 @@ export function CategoryForm({
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   className={`px-4 py-2.5 rounded-xl border focus:outline-none text-sm text-gray-900 placeholder-gray-400 ${
-                    field.state.meta.errors.length > 0 ? 'border-rose-300 ring-1 ring-rose-300' : 'border-gray-200'
+                    field.state.meta.errors.length > 0
+                      ? 'border-rose-300 ring-1 ring-rose-300'
+                      : 'border-gray-200'
                   } ${
                     isReadOnly ? 'bg-gray-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-brand'
                   }`}

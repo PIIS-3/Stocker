@@ -108,7 +108,6 @@ export function UserForm({
     enabled: isOpen,
   });
 
-
   // ── Sincronización de Datos Iniciales ──
   useEffect(() => {
     if (isOpen) {
@@ -154,8 +153,8 @@ export function UserForm({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} subtitle={modalSubtitle} size="lg">
-      <form 
-        className="p-6 flex flex-col gap-5" 
+      <form
+        className="p-6 flex flex-col gap-5"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -181,14 +180,16 @@ export function UserForm({
               />
             </div>
           )}
-          <div className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-5' : 'sm:col-span-6'}`}>
+          <div
+            className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-5' : 'sm:col-span-6'}`}
+          >
             <label className="text-sm font-medium text-gray-700" htmlFor="user-first_name">
               Nombre {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
             <form.Field
               name="first_name"
               validators={{
-                onChange: ({ value }) => !value ? 'El nombre es requerido' : undefined,
+                onChange: ({ value }) => (!value ? 'El nombre es requerido' : undefined),
               }}
               children={(field) => (
                 <>
@@ -209,20 +210,24 @@ export function UserForm({
                     }`}
                   />
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </>
               )}
             />
           </div>
-          <div className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-5' : 'sm:col-span-6'}`}>
+          <div
+            className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-5' : 'sm:col-span-6'}`}
+          >
             <label className="text-sm font-medium text-gray-700" htmlFor="user-last_name">
               Apellidos {!isReadOnly && <span className="text-rose-500">*</span>}
             </label>
             <form.Field
               name="last_name"
               validators={{
-                onChange: ({ value }) => !value ? 'Los apellidos son requeridos' : undefined,
+                onChange: ({ value }) => (!value ? 'Los apellidos son requeridos' : undefined),
               }}
               children={(field) => (
                 <>
@@ -243,7 +248,9 @@ export function UserForm({
                     }`}
                   />
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </>
               )}
@@ -260,7 +267,7 @@ export function UserForm({
             <form.Field
               name="username"
               validators={{
-                onChange: ({ value }) => !value ? 'El nombre de usuario es requerido' : undefined,
+                onChange: ({ value }) => (!value ? 'El nombre de usuario es requerido' : undefined),
               }}
               children={(field) => (
                 <>
@@ -286,7 +293,9 @@ export function UserForm({
                     />
                   </div>
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </>
               )}
@@ -330,7 +339,12 @@ export function UserForm({
               <form.Field
                 name="hashed_password"
                 validators={{
-                  onChange: ({ value }) => !value ? 'La contraseña es requerida' : value.length < 8 ? 'Mínimo 8 caracteres' : undefined,
+                  onChange: ({ value }) =>
+                    !value
+                      ? 'La contraseña es requerida'
+                      : value.length < 8
+                        ? 'Mínimo 8 caracteres'
+                        : undefined,
                 }}
                 children={(field) => (
                   <>
@@ -346,7 +360,9 @@ export function UserForm({
                       className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
                     />
                     {field.state.meta.errors ? (
-                      <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                      <em className="text-[10px] text-rose-500 mt-1 font-medium">
+                        {field.state.meta.errors.join(', ')}
+                      </em>
                     ) : null}
                   </>
                 )}
@@ -360,12 +376,12 @@ export function UserForm({
                 name="confirm_password"
                 validators={{
                   onChange: ({ value, fieldApi }) => {
-                    if (!value) return 'Debes confirmar la contraseña'
+                    if (!value) return 'Debes confirmar la contraseña';
                     if (value !== fieldApi.form.getFieldValue('hashed_password')) {
-                      return 'Las contraseñas no coinciden'
+                      return 'Las contraseñas no coinciden';
                     }
-                    return undefined
-                  }
+                    return undefined;
+                  },
                 }}
                 children={(field) => (
                   <>
@@ -381,7 +397,9 @@ export function UserForm({
                       className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
                     />
                     {field.state.meta.errors ? (
-                      <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                      <em className="text-[10px] text-rose-500 mt-1 font-medium">
+                        {field.state.meta.errors.join(', ')}
+                      </em>
                     ) : null}
                   </>
                 )}
@@ -399,7 +417,7 @@ export function UserForm({
             <form.Field
               name="role_id"
               validators={{
-                onChange: ({ value }) => value === 0 ? 'El rol es requerido' : undefined,
+                onChange: ({ value }) => (value === 0 ? 'El rol es requerido' : undefined),
               }}
               children={(field) => (
                 <div className="relative">
@@ -431,7 +449,9 @@ export function UserForm({
                     ))}
                   </select>
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </div>
               )}
@@ -444,7 +464,7 @@ export function UserForm({
             <form.Field
               name="store_id"
               validators={{
-                onChange: ({ value }) => value === 0 ? 'La tienda es requerida' : undefined,
+                onChange: ({ value }) => (value === 0 ? 'La tienda es requerida' : undefined),
               }}
               children={(field) => (
                 <div className="relative">
@@ -476,7 +496,9 @@ export function UserForm({
                     ))}
                   </select>
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 mt-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 mt-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </div>
               )}

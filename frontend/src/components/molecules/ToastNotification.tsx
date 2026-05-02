@@ -53,8 +53,6 @@ function renderIcon(variant: ToastVariant) {
   );
 }
 
-
-
 export function ToastNotification({
   variant,
   title,

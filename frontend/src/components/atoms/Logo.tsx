@@ -12,12 +12,7 @@ interface LogoProps {
   to?: string;
 }
 
-export function Logo({
-  label = 'Stocker',
-  showBg = false,
-  iconSize = 'h-10 w-10',
-  to,
-}: LogoProps) {
+export function Logo({ label = 'Stocker', showBg = false, iconSize = 'h-10 w-10', to }: LogoProps) {
   const content = (
     <div className="flex items-center gap-3">
       <div

@@ -4,10 +4,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '../atoms/Button';
 import { Modal } from '../molecules/Modal';
-import {
-  useCreateProduct,
-  useUpdateProduct,
-} from '../../queries/products.queries';
+import { useCreateProduct, useUpdateProduct } from '../../queries/products.queries';
 import { categoriesListOptions } from '../../queries/categories.queries';
 import type { ProductApi, ProductCreate } from '../../services/products.service';
 
@@ -122,8 +119,8 @@ export function ProductForm({
       }
       size="lg"
     >
-      <form 
-        className="p-6 flex flex-col gap-6" 
+      <form
+        className="p-6 flex flex-col gap-6"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -151,7 +148,9 @@ export function ProductForm({
               />
             </div>
           )}
-          <div className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-4' : 'sm:col-span-6'}`}>
+          <div
+            className={`flex flex-col gap-1.5 ${initialData ? 'sm:col-span-4' : 'sm:col-span-6'}`}
+          >
             <label
               className="text-xs font-semibold text-gray-500 uppercase tracking-wider pl-1"
               htmlFor="product-sku"
@@ -161,7 +160,7 @@ export function ProductForm({
             <form.Field
               name="sku"
               validators={{
-                onChange: ({ value }) => !value ? 'El SKU es requerido' : undefined,
+                onChange: ({ value }) => (!value ? 'El SKU es requerido' : undefined),
               }}
               children={(field) => (
                 <div className="relative">
@@ -185,7 +184,9 @@ export function ProductForm({
                     }`}
                   />
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </div>
               )}
@@ -201,11 +202,14 @@ export function ProductForm({
             <form.Field
               name="product_name"
               validators={{
-                onChange: ({ value }) => !value ? 'El nombre es requerido' : undefined,
+                onChange: ({ value }) => (!value ? 'El nombre es requerido' : undefined),
               }}
               children={(field) => (
                 <div className="relative">
-                  <Box className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <Box
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={16}
+                  />
                   <input
                     id={field.name}
                     name={field.name}
@@ -222,7 +226,9 @@ export function ProductForm({
                     }`}
                   />
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </div>
               )}
@@ -269,11 +275,14 @@ export function ProductForm({
             <form.Field
               name="category_id"
               validators={{
-                onChange: ({ value }) => value === 0 ? 'La categoría es requerida' : undefined,
+                onChange: ({ value }) => (value === 0 ? 'La categoría es requerida' : undefined),
               }}
               children={(field) => (
                 <div className="relative">
-                  <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <Tag
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={16}
+                  />
                   <select
                     id={field.name}
                     name={field.name}
@@ -298,7 +307,9 @@ export function ProductForm({
                     ))}
                   </select>
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </div>
               )}
@@ -318,7 +329,8 @@ export function ProductForm({
             <form.Field
               name="fixed_selling_price"
               validators={{
-                onChange: ({ value }) => value < 0 ? 'El precio no puede ser negativo' : undefined,
+                onChange: ({ value }) =>
+                  value < 0 ? 'El precio no puede ser negativo' : undefined,
               }}
               children={(field) => (
                 <div className="relative">
@@ -343,7 +355,9 @@ export function ProductForm({
                     }`}
                   />
                   {field.state.meta.errors ? (
-                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">{field.state.meta.errors.join(', ')}</em>
+                    <em className="text-[10px] text-rose-500 absolute -bottom-4 left-1 font-medium">
+                      {field.state.meta.errors.join(', ')}
+                    </em>
                   ) : null}
                 </div>
               )}

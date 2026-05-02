@@ -21,10 +21,7 @@ import { CategoryForm, CrudTable } from '../../components/organisms';
 import { CrudPageTemplate } from '../../components/templates';
 
 // ── Queries y Hooks ────────────────────────────────────────────────────────
-import {
-  categoriesListOptions,
-  useDeleteCategory,
-} from '../../queries/categories.queries';
+import { categoriesListOptions, useDeleteCategory } from '../../queries/categories.queries';
 import { useCrud } from '../../hooks/useCrud';
 import type { CategoryApi } from '../../services/categories.service';
 
@@ -77,13 +74,20 @@ export default function CategoriesList() {
     () => [
       columnHelper.accessor('category_name', {
         header: 'Nombre de Categoría',
-        cell: (info) => <span className="font-medium text-gray-900" title={info.getValue()}>{info.getValue()}</span>,
+        cell: (info) => (
+          <span className="font-medium text-gray-900" title={info.getValue()}>
+            {info.getValue()}
+          </span>
+        ),
       }),
       columnHelper.accessor('description', {
         header: 'Descripción',
         size: 350,
         cell: (info) => (
-          <span className="text-gray-600 truncate max-w-[300px] block" title={info.getValue() || ''}>
+          <span
+            className="text-gray-600 truncate max-w-[300px] block"
+            title={info.getValue() || ''}
+          >
             {info.getValue() || '-'}
           </span>
         ),
@@ -130,7 +134,9 @@ export default function CategoriesList() {
           id="categories-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={(size) => setPagination({ ...pagination, pageSize: size, pageIndex: 0 })}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         />
       }
       table={
@@ -151,7 +157,8 @@ export default function CategoriesList() {
           totalItems={totalItems}
           pageSize={pagination.pageSize}
           onPageChange={(updater) => {
-            const nextPageIndex = typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
             setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
           }}
           isLoading={isLoading}

@@ -85,12 +85,14 @@ export function Modal({ isOpen, onClose, title, subtitle, children, size = 'md' 
       // Optional: auto-focus the modal or first element when it opens
       setTimeout(() => {
         if (modalRef.current && !modalRef.current.contains(document.activeElement)) {
-           const focusable = modalRef.current.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') as HTMLElement;
-           if (focusable) focusable.focus();
+          const focusable = modalRef.current.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          ) as HTMLElement;
+          if (focusable) focusable.focus();
         }
       }, 50);
     }
-    
+
     return () => document.removeEventListener('keydown', handleKey);
   }, [isOpen, onClose]);
 
