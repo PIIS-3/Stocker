@@ -1,5 +1,7 @@
 import { Plus, Package, Tag as TagIcon, Filter } from 'lucide-react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { createColumnHelper } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -10,145 +12,196 @@ import {
   TableToolbar,
   TablePagination,
   ConfirmDeleteModal,
-  type ToastVariant,
 } from '../../components/molecules';
 
 // ── Organismos ──────────────────────────────────────────────────────────────
-import { ProductForm, DataTable } from '../../components/organisms';
+import { ProductForm, CrudTable } from '../../components/organisms';
 
 // ── Templates ───────────────────────────────────────────────────────────────
 import { CrudPageTemplate } from '../../components/templates';
 
-// ── Servicios y Hooks ───────────────────────────────────────────────────────
-import { productsService, type ProductApi } from '../../services/products.service';
-import { categoriesService, type CategoryApi } from '../../services/categories.service';
+// ── Queries y Hooks ────────────────────────────────────────────────────────
+import { productsListOptions, useDeleteProduct } from '../../queries/products.queries';
+import { categoriesListOptions } from '../../queries/categories.queries';
 import { useCrud } from '../../hooks/useCrud';
+import type { ProductApi } from '../../services/products.service';
 
-// ── Configuración ───────────────────────────────────────────────────────────
+const columnHelper = createColumnHelper<ProductApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
-
-interface NotificationState {
-  id: number;
-  title: string;
-  message: string;
-  variant: ToastVariant;
-}
 
 /**
  * Página: ProductsList
- * Gestión del catálogo maestro de productos (Plantillas).
- * Implementa filtrado local y búsqueda avanzada por SKU/Nombre/Marca.
+ * Gestión del catálogo maestro de productos refactorizada con useCrud.
  */
 export default function ProductsList() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<number>(0);
-  const [categories, setCategories] = useState<CategoryApi[]>([]);
 
-  // ── Lógica de Negocio (CRUD) ──────────────────────────────────────────────
-  const fetchProducts = useCallback(() => productsService.getProducts(0, 1000), []);
-  const deleteProduct = useCallback((id: number) => productsService.deleteProduct(id), []);
+  // ── Lógica de Datos ──────────────────────────────────────────────────────
+  const { data: allProducts = [], isLoading, error } = useQuery(productsListOptions());
+  const { data: categories = [] } = useQuery(categoriesListOptions());
 
-  const filterFn = useCallback(
-    (prod: ProductApi) => {
-      const search = searchTerm.toLowerCase();
-      const matchesSearch =
-        prod.product_name.toLowerCase().includes(search) ||
-        prod.sku.toLowerCase().includes(search) ||
-        (prod.brand || '').toLowerCase().includes(search);
+  const filteredProducts = useMemo(() => {
+    let result = allProducts;
+    if (categoryFilter !== 0) {
+      result = result.filter((p) => p.category_id === categoryFilter);
+    }
+    return result;
+  }, [allProducts, categoryFilter]);
 
-      const matchesCategory = categoryFilter === 0 || prod.category_id === categoryFilter;
-
-      return matchesSearch && matchesCategory;
-    },
-    [searchTerm, categoryFilter]
-  );
+  const deleteMutation = useDeleteProduct();
 
   const {
-    items: products,
-    isLoading,
-    errorMessage,
+    searchTerm,
     pagination,
-    refresh,
-    remove,
-  } = useCrud<ProductApi>(fetchProducts, deleteProduct, { filterFn });
+    selectedItem,
+    itemToDelete,
+    isDeleting,
+    notification,
+    modalStates,
+    setSearchTerm,
+    setPagination,
+    setItemToDelete,
+    openCreate,
+    openEdit,
+    openView,
+    openDelete,
+    closeModals,
+    closeNotification,
+    handleSuccess,
+    confirmDelete,
+    paginationData,
+  } = useCrud<ProductApi>({
+    moduleKey: 'products',
+    itemNameKey: 'product_name',
+    data: filteredProducts,
+    onDelete: async (item) => {
+      await deleteMutation.mutateAsync(item.id_product);
+    },
+  });
 
-  // ── Carga de Categorías para Filtro ──
-  useEffect(() => {
-    void categoriesService.getCategories(0, 1000).then(setCategories);
-  }, []);
+  const { totalPages, totalItems } = paginationData;
 
-  // ── Estados de Interfaz (UI) ──────────────────────────────────────────────
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isViewOpen, setIsViewOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ProductApi | null>(null);
-  const [productToDelete, setProductToDelete] = useState<ProductApi | null>(null);
-  const [notification, setNotification] = useState<NotificationState | null>(null);
-
-  // ── Manejadores de Eventos (Handlers) ────────────────────────────────────
-
-  const showNotification = useCallback((variant: ToastVariant, title: string, message: string) => {
-    setNotification({ id: Date.now(), variant, title, message });
-    setTimeout(() => setNotification(null), 3800);
-  }, []);
-
-  const handleProductSuccess = (action: 'create' | 'update', product: ProductApi) => {
-    void refresh();
-    showNotification(
-      'success',
-      action === 'create' ? 'Producto creado' : 'Producto actualizado',
-      `El producto ${product.product_name} ha sido guardado.`
-    );
-  };
-
-  const confirmDelete = async () => {
-    if (!productToDelete) return;
-    try {
-      await remove(productToDelete.id_product);
-      showNotification(
-        'success',
-        'Producto eliminado',
-        `${productToDelete.product_name} ha sido retirado del catálogo.`
-      );
-      setProductToDelete(null);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error al eliminar producto.';
-      showNotification('error', 'Error', message);
-    }
-  };
+  // ── Columnas ─────────────────────────────────────────────────────────────
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('sku', {
+        header: 'SKU',
+        size: 110,
+        cell: (info) => (
+          <span
+            className="font-mono text-xs text-brand font-semibold tracking-wider"
+            title={info.getValue()}
+          >
+            {info.getValue()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('product_name', {
+        header: 'Producto / Marca',
+        size: 300,
+        cell: (info) => (
+          <div className="flex flex-col">
+            <span className="font-medium text-gray-900" title={info.getValue()}>
+              {info.getValue()}
+            </span>
+            <span
+              className="text-xs text-gray-500 flex items-center gap-1"
+              title={info.row.original.brand || 'Marca genérica'}
+            >
+              <Package size={10} /> {info.row.original.brand || 'Marca genérica'}
+            </span>
+          </div>
+        ),
+      }),
+      columnHelper.accessor((row) => row.category?.category_name, {
+        id: 'category_name',
+        header: 'Categoría',
+        size: 180,
+        cell: (info) => (
+          <span
+            className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200 flex items-center gap-1.5 w-fit"
+            title={info.getValue() || 'Sin categoría'}
+          >
+            <TagIcon size={12} />
+            {info.getValue() || 'Sin categoría'}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('fixed_selling_price', {
+        header: 'Precio Venta',
+        size: 120,
+        cell: (info) => (
+          <span
+            className="font-semibold text-gray-900"
+            title={info.getValue().toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })}
+          >
+            {info.getValue().toLocaleString('es-ES', {
+              style: 'currency',
+              currency: 'EUR',
+            })}
+          </span>
+        ),
+      }),
+      columnHelper.accessor('status', {
+        header: 'Estado',
+        size: 130,
+        cell: (info) => (
+          <StatusBadge
+            status={info.getValue()}
+            activeLabel="Disponible"
+            inactiveLabel="Descatalogado"
+          />
+        ),
+      }),
+      columnHelper.display({
+        id: 'actions',
+        size: 100,
+        header: 'Acciones',
+        cell: (info) => (
+          <ActionButtons
+            onEdit={() => openEdit(info.row.original)}
+            onDelete={() => openDelete(info.row.original)}
+          />
+        ),
+      }),
+    ],
+    [openEdit, openDelete]
+  );
 
   return (
     <CrudPageTemplate
       title="Catálogo maestro"
       subtitle="Define las especificaciones de tus productos, precios base y categorías."
       headerAction={
-        <Button icon={<Plus size={20} />} onClick={() => setIsCreateOpen(true)}>
+        <Button icon={<Plus size={20} />} onClick={openCreate}>
           Nuevo Producto
         </Button>
       }
-      // Búsqueda
       searchValue={searchTerm}
       onSearchChange={setSearchTerm}
       searchPlaceholder="Buscar por SKU, nombre o marca..."
-      // Notificaciones
       notification={notification}
-      onNotificationClose={() => setNotification(null)}
-      errorMessage={errorMessage}
-      // Configuración de Tabla
+      onNotificationClose={closeNotification}
+      errorMessage={error ? 'No se pudieron cargar los productos.' : null}
       tableToolbar={
         <TableToolbar
+          id="products-toolbar"
           pageSize={pagination.pageSize}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
-          onPageSizeChange={pagination.setPageSize}
-          onRefresh={refresh}
-          isLoading={isLoading}
+          onPageSizeChange={(size) =>
+            setPagination({ ...pagination, pageSize: size, pageIndex: 0 })
+          }
         >
           <div className="flex items-center gap-2">
             <Filter size={16} className="text-gray-400" />
             <select
+              title="Filtrar por categoría"
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(Number(e.target.value))}
-              className="px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-colors outline-none focus:ring-2 focus:ring-brand"
+              onChange={(e) => {
+                setCategoryFilter(Number(e.target.value));
+                setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+              }}
+              className="px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 outline-none focus:ring-2 focus:ring-brand"
             >
               <option value={0}>Todas las categorías</option>
               {categories.map((cat) => (
@@ -161,115 +214,60 @@ export default function ProductsList() {
         </TableToolbar>
       }
       table={
-        <DataTable
-          columns={['SKU', 'Producto / Marca', 'Categoría', 'Precio Venta', 'Estado', 'Acciones']}
+        <CrudTable
+          data={filteredProducts}
+          columns={columns}
           isLoading={isLoading}
-          rowCount={products.length}
-          expectedRows={pagination.pageSize}
-          emptyMessage="No se encontraron productos con los filtros actuales."
-        >
-          {products.map((prod, index) => (
-            <tr
-              key={prod.id_product}
-              onClick={() => {
-                setSelectedProduct(prod);
-                setIsViewOpen(true);
-              }}
-              className={`h-14 hover:bg-gray-100 transition-colors border-b border-gray-50 cursor-pointer ${
-                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-              }`}
-            >
-              <td className="px-4 py-0 align-middle">
-                <span className="font-mono text-xs text-brand font-semibold tracking-wider">
-                  {prod.sku}
-                </span>
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">{prod.product_name}</span>
-                  <span className="text-xs text-gray-500 flex items-center gap-1">
-                    <Package size={10} /> {prod.brand || 'Marca genérica'}
-                  </span>
-                </div>
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200 flex items-center gap-1.5 w-fit">
-                  <TagIcon size={12} />
-                  {prod.category?.category_name || 'Sin categoría'}
-                </span>
-              </td>
-              <td className="px-4 py-0 align-middle font-semibold text-gray-900">
-                {prod.fixed_selling_price.toLocaleString('es-ES', {
-                  style: 'currency',
-                  currency: 'EUR',
-                })}
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <StatusBadge
-                  status={prod.status}
-                  activeLabel="Disponible"
-                  inactiveLabel="Descatalogado"
-                />
-              </td>
-              <td className="px-4 py-0 align-middle">
-                <ActionButtons
-                  onEdit={() => {
-                    setSelectedProduct(prod);
-                    setIsEditOpen(true);
-                  }}
-                  onDelete={() => setProductToDelete(prod)}
-                />
-              </td>
-            </tr>
-          ))}
-        </DataTable>
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          globalFilter={searchTerm}
+          onRowClick={openView}
+        />
       }
       tablePagination={
         <TablePagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
+          currentPage={pagination.pageIndex + 1}
+          totalPages={totalPages}
+          totalItems={totalItems}
           pageSize={pagination.pageSize}
-          onPageChange={pagination.setPage}
+          onPageChange={(updater) => {
+            const nextPageIndex =
+              typeof updater === 'function' ? updater(pagination.pageIndex + 1) - 1 : updater - 1;
+            setPagination((prev) => ({ ...prev, pageIndex: nextPageIndex }));
+          }}
           isLoading={isLoading}
         />
       }
     >
       <ConfirmDeleteModal
-        isOpen={productToDelete !== null}
-        onClose={() => setProductToDelete(null)}
+        isOpen={itemToDelete !== null}
+        onClose={() => setItemToDelete(null)}
         onConfirm={confirmDelete}
         title="Eliminar del Catálogo"
-        itemName={productToDelete?.product_name}
-        isLoading={isLoading}
+        itemName={itemToDelete?.product_name}
+        isLoading={isDeleting}
       />
 
       <ProductForm
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
+        isOpen={modalStates.isCreateOpen}
+        onClose={closeModals}
         mode="create"
-        onSuccess={handleProductSuccess}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Producto')}
       />
 
       <ProductForm
-        isOpen={isEditOpen}
-        onClose={() => {
-          setIsEditOpen(false);
-          setSelectedProduct(null);
-        }}
+        isOpen={modalStates.isEditOpen}
+        onClose={closeModals}
         mode="edit"
-        initialData={selectedProduct}
-        onSuccess={handleProductSuccess}
+        initialData={selectedItem}
+        onSuccess={(action, data) => handleSuccess(action, data, 'Producto')}
       />
 
       <ProductForm
-        isOpen={isViewOpen}
-        onClose={() => {
-          setIsViewOpen(false);
-          setSelectedProduct(null);
-        }}
+        isOpen={modalStates.isViewOpen}
+        onClose={closeModals}
         mode="view"
-        initialData={selectedProduct}
+        initialData={selectedItem}
       />
     </CrudPageTemplate>
   );

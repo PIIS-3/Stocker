@@ -8,11 +8,13 @@ interface LogoProps {
   showBg?: boolean;
   /** Tamaño del contenedor del icono en Tailwind (h-X w-X) */
   iconSize?: string;
+  /** Ruta a la que navega el logo. Si no se proporciona, no será un enlace. */
+  to?: string;
 }
 
-export function Logo({ label = 'Stocker', showBg = false, iconSize = 'h-10 w-10' }: LogoProps) {
-  return (
-    <Link to="/" className="flex items-center gap-3">
+export function Logo({ label = 'Stocker', showBg = false, iconSize = 'h-10 w-10', to }: LogoProps) {
+  const content = (
+    <div className="flex items-center gap-3">
       <div
         className={`${iconSize} flex items-center justify-center overflow-hidden ${
           showBg ? 'bg-white rounded' : 'mix-blend-multiply'
@@ -27,6 +29,16 @@ export function Logo({ label = 'Stocker', showBg = false, iconSize = 'h-10 w-10'
       <span className={`text-xl font-bold ${showBg ? 'text-white' : 'text-gray-800'}`}>
         {label}
       </span>
-    </Link>
+    </div>
   );
+
+  if (to) {
+    return (
+      <Link to={to} className="hover:opacity-80 transition-opacity">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

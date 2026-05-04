@@ -1,10 +1,6 @@
 import api from './api';
 
-export interface RoleApi {
-  id_role: number;
-  role_name: string;
-  status: string;
-}
+import { type RoleApi } from './roles.service';
 
 export interface StoreApiShort {
   id_store: number;

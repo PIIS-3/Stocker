@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 export function Hero() {
@@ -50,10 +51,13 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
           >
-            <button className="bg-brand text-white px-8 py-4 rounded-xl font-semibold hover:bg-brand-dark transition-all transform hover:-translate-y-1 shadow-xl shadow-brand/30 flex items-center justify-center gap-2 group text-lg">
+            <Link
+              to="/login"
+              className="bg-brand text-white px-8 py-4 rounded-xl font-semibold hover:bg-brand-dark transition-all transform hover:-translate-y-1 shadow-xl shadow-brand/30 flex items-center justify-center gap-2 group text-lg w-full sm:w-auto"
+            >
               Empezar ahora
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </motion.div>
         </div>
 

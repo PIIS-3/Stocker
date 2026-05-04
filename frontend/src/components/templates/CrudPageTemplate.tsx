@@ -100,7 +100,7 @@ export function CrudPageTemplate({
         )}
 
         {/* Tabla de Datos */}
-        {table}
+        <div className="flex-1 flex flex-col min-h-0">{table}</div>
 
         {/* Paginación Inferior */}
         {tablePagination}
