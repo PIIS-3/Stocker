@@ -1,19 +1,19 @@
 """
 categories.py — Datos de prueba y lógica de seed para Categorías.
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from sqlmodel import Session
 
 from .. import models
 from ._base import SeedReport, upsert_by_field
 
-
 # ── Datos de prueba ───────────────────────────────────────────────────────────
 
-CATEGORIES_SEED: List[Dict[str, Any]] = [
+CATEGORIES_SEED: list[dict[str, Any]] = [
     {
         "category_name": "Electrónica",
         "description": "Dispositivos, cables y componentes tecnológicos",
@@ -49,9 +49,8 @@ CATEGORIES_SEED: List[Dict[str, Any]] = [
 
 # ── Lógica de seed ────────────────────────────────────────────────────────────
 
-def seed_categories(
-    session: Session, report: SeedReport
-) -> dict[str, models.Category]:
+
+def seed_categories(session: Session, report: SeedReport) -> dict[str, models.Category]:
     """Inserta o actualiza las categorías semilla del inventario.
 
     Returns:

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import SQLModel, Session, Field
+from sqlmodel import Field, Session, SQLModel
 
+from ... import models
 from ...core import security
 from ...crud import employees as crud_employees
 from ...database import get_db
-from ... import models
 
 router = APIRouter(tags=["Autenticación"])
 
@@ -17,6 +17,7 @@ class LoginRequest(SQLModel):
 
 
 # ── POST /auth/login ─────────────────────────────────────────────────
+
 
 @router.post(
     "/login",

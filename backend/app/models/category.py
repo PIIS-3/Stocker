@@ -1,7 +1,8 @@
-from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from typing import TYPE_CHECKING
+
 from pydantic import ConfigDict
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from .enums import StatusEnum
 from .mixins import TimestampMixin
@@ -17,7 +18,7 @@ class CategoryBase(SQLModel):
     category_name: str = Field(
         unique=True, index=True, min_length=1, description="Nombre único de la categoría."
     )
-    description: Optional[str] = Field(
+    description: str | None = Field(
         default=None, description="Descripción detallada de la categoría."
     )
     status: StatusEnum = Field(
@@ -29,7 +30,7 @@ class CategoryBase(SQLModel):
             "example": {
                 "category_name": "Electrónica de Consumo",
                 "description": "Smartphones, tablets, ordenadores y accesorios relacionados.",
-                "status": "Active"
+                "status": "Active",
             }
         }
     )
@@ -46,22 +47,18 @@ class CategoryCreate(CategoryBase):
 # Schema de entrada para PATCH /categories/{id}.
 # Todos los campos son opcionales para permitir actualizaciones parciales.
 class CategoryUpdate(SQLModel):
-    category_name: Optional[str] = Field(
+    category_name: str | None = Field(
         default=None, min_length=1, description="Nuevo nombre (debe ser único)."
     )
-    description: Optional[str] = Field(
-        default=None, description="Nueva descripción detallada."
-    )
-    status: Optional[StatusEnum] = Field(
-        default=None, description="Nuevo estado operativo."
-    )
+    description: str | None = Field(default=None, description="Nueva descripción detallada.")
+    status: StatusEnum | None = Field(default=None, description="Nuevo estado operativo.")
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "category_name": "Línea Blanca",
                 "description": "Grandes electrodomésticos para el hogar.",
-                "status": "Active"
+                "status": "Active",
             }
         }
     )
@@ -72,11 +69,11 @@ class CategoryUpdate(SQLModel):
 # No se usa directamente en request/response de la API.
 class Category(TimestampMixin, CategoryBase, table=True):
     # None antes de persistir; PostgreSQL asigna el ID vía secuencia SERIAL.
-    id_category: Optional[int] = Field(default=None, primary_key=True)
+    id_category: int | None = Field(default=None, primary_key=True)
 
     # Relación lazy uno-a-muchos. No se incluye en CategoryResponse,
     # por lo que FastAPI nunca lo devuelve en los JSON de la API.
-    products: List["ProductTemplate"] = Relationship(back_populates="category")
+    products: list["ProductTemplate"] = Relationship(back_populates="category")
 
 
 # ── CategoryResponse ─────────────────────────────────────────────────────
@@ -84,7 +81,5 @@ class Category(TimestampMixin, CategoryBase, table=True):
 # Extiende CategoryBase añadiendo id y timestamps generados por la BD.
 class CategoryResponse(CategoryBase):
     id_category: int = Field(description="ID único de la categoría.")
-    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    updated_at: Optional[datetime] = Field(
-        default=None, description="Fecha de última actualización."
-    )
+    created_at: datetime | None = Field(default=None, description="Fecha de registro.")
+    updated_at: datetime | None = Field(default=None, description="Fecha de última actualización.")

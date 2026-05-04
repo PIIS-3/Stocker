@@ -2,7 +2,6 @@ from sqlmodel import Session, select
 
 from .. import models
 
-
 # El CRUD siempre devuelve el modelo ORM `ProductTemplate`, nunca `ProductTemplateResponse`.
 # La conversión ORM → schema de respuesta la hace FastAPI automáticamente
 # a través del parámetro response_model=ProductTemplateResponse declarado en cada endpoint.
@@ -11,9 +10,8 @@ from .. import models
 
 # ── Read ─────────────────────────────────────────────────────────────
 
-def get_products(
-    db: Session, skip: int = 0, limit: int = 100
-) -> list[models.ProductTemplate]:
+
+def get_products(db: Session, skip: int = 0, limit: int = 100) -> list[models.ProductTemplate]:
     """Devuelve la lista de plantillas de producto con paginación.
 
     Args:
@@ -31,9 +29,7 @@ def get_products(
 def get_product_by_id(db: Session, product_id: int) -> models.ProductTemplate | None:
     """Devuelve una plantilla de producto por su ID, o None si no existe."""
     return db.exec(
-        select(models.ProductTemplate).where(
-            models.ProductTemplate.id_product == product_id
-        )
+        select(models.ProductTemplate).where(models.ProductTemplate.id_product == product_id)
     ).first()
 
 
@@ -44,9 +40,7 @@ def get_product_by_sku(db: Session, sku: str) -> models.ProductTemplate | None:
     - Validar unicidad de SKU antes de crear o actualizar.
     - Búsqueda directa desde GET /products/by-sku/{sku}.
     """
-    return db.exec(
-        select(models.ProductTemplate).where(models.ProductTemplate.sku == sku)
-    ).first()
+    return db.exec(select(models.ProductTemplate).where(models.ProductTemplate.sku == sku)).first()
 
 
 def get_product_by_name(db: Session, product_name: str) -> models.ProductTemplate | None:
@@ -64,6 +58,7 @@ def get_product_by_name(db: Session, product_name: str) -> models.ProductTemplat
 
 
 # ── Create ───────────────────────────────────────────────────────────
+
 
 def create_product(
     db: Session,
@@ -84,6 +79,7 @@ def create_product(
 
 
 # ── Update ───────────────────────────────────────────────────────────
+
 
 def update_product(
     db: Session,
@@ -119,6 +115,7 @@ def update_product(
 
 
 # ── Delete ───────────────────────────────────────────────────────────
+
 
 def delete_product(db: Session, product_id: int) -> models.ProductTemplate | None:
     """Elimina una plantilla de producto y devuelve el registro tal como era antes de borrarse.

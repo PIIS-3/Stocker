@@ -6,13 +6,13 @@ Proporciona:
 - upsert_by_field: helper genérico que evita duplicar la lógica de upsert
 en cada módulo de seed.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Tuple, Type
+from typing import Any
 
 from sqlmodel import Session, SQLModel, select
-
 
 # ── SeedReport ────────────────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ class EntityReport:
 class SeedReport:
     """Informe global del seed. Cada módulo añade sus propios contadores."""
 
-    _entities: Dict[str, EntityReport] = field(default_factory=dict)
+    _entities: dict[str, EntityReport] = field(default_factory=dict)
 
     def register(self, entity: str, *, created: bool) -> None:
         """Registra una operación create o update para la entidad indicada."""
@@ -60,11 +60,11 @@ class SeedReport:
 
 def upsert_by_field(
     session: Session,
-    model_cls: Type[SQLModel],
+    model_cls: type[SQLModel],
     lookup_field: str,
     lookup_value: Any,
-    data: Dict[str, Any],
-) -> Tuple[SQLModel, bool]:
+    data: dict[str, Any],
+) -> tuple[SQLModel, bool]:
     """Inserta o actualiza un registro identificado por `lookup_field`.
 
     Args:
@@ -80,7 +80,7 @@ def upsert_by_field(
     """
     # Búsqueda por el campo único proporcionado.
     column = getattr(model_cls, lookup_field)
-    existing: Optional[SQLModel] = session.exec(
+    existing: SQLModel | None = session.exec(
         select(model_cls).where(column == lookup_value)
     ).first()
 

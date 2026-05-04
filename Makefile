@@ -43,6 +43,13 @@ lint:
 	npx editorconfig-checker
 	cd frontend && npm run lint
 	cd frontend && npm run format:check
+	$(MAKE) lint-backend
+
+# Ejecuta los linters del backend (Ruff + MyPy)
+lint-backend:
+	cd backend && ruff check .
+	cd backend && ruff format --check .
+	cd backend && mypy .
 
 # Ejecuta solo el linter del frontend
 lint-frontend:
@@ -69,5 +76,6 @@ pr-check:
 	@echo "⚛️ Validando Frontend..."
 	cd frontend && npx prettier --write . && npm run lint && npm run test -- --run
 	@echo "🐍 Validando Backend..."
-	cd backend && PYTHONPATH=. .venv/bin/python -m pytest tests
+	cd backend && ruff check . && ruff format --check . && mypy .
+	cd backend && PYTHONPATH=. .venv/bin/python -m pytest tests --cov=app
 	@echo "✅ ¡Todo listo para el Pull Request!"

@@ -11,3 +11,6 @@ sqlmodel==0.0.37
 uvicorn==0.42.0
 pytest==8.4.2
 httpx==0.28.1
+ruff==0.9.1
+mypy==1.14.1
+pytest-cov==6.0.0

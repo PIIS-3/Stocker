@@ -1,7 +1,9 @@
 from sqlmodel import Session
-from app.models.product import ProductTemplate
+
+from app.crud.products import get_product_by_id, get_product_templates, get_products
 from app.models.category import Category
-from app.crud.products import get_product_templates, get_products, get_product_by_id
+from app.models.product import ProductTemplate
+
 
 def test_get_product_templates(session: Session):
     # 1. Crear una categoría necesaria para el ProductTemplate
@@ -16,14 +18,14 @@ def test_get_product_templates(session: Session):
         product_name="Smartphone X",
         brand="Apple",
         fixed_selling_price=999.99,
-        category_id=category.id_category
+        category_id=category.id_category,
     )
     product2 = ProductTemplate(
         sku="SKU002",
         product_name="Laptop Pro",
         brand="Dell",
         fixed_selling_price=1499.99,
-        category_id=category.id_category
+        category_id=category.id_category,
     )
     session.add(product1)
     session.add(product2)

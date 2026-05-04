@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
@@ -7,7 +5,7 @@ from sqlmodel import Session
 from ... import models
 from ...crud import employees as crud_employees
 from ...database import get_db
-from ..deps import get_current_employee, get_current_admin
+from ..deps import get_current_admin, get_current_employee
 
 router = APIRouter(tags=["Empleados"], dependencies=[Depends(get_current_employee)])
 
@@ -19,23 +17,25 @@ _409_DELETE = {409: {"description": "No se puede eliminar un empleado con regist
 
 # ── GET /employees/roles ─────────────────────────────────────────────
 
+
 @router.get(
     "/roles",
-    response_model=List[models.RoleResponse],
+    response_model=list[models.RoleResponse],
     summary="Listar roles",
     description="Devuelve el catálogo de roles disponibles (SuperAdmin, Manager, Staff).",
 )
 def read_roles(db: Session = Depends(get_db)):
     from sqlmodel import select
-    return db.exec(select(models.Role).order_by(models.Role.id_role)).all()
 
+    return db.exec(select(models.Role).order_by(models.Role.id_role)).all()
 
 
 # ── GET /employees/ ──────────────────────────────────────────────────
 
+
 @router.get(
     "/",
-    response_model=List[models.EmployeeResponse],
+    response_model=list[models.EmployeeResponse],
     summary="Listar empleados",
     description=(
         "Devuelve la lista completa de empleados con soporte para paginación (skip/limit)."
@@ -50,6 +50,7 @@ def read_employees(
 
 
 # ── GET /employees/by-name/{name} ────────────────────────────────────
+
 
 @router.get(
     "/by-name/{name}",
@@ -67,14 +68,13 @@ def read_employee_by_name(name: str, db: Session = Depends(get_db)):
 
 # ── GET /employees/{employee_id} ─────────────────────────────────────
 
+
 @router.get(
     "/{employee_id}",
     response_model=models.EmployeeResponse,
     responses=_404,
     summary="Obtener empleado por ID",
-    description=(
-        "Recupera el detalle de un empleado a través de su identificador numérico único."
-    ),
+    description=("Recupera el detalle de un empleado a través de su identificador numérico único."),
 )
 def read_employee(employee_id: int, db: Session = Depends(get_db)):
     db_employee = crud_employees.get_employee_by_id(db, employee_id=employee_id)
@@ -84,6 +84,7 @@ def read_employee(employee_id: int, db: Session = Depends(get_db)):
 
 
 # ── POST /employees/ ─────────────────────────────────────────────────
+
 
 @router.post(
     "/",
@@ -104,6 +105,7 @@ def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(ge
 
 
 # ── PATCH /employees/{employee_id} ───────────────────────────────────
+
 
 @router.patch(
     "/{employee_id}",
@@ -136,6 +138,7 @@ def update_employee(
 
 # ── DELETE /employees/{employee_id} ──────────────────────────────────
 
+
 @router.delete(
     "/{employee_id}",
     response_model=models.EmployeeResponse,
@@ -157,4 +160,3 @@ def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     if deleted is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Empleado no encontrado.")
     return deleted
-

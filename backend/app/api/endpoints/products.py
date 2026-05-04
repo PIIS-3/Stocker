@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
-from typing import List
 
 from ... import models
 from ...crud import products as crud_products
 from ...database import get_db
-from ..deps import get_current_employee, get_current_admin
+from ..deps import get_current_admin, get_current_employee
 
 router = APIRouter(tags=["Productos"], dependencies=[Depends(get_current_employee)])
 
@@ -19,9 +18,10 @@ _400 = {400: {"description": "La categoría especificada no existe."}}
 
 # ── GET /products/ ───────────────────────────────────────────────────
 
+
 @router.get(
     "/",
-    response_model=List[models.ProductTemplateResponse],
+    response_model=list[models.ProductTemplateResponse],
     summary="Listar productos",
     description=(
         "Devuelve una lista paginada de todas las plantillas de producto registradas en el sistema."
@@ -37,6 +37,7 @@ def read_products(
 
 # ── GET /products/by-sku/{sku} ───────────────────────────────────────
 
+
 @router.get(
     "/by-sku/{sku}",
     response_model=models.ProductTemplateResponse,
@@ -50,13 +51,12 @@ def read_products(
 def read_product_by_sku(sku: str, db: Session = Depends(get_db)):
     db_product = crud_products.get_product_by_sku(db, sku=sku)
     if db_product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return db_product
 
 
 # ── GET /products/by-name/{product_name} ────────────────────────────
+
 
 @router.get(
     "/by-name/{product_name}",
@@ -71,13 +71,12 @@ def read_product_by_sku(sku: str, db: Session = Depends(get_db)):
 def read_product_by_name(product_name: str, db: Session = Depends(get_db)):
     db_product = crud_products.get_product_by_name(db, product_name=product_name)
     if db_product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return db_product
 
 
 # ── GET /products/{product_id} ───────────────────────────────────────
+
 
 @router.get(
     "/{product_id}",
@@ -92,13 +91,12 @@ def read_product_by_name(product_name: str, db: Session = Depends(get_db)):
 def read_product(product_id: int, db: Session = Depends(get_db)):
     db_product = crud_products.get_product_by_id(db, product_id=product_id)
     if db_product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return db_product
 
 
 # ── POST /products/ ──────────────────────────────────────────────────
+
 
 @router.post(
     "/",
@@ -129,6 +127,7 @@ def create_product(product_in: models.ProductTemplateCreate, db: Session = Depen
 
 
 # ── PATCH /products/{product_id} ─────────────────────────────────────
+
 
 @router.patch(
     "/{product_id}",
@@ -165,13 +164,12 @@ def update_product(
         )
 
     if updated is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return updated
 
 
 # ── DELETE /products/{product_id} ────────────────────────────────────
+
 
 @router.delete(
     "/{product_id}",
@@ -195,7 +193,5 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
         )
 
     if deleted is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return deleted

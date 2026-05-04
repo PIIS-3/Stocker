@@ -2,7 +2,6 @@ from sqlmodel import Session, select
 
 from .. import models
 
-
 # El CRUD siempre devuelve el modelo ORM `Employee`, nunca `EmployeeResponse`.
 # La conversión ORM → schema de respuesta la hace FastAPI automáticamente
 # a través del parámetro response_model=EmployeeResponse declarado en cada endpoint.
@@ -10,6 +9,7 @@ from .. import models
 
 
 # ── Read ─────────────────────────────────────────────────────────────
+
 
 def get_employees(db: Session, skip: int = 0, limit: int = 100) -> list[models.Employee]:
     """Devuelve la lista de empleados con paginación.
@@ -37,12 +37,11 @@ def get_employee_by_username(db: Session, username: str) -> models.Employee | No
     - Validar unicidad de username antes de crear o actualizar.
     - Búsqueda directa en el flujo de autenticación (login / JWT).
     """
-    return db.exec(
-        select(models.Employee).where(models.Employee.username == username)
-    ).first()
+    return db.exec(select(models.Employee).where(models.Employee.username == username)).first()
 
 
 # ── Create ───────────────────────────────────────────────────────────
+
 
 def create_employee(db: Session, employee_in: models.EmployeeCreate) -> models.Employee:
     """Inserta un nuevo empleado y devuelve el registro creado con todos sus campos."""
@@ -60,6 +59,7 @@ def create_employee(db: Session, employee_in: models.EmployeeCreate) -> models.E
 
 
 # ── Update ───────────────────────────────────────────────────────────
+
 
 def update_employee(
     db: Session,
@@ -95,6 +95,7 @@ def update_employee(
 
 
 # ── Delete ───────────────────────────────────────────────────────────
+
 
 def delete_employee(db: Session, employee_id: int) -> models.Employee | None:
     """Elimina un empleado y devuelve el registro tal como era antes de borrarse.

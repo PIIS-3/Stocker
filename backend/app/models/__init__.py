@@ -4,29 +4,30 @@
 # de conocer la estructura interna del paquete.
 
 # ── Enums ────────────────────────────────────────────────────────────
-from .enums import StatusEnum, RoleEnum
+# ── Categoría ────────────────────────────────────────────────────────
+from .category import Category, CategoryBase, CategoryCreate, CategoryResponse, CategoryUpdate
+
+# ── Empleado ─────────────────────────────────────────────────────────
+from .employee import Employee, EmployeeBase, EmployeeCreate, EmployeeResponse, EmployeeUpdate
+from .enums import RoleEnum, StatusEnum
 
 # ── Mixins ───────────────────────────────────────────────────────────
 from .mixins import TimestampMixin
 
-# ── Categoría ────────────────────────────────────────────────────────
-from .category import CategoryBase, CategoryCreate, CategoryUpdate, Category, CategoryResponse
-
 # ── Producto ─────────────────────────────────────────────────────────
 from .product import (
-    ProductTemplateBase, ProductTemplateCreate, ProductTemplateUpdate,
-    ProductTemplate, ProductTemplateResponse
+    ProductTemplate,
+    ProductTemplateBase,
+    ProductTemplateCreate,
+    ProductTemplateResponse,
+    ProductTemplateUpdate,
 )
 
-# ── Tienda ───────────────────────────────────────────────────────────
-from .store import StoreBase, StoreCreate, StoreUpdate, Store, StoreResponse
-
 # ── Rol ──────────────────────────────────────────────────────────────
-from .role import RoleBase, Role, RoleResponse
+from .role import Role, RoleBase, RoleResponse
 
-
-# ── Empleado ─────────────────────────────────────────────────────────
-from .employee import EmployeeBase, EmployeeCreate, EmployeeUpdate, Employee, EmployeeResponse
+# ── Tienda ───────────────────────────────────────────────────────────
+from .store import Store, StoreBase, StoreCreate, StoreResponse, StoreUpdate
 
 # ── Auth / Token ─────────────────────────────────────────────────────
 from .token import Token, TokenData
@@ -59,7 +60,6 @@ __all__ = [
     "RoleBase",
     "Role",
     "RoleResponse",
-
     # Empleado
     "EmployeeBase",
     "EmployeeCreate",

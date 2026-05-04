@@ -3,10 +3,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlmodel import Session
 
+from .. import models
 from ..core.config import settings
 from ..crud import employees as crud_employees
 from ..database import get_db
-from .. import models
 from ..models.enums import RoleEnum
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")

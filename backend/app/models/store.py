@@ -1,7 +1,8 @@
-from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from typing import TYPE_CHECKING
+
 from pydantic import ConfigDict
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from .enums import StatusEnum
 from .mixins import TimestampMixin
@@ -27,7 +28,7 @@ class StoreBase(SQLModel):
             "example": {
                 "store_name": "Stocker Central - Madrid",
                 "address": "Calle de la Gran Vía, 28, 28013 Madrid, España",
-                "status": "Active"
+                "status": "Active",
             }
         }
     )
@@ -45,20 +46,18 @@ class StoreCreate(StoreBase):
 # Todos los campos son opcionales para permitir actualizaciones parciales.
 # No hereda StoreBase para no forzar campos obligatorios en un PATCH.
 class StoreUpdate(SQLModel):
-    store_name: Optional[str] = Field(
+    store_name: str | None = Field(
         default=None, min_length=1, description="Nuevo nombre (debe ser único)."
     )
-    address: Optional[str] = Field(
-        default=None, min_length=1, description="Nueva dirección física."
-    )
-    status: Optional[StatusEnum] = Field(default=None, description="Nuevo estado operativo.")
+    address: str | None = Field(default=None, min_length=1, description="Nueva dirección física.")
+    status: StatusEnum | None = Field(default=None, description="Nuevo estado operativo.")
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "store_name": "Stocker Express - Chamberí",
                 "address": "Calle de Fuencarral, 120, 28010 Madrid",
-                "status": "Inactive"
+                "status": "Inactive",
             }
         }
     )
@@ -69,11 +68,11 @@ class StoreUpdate(SQLModel):
 # No se usa directamente en request/response de la API.
 class Store(TimestampMixin, StoreBase, table=True):
     # None antes de persistir; PostgreSQL asigna el ID vía secuencia SERIAL.
-    id_store: Optional[int] = Field(default=None, primary_key=True)
+    id_store: int | None = Field(default=None, primary_key=True)
 
     # Relación lazy uno-a-muchos. No se incluye en StoreResponse,
     # por lo que FastAPI nunca lo devuelve en los JSON de la API.
-    employees: List["Employee"] = Relationship(back_populates="store")
+    employees: list["Employee"] = Relationship(back_populates="store")
 
 
 # ── StoreResponse ────────────────────────────────────────────────────
@@ -81,8 +80,5 @@ class Store(TimestampMixin, StoreBase, table=True):
 # Extiende StoreBase añadiendo id y timestamps generados por la BD.
 class StoreResponse(StoreBase):
     id_store: int = Field(description="ID único de la tienda.")
-    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    updated_at: Optional[datetime] = Field(
-        default=None, description="Fecha de última actualización."
-    )
-
+    created_at: datetime | None = Field(default=None, description="Fecha de registro.")
+    updated_at: datetime | None = Field(default=None, description="Fecha de última actualización.")

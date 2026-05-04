@@ -1,18 +1,18 @@
 from sqlmodel import Session
 
-from app.models.store import Store, StoreCreate, StoreUpdate
-from app.models.enums import StatusEnum
 from app.crud.stores import (
-    get_stores,
+    create_store,
+    delete_store,
     get_store_by_id,
     get_store_by_name,
-    create_store,
+    get_stores,
     update_store,
-    delete_store,
 )
-
+from app.models.enums import StatusEnum
+from app.models.store import Store, StoreCreate, StoreUpdate
 
 # ── Helpers ──────────────────────────────────────────────────────────
+
 
 def _seed(
     session: Session,
@@ -28,6 +28,7 @@ def _seed(
 
 
 # ── Create ───────────────────────────────────────────────────────────
+
 
 def test_create_store_assigns_id(session: Session):
     store_in = StoreCreate(store_name="Tienda Central", address="Gran Vía 10")
@@ -59,6 +60,7 @@ def test_create_store_inactive_status(session: Session):
 
 
 # ── Read ─────────────────────────────────────────────────────────────
+
 
 def test_get_stores_returns_all(session: Session):
     _seed(session, "Tienda A")
@@ -138,6 +140,7 @@ def test_get_store_by_name_case_sensitive(session: Session):
 
 # ── Update ───────────────────────────────────────────────────────────
 
+
 def test_update_store_changes_address(session: Session):
     seeded = _seed(session, "Tienda Central", address="Calle Vieja 1")
     update_in = StoreUpdate(address="Calle Nueva 99")
@@ -176,9 +179,9 @@ def test_update_store_exclude_unset_leaves_other_fields(session: Session):
     result = update_store(session, store_id=seeded.id_store, store_in=update_in)
 
     assert result is not None
-    assert result.store_name == "TiendaMixta"         # intacto
-    assert result.status == StatusEnum.Active           # intacto
-    assert result.address == "Calle Actualizada 2"     # actualizado
+    assert result.store_name == "TiendaMixta"  # intacto
+    assert result.status == StatusEnum.Active  # intacto
+    assert result.address == "Calle Actualizada 2"  # actualizado
 
 
 def test_update_store_not_found_returns_none(session: Session):
@@ -190,6 +193,7 @@ def test_update_store_not_found_returns_none(session: Session):
 
 
 # ── Delete ───────────────────────────────────────────────────────────
+
 
 def test_delete_store_returns_deleted_record(session: Session):
     seeded = _seed(session, "Efimera", address="Calle Sin Futuro 0")

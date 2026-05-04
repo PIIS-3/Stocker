@@ -1,9 +1,10 @@
 """
 employees.py — Datos de prueba y lógica de seed para Empleados.
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from sqlmodel import Session
 
@@ -11,13 +12,12 @@ from .. import models
 from ..core import security
 from ._base import SeedReport, upsert_by_field
 
-
 # ── Datos de prueba ───────────────────────────────────────────────────────────
 
 # Todos los usuarios tendrán 'stocker123' como contraseña por defecto para desarrollo.
 DEFAULT_PASSWORD = "stocker123"
 
-EMPLOYEES_SEED: List[Dict[str, Any]] = [
+EMPLOYEES_SEED: list[dict[str, Any]] = [
     {
         "first_name": "Carlos",
         "last_name": "García López",
@@ -87,6 +87,7 @@ EMPLOYEES_SEED: List[Dict[str, Any]] = [
 
 # ── Lógica de seed ────────────────────────────────────────────────────────────
 
+
 def seed_employees(
     session: Session,
     report: SeedReport,
@@ -99,7 +100,6 @@ def seed_employees(
     el rendimiento durante la inserción masiva.
     """
     hashed_password = security.get_password_hash(DEFAULT_PASSWORD)
-
 
     for data in EMPLOYEES_SEED:
         store_name = data.pop("store_name")
@@ -126,7 +126,7 @@ def seed_employees(
                 **data,
                 "store_id": store.id_store,
                 "role_id": role.id_role,
-                "hashed_password": hashed_password
+                "hashed_password": hashed_password,
             },
         )
         report.register("Empleados", created=created)
