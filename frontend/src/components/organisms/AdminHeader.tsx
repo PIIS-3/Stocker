@@ -37,7 +37,9 @@ export function AdminHeader() {
     .slice(0, 2);
 
   return (
-    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 shadow-sm z-30 w-full">
+    <header
+      className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 shadow-sm z-30 w-full"
+    >
       <div className="flex-1" />
 
       <div className="flex items-center gap-4 relative" ref={dropdownRef}>
@@ -58,11 +60,15 @@ export function AdminHeader() {
           </div>
 
           <div className="relative">
-            <div className="h-10 w-10 bg-brand/10 rounded-full flex items-center justify-center text-brand font-bold border border-brand/20 shadow-inner group-hover:scale-105 transition-transform">
+            <div
+              className="h-10 w-10 bg-brand/10 rounded-full flex items-center justify-center text-brand font-bold border border-brand/20 shadow-inner group-hover:scale-105 transition-transform"
+            >
               {initials}
             </div>
             {/* Indicador de dropdown */}
-            <div className="absolute -bottom-1 -right-1 bg-white rounded-full border border-gray-100 shadow-sm p-0.5 text-gray-400 group-hover:text-brand group-hover:rotate-180 transition-all duration-300">
+            <div
+              className="absolute -bottom-1 -right-1 bg-white rounded-full border border-gray-100 shadow-sm p-0.5 text-gray-400 group-hover:text-brand group-hover:rotate-180 transition-all duration-300"
+            >
               <ChevronDown size={12} />
             </div>
           </div>
@@ -93,7 +99,9 @@ export function AdminHeader() {
                 <span className="font-medium">Ajustes</span>
               </Link>
 
-              <button className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors mx-2 rounded-xl group">
+              <button
+                className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors mx-2 rounded-xl group"
+              >
                 <div className="p-1.5 bg-gray-50 group-hover:bg-red-100 rounded-lg transition-colors">
                   <LogOut size={18} />
                 </div>

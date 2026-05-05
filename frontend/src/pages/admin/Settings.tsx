@@ -45,9 +45,13 @@ const Settings = () => {
       <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Ajustes de Usuario</h1>
-          <p className="text-gray-500 mt-2">Personaliza tu experiencia y gestiona la seguridad de tu cuenta.</p>
+          <p className="text-gray-500 mt-2">
+            Personaliza tu experiencia y gestiona la seguridad de tu cuenta.
+          </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-brand/5 text-brand rounded-full text-sm font-medium border border-brand/10">
+        <div
+          className="flex items-center gap-2 px-4 py-2 bg-brand/5 text-brand rounded-full text-sm font-medium border border-brand/10"
+        >
           <User size={16} />
           Sesión iniciada como {username}
         </div>
@@ -76,11 +80,15 @@ const Settings = () => {
               Personaliza el aspecto visual de la plataforma según tu preferencia o el entorno de luz.
             </p>
             <div className="grid grid-cols-2 gap-4">
-              <button className="border-2 border-brand p-5 rounded-2xl flex flex-col items-center gap-3 bg-brand/5 transition-all">
+              <button
+                className="border-2 border-brand p-5 rounded-2xl flex flex-col items-center gap-3 bg-brand/5 transition-all"
+              >
                 <Sun className="text-brand" size={24} />
                 <span className="font-bold text-brand">Modo Claro</span>
               </button>
-              <button className="border-2 border-gray-50 p-5 rounded-2xl flex flex-col items-center gap-3 hover:bg-gray-50 transition-all group">
+              <button
+                className="border-2 border-gray-50 p-5 rounded-2xl flex flex-col items-center gap-3 hover:bg-gray-50 transition-all group"
+              >
                 <Moon className="text-gray-400 group-hover:text-gray-600" size={24} />
                 <span className="font-bold text-gray-500 group-hover:text-gray-700">Modo Oscuro</span>
               </button>
@@ -113,18 +121,24 @@ const Settings = () => {
                   checked={desktopEnabled}
                   onChange={(e) => setDesktopEnabled(e.target.checked)}
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                <div
+                  className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"
+                ></div>
               </label>
             </div>
 
             <div
-              className={`flex items-center justify-between pt-4 border-t border-gray-50 transition-opacity duration-300 ${!desktopEnabled ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}
+              className={`flex items-center justify-between pt-4 border-t border-gray-50 transition-opacity duration-300 ${
+                !desktopEnabled ? 'opacity-40 pointer-events-none' : 'opacity-100'
+              }`}
             >
               <div>
                 <p className="font-semibold text-gray-800 flex items-center gap-2">
                   Efectos de sonido
                   {!desktopEnabled && (
-                    <span className="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-md uppercase font-bold tracking-tighter">
+                    <span
+                      className="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-md uppercase font-bold tracking-tighter"
+                    >
                       Off
                     </span>
                   )}
@@ -132,7 +146,9 @@ const Settings = () => {
                 <p className="text-xs text-gray-500">Sonido al recibir notificaciones.</p>
               </div>
               <label
-                className={`relative inline-flex items-center ${desktopEnabled ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                className={`relative inline-flex items-center ${
+                  desktopEnabled ? 'cursor-pointer' : 'cursor-not-allowed'
+                }`}
               >
                 <input
                   type="checkbox"
@@ -141,7 +157,9 @@ const Settings = () => {
                   onChange={(e) => setSoundEnabled(e.target.checked)}
                   disabled={!desktopEnabled}
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                <div
+                  className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"
+                ></div>
               </label>
             </div>
           </div>
@@ -176,18 +194,24 @@ const Settings = () => {
               <span className="text-gray-400 group-hover:translate-x-1 transition-transform">→</span>
             </button>
 
-            <button className="w-full flex items-center justify-between p-5 bg-gray-50/50 border border-gray-100 rounded-2xl hover:bg-brand/5 hover:border-brand/20 transition-all group">
+            <button
+              className="w-full flex items-center justify-between p-5 bg-gray-50/50 border border-gray-100 rounded-2xl hover:bg-brand/5 hover:border-brand/20 transition-all group"
+            >
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-white rounded-lg shadow-sm group-hover:text-brand transition-colors">
                   <Smartphone size={18} />
                 </div>
                 <div className="text-left">
                   <p className="text-gray-800 font-bold">Doble factor (2FA)</p>
-                  <p className="text-xs text-gray-500 text-pretty">Añade una capa extra de seguridad.</p>
+                  <p className="text-xs text-gray-500 text-pretty">
+                    Añade una capa extra de seguridad.
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-bold uppercase tracking-tight">
+                <span
+                  className="text-[10px] bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-bold uppercase tracking-tight"
+                >
                   Recomendado
                 </span>
                 <span className="text-gray-400 group-hover:translate-x-1 transition-transform">→</span>
@@ -214,7 +238,9 @@ const Settings = () => {
                 Idioma del sistema
               </label>
               <div className="relative">
-                <select className="w-full appearance-none bg-gray-50 border border-gray-100 text-gray-700 py-3.5 px-4 pr-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all cursor-pointer font-bold">
+                <select
+                  className="w-full appearance-none bg-gray-50 border border-gray-100 text-gray-700 py-3.5 px-4 pr-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all cursor-pointer font-bold"
+                >
                   <option value="es">Español (Castellano)</option>
                   <option value="en">English (United States)</option>
                 </select>
@@ -229,10 +255,14 @@ const Settings = () => {
                 Formato de moneda
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <button className="py-3 px-4 border-2 border-brand bg-brand/5 rounded-xl text-sm font-bold text-brand shadow-sm shadow-brand/5">
+                <button
+                  className="py-3 px-4 border-2 border-brand bg-brand/5 rounded-xl text-sm font-bold text-brand shadow-sm shadow-brand/5"
+                >
                   EUR (€) Euro
                 </button>
-                <button className="py-3 px-4 border-2 border-gray-100 bg-white rounded-xl text-sm font-bold text-gray-400 hover:border-gray-200 transition-colors">
+                <button
+                  className="py-3 px-4 border-2 border-gray-100 bg-white rounded-xl text-sm font-bold text-gray-400 hover:border-gray-200 transition-colors"
+                >
                   USD ($) Dólar
                 </button>
               </div>
