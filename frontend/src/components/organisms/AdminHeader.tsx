@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { authService } from '../../services/auth.service';
-import { Settings as SettingsIcon, LogOut, User, ChevronDown } from 'lucide-react';
+import { Settings as SettingsIcon, LogOut, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 

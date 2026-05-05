@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Bell, 
-  Volume2, 
   Moon, 
   Sun, 
   User, 
@@ -9,7 +8,6 @@ import {
   Globe, 
   ShieldCheck,
   Smartphone,
-  Mail,
   Palette,
   ChevronDown
 } from 'lucide-react';
@@ -18,11 +16,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../../services/auth.service';
 
 const Settings = () => {
+  useEffect(() => {
+    document.title = 'Ajustes de Usuario | Stocker';
+  }, []);
+
   const user = authService.getUser();
   const username = user?.username || 'Usuario';
-  const [desktopEnabled, setDesktopEnabled] = React.useState(true);
-  const [soundEnabled, setSoundEnabled] = React.useState(true);
-  const [showPasswordModal, setShowPasswordModal] = React.useState(false);
+  const [desktopEnabled, setDesktopEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
