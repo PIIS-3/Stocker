@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Bell, 
-  Moon, 
-  Sun, 
-  User, 
-  Lock, 
-  Globe, 
+import {
+  Bell,
+  Moon,
+  Sun,
+  User,
+  Lock,
+  Globe,
   ShieldCheck,
   Smartphone,
   Palette,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,16 +28,16 @@ const Settings = () => {
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { duration: 0.5, staggerChildren: 0.1 }
-    }
+      transition: { duration: 0.5, staggerChildren: 0.1 },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 }
+    visible: { opacity: 1, x: 0 },
   };
 
   return (
@@ -53,23 +53,28 @@ const Settings = () => {
         </div>
       </header>
 
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="grid grid-cols-1 lg:grid-cols-2 gap-8"
       >
         {/* Appearance Section */}
-        <motion.section variants={itemVariants} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
+        <motion.section
+          variants={itemVariants}
+          className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full"
+        >
           <h2 className="text-xl font-bold mb-6 flex items-center gap-3 text-gray-800">
             <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
               <Palette size={20} />
             </div>
             Apariencia del Sistema
           </h2>
-          
+
           <div className="flex-1 space-y-6">
-            <p className="text-sm text-gray-500">Personaliza el aspecto visual de la plataforma según tu preferencia o el entorno de luz.</p>
+            <p className="text-sm text-gray-500">
+              Personaliza el aspecto visual de la plataforma según tu preferencia o el entorno de luz.
+            </p>
             <div className="grid grid-cols-2 gap-4">
               <button className="border-2 border-brand p-5 rounded-2xl flex flex-col items-center gap-3 bg-brand/5 transition-all">
                 <Sun className="text-brand" size={24} />
@@ -84,14 +89,17 @@ const Settings = () => {
         </motion.section>
 
         {/* Notifications Section */}
-        <motion.section variants={itemVariants} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
+        <motion.section
+          variants={itemVariants}
+          className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full"
+        >
           <h2 className="text-xl font-bold mb-6 flex items-center gap-3 text-gray-800">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
               <Bell size={20} />
             </div>
             Notificaciones
           </h2>
-          
+
           <div className="flex-1 space-y-6">
             <div className="flex items-center justify-between">
               <div>
@@ -99,9 +107,9 @@ const Settings = () => {
                 <p className="text-xs text-gray-500">Alertas visuales en el navegador.</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
                   checked={desktopEnabled}
                   onChange={(e) => setDesktopEnabled(e.target.checked)}
                 />
@@ -109,18 +117,26 @@ const Settings = () => {
               </label>
             </div>
 
-            <div className={`flex items-center justify-between pt-4 border-t border-gray-50 transition-opacity duration-300 ${!desktopEnabled ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}>
+            <div
+              className={`flex items-center justify-between pt-4 border-t border-gray-50 transition-opacity duration-300 ${!desktopEnabled ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}
+            >
               <div>
                 <p className="font-semibold text-gray-800 flex items-center gap-2">
                   Efectos de sonido
-                  {!desktopEnabled && <span className="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-md uppercase font-bold tracking-tighter">Off</span>}
+                  {!desktopEnabled && (
+                    <span className="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-md uppercase font-bold tracking-tighter">
+                      Off
+                    </span>
+                  )}
                 </p>
                 <p className="text-xs text-gray-500">Sonido al recibir notificaciones.</p>
               </div>
-              <label className={`relative inline-flex items-center ${desktopEnabled ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
+              <label
+                className={`relative inline-flex items-center ${desktopEnabled ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+              >
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
                   checked={soundEnabled && desktopEnabled}
                   onChange={(e) => setSoundEnabled(e.target.checked)}
                   disabled={!desktopEnabled}
@@ -132,16 +148,19 @@ const Settings = () => {
         </motion.section>
 
         {/* Security Section */}
-        <motion.section variants={itemVariants} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
+        <motion.section
+          variants={itemVariants}
+          className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full"
+        >
           <h2 className="text-xl font-bold mb-6 flex items-center gap-3 text-gray-800">
             <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
               <ShieldCheck size={20} />
             </div>
             Seguridad y Privacidad
           </h2>
-          
+
           <div className="flex-1 space-y-4">
-            <button 
+            <button
               onClick={() => setShowPasswordModal(true)}
               className="w-full flex items-center justify-between p-5 bg-gray-50/50 border border-gray-100 rounded-2xl hover:bg-brand/5 hover:border-brand/20 transition-all group"
             >
@@ -168,7 +187,9 @@ const Settings = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-bold uppercase tracking-tight">Recomendado</span>
+                <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-bold uppercase tracking-tight">
+                  Recomendado
+                </span>
                 <span className="text-gray-400 group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </button>
@@ -176,17 +197,22 @@ const Settings = () => {
         </motion.section>
 
         {/* Language & Region Section */}
-        <motion.section variants={itemVariants} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
+        <motion.section
+          variants={itemVariants}
+          className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full"
+        >
           <h2 className="text-xl font-bold mb-6 flex items-center gap-3 text-gray-800">
             <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
               <Globe size={20} />
             </div>
             Idioma y Región
           </h2>
-          
+
           <div className="flex-1 space-y-6">
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Idioma del sistema</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">
+                Idioma del sistema
+              </label>
               <div className="relative">
                 <select className="w-full appearance-none bg-gray-50 border border-gray-100 text-gray-700 py-3.5 px-4 pr-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all cursor-pointer font-bold">
                   <option value="es">Español (Castellano)</option>
@@ -199,7 +225,9 @@ const Settings = () => {
             </div>
 
             <div className="pt-6 border-t border-gray-50">
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Formato de moneda</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">
+                Formato de moneda
+              </label>
               <div className="grid grid-cols-2 gap-3">
                 <button className="py-3 px-4 border-2 border-brand bg-brand/5 rounded-xl text-sm font-bold text-brand shadow-sm shadow-brand/5">
                   EUR (€) Euro
@@ -218,16 +246,16 @@ const Settings = () => {
         {showPasswordModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowPasswordModal(false)}
               className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
             />
-            
+
             {/* Modal Content */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -240,15 +268,19 @@ const Settings = () => {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">Cambiar contraseña</h3>
-                    <p className="text-sm text-gray-500 text-pretty">Ingresa tu contraseña actual y la nueva para actualizarla.</p>
+                    <p className="text-sm text-gray-500 text-pretty">
+                      Ingresa tu contraseña actual y la nueva para actualizarla.
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-5">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Contraseña actual</label>
-                    <input 
-                      type="password" 
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">
+                      Contraseña actual
+                    </label>
+                    <input
+                      type="password"
                       placeholder="••••••••"
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
                     />
@@ -257,18 +289,22 @@ const Settings = () => {
                   <div className="h-px bg-gray-100 my-2" />
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Nueva contraseña</label>
-                    <input 
-                      type="password" 
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">
+                      Nueva contraseña
+                    </label>
+                    <input
+                      type="password"
                       placeholder="••••••••"
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Confirmar nueva contraseña</label>
-                    <input 
-                      type="password" 
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">
+                      Confirmar nueva contraseña
+                    </label>
+                    <input
+                      type="password"
                       placeholder="••••••••"
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
                     />
@@ -276,13 +312,13 @@ const Settings = () => {
                 </div>
 
                 <div className="flex gap-3 mt-8">
-                  <button 
+                  <button
                     onClick={() => setShowPasswordModal(false)}
                     className="flex-1 px-4 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors"
                   >
                     Cancelar
                   </button>
-                  <button 
+                  <button
                     onClick={() => setShowPasswordModal(false)}
                     className="flex-[2] px-4 py-3 bg-brand text-white font-medium rounded-xl hover:bg-brand/90 transition-shadow shadow-lg shadow-brand/20"
                   >
