@@ -66,6 +66,20 @@ def read_employee_by_name(name: str, db: Session = Depends(get_db)):
     return db_employee
 
 
+# ── GET /employees/me ────────────────────────────────────────────────
+
+@router.get(
+    "/me",
+    response_model=models.EmployeeResponse,
+    summary="Obtener empleado autenticado",
+    description="Devuelve los datos del empleado que realiza la petición.",
+)
+def read_current_employee(
+    current_employee: models.Employee = Depends(get_current_employee),
+):
+    return current_employee
+
+
 # ── GET /employees/{employee_id} ─────────────────────────────────────
 
 @router.get(
