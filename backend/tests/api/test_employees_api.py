@@ -149,6 +149,17 @@ def test_read_employee_by_username_not_found(client: TestClient):
     assert response.json()["detail"] == "Empleado no encontrado."
 
 
+# ── GET /api/employees/me ────────────────────────────────────────────
+
+def test_read_me_returns_authenticated_employee(client: TestClient):
+    response = client.get("/api/employees/me")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id_employee"] is not None
+    assert "hashed_password" not in data
+
+
 # ── POST /api/employees/ ─────────────────────────────────────────────
 
 def test_create_employee_returns_201(client: TestClient, session: Session):
@@ -158,7 +169,7 @@ def test_create_employee_returns_201(client: TestClient, session: Session):
         "first_name": "Ana",
         "last_name": "Rodríguez",
         "username": "arodriguez",
-        "hashed_password": "hash_secreto",
+        "password": "hash_secreto",
         "role_id": role.id_role,
         "store_id": store.id_store,
     }
@@ -180,7 +191,7 @@ def test_create_employee_default_status_active(client: TestClient, session: Sess
         "first_name": "Luis",
         "last_name": "Martín",
         "username": "lmartin",
-        "hashed_password": "hash_secreto",
+        "password": "hash_secreto",
         "role_id": role.id_role,
         "store_id": store.id_store,
     }
@@ -198,7 +209,7 @@ def test_create_employee_explicit_inactive(client: TestClient, session: Session)
         "first_name": "Pedro",
         "last_name": "Sánchez",
         "username": "psanchez",
-        "hashed_password": "hash_secreto",
+        "password": "hash_secreto",
         "status": StatusEnum.Inactive.value,
         "role_id": role.id_role,
         "store_id": store.id_store,
@@ -218,7 +229,7 @@ def test_create_employee_duplicate_username_returns_409(client: TestClient, sess
         "first_name": "Otro",
         "last_name": "Usuario",
         "username": "duplicado",
-        "hashed_password": "hash_secreto",
+        "password": "hash_secreto",
         "role_id": role.id_role,
         "store_id": store.id_store,
     }
@@ -236,7 +247,7 @@ def test_create_employee_hashed_password_not_in_response(client: TestClient, ses
         "first_name": "Seguro",
         "last_name": "García",
         "username": "sgarcia",
-        "hashed_password": "mi_hash_privado",
+        "password": "mi_password_privado",
         "role_id": role.id_role,
         "store_id": store.id_store,
     }
@@ -253,7 +264,7 @@ def test_create_employee_missing_username_returns_422(client: TestClient, sessio
     payload = {
         "first_name": "Sin",
         "last_name": "Username",
-        "hashed_password": "hash_secreto",
+        "password": "hash_secreto",
         "role_id": role.id_role,
         "store_id": store.id_store,
     }
