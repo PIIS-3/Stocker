@@ -2,6 +2,7 @@ import pytest
 from fastapi import Depends, HTTPException, status
 from fastapi.testclient import TestClient
 from jose import JWTError, jwt
+from sqlalchemy import event
 from sqlmodel import SQLModel, create_engine, Session, StaticPool
 
 from app.api.deps import get_current_employee, get_current_admin, oauth2_scheme
@@ -21,6 +22,13 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
+
+
+@event.listens_for(engine, "connect")
+def _set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 _AUTH_USERNAME = "_test_admin"
 _AUTH_PASSWORD = "test_secret_pw"
