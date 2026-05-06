@@ -37,7 +37,8 @@ class EmployeeBase(SQLModel):
                 "username": "jgarcia",
                 "status": "Active",
                 "role_id": 1,
-                "store_id": 1
+                "store_id": 1,
+                "password": "MiContraseña123"
             }
         }
     )
@@ -45,12 +46,10 @@ class EmployeeBase(SQLModel):
 
 # ── EmployeeCreate ───────────────────────────────────────────────────
 # Schema de entrada para POST /employees/.
-# Se mantiene hashed_password como dato técnico porque la tabla lo requiere,
-# pero este CRUD NO implementa hashing ni autenticación. Eso queda para auth/JWT.
 class EmployeeCreate(EmployeeBase):
-    hashed_password: str = Field(
+    password: str = Field(
         min_length=1,
-        description="Hash de contraseña ya preparado. El CRUD no lo calcula.",
+        description="Contraseña en texto plano. El backend aplica el hash.",
     )
 
 
@@ -85,10 +84,10 @@ class EmployeeUpdate(SQLModel):
         default=None,
         description="ID de la tienda asignada."
     )
-    hashed_password: Optional[str] = Field(
+    password: Optional[str] = Field(
         default=None,
         min_length=1,
-        description="Hash de contraseña ya preparado. El CRUD no lo calcula.",
+        description="Nueva contraseña en texto plano. El backend aplica el hash.",
     )
 
     model_config = ConfigDict(

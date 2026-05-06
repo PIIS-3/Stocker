@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from ... import models
+from ...core import security
 from ...crud import employees as crud_employees
 from ...database import get_db
 from ..deps import get_current_employee, get_current_admin
@@ -100,7 +101,8 @@ def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(ge
             status_code=status.HTTP_409_CONFLICT,
             detail="Ya existe un empleado con ese username.",
         )
-    return crud_employees.create_employee(db, employee_in=employee_in)
+    hashed = security.get_password_hash(employee_in.password)
+    return crud_employees.create_employee(db, employee_in=employee_in, hashed_password=hashed)
 
 
 # ── PATCH /employees/{employee_id} ───────────────────────────────────
@@ -128,7 +130,8 @@ def update_employee(
                 detail="Ya existe un empleado con ese username.",
             )
 
-    updated = crud_employees.update_employee(db, employee_id=employee_id, employee_in=employee_in)
+    hashed = security.get_password_hash(employee_in.password) if employee_in.password else None
+    updated = crud_employees.update_employee(db, employee_id=employee_id, employee_in=employee_in, hashed_password=hashed)
     if updated is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Empleado no encontrado.")
     return updated
