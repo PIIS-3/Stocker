@@ -44,7 +44,9 @@ def get_employee_by_username(db: Session, username: str) -> models.Employee | No
 
 # ── Create ───────────────────────────────────────────────────────────
 
-def create_employee(db: Session, employee_in: models.EmployeeCreate, hashed_password: str) -> models.Employee:
+def create_employee(
+    db: Session, employee_in: models.EmployeeCreate, hashed_password: str
+) -> models.Employee:
     """Inserta un nuevo empleado y devuelve el registro creado con todos sus campos."""
     data = employee_in.model_dump(exclude={"password"})
     data["hashed_password"] = hashed_password
