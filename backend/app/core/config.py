@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class Settings(BaseSettings):
     # Metadatos de la API
     PROJECT_NAME: str = "Stocker API"
@@ -12,7 +13,7 @@ class Settings(BaseSettings):
     # Variables de Base de Datos
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
-    POSTGRES_SERVER: str = "db" # "db" para Docker, "localhost" para local
+    POSTGRES_SERVER: str = "db"  # "db" para Docker, "localhost" para local
     POSTGRES_PORT: str = "5432"
     POSTGRES_DB: str = "stocker"
 
@@ -28,6 +29,7 @@ class Settings(BaseSettings):
         return f"postgresql://{user_pass}@{server_port}/{self.POSTGRES_DB}"
 
     model_config = SettingsConfigDict(env_file=".env")
+
 
 # Instanciamos para que otros archivos puedan importar 'settings'
 settings = Settings()

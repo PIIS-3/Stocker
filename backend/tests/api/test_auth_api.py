@@ -1,11 +1,11 @@
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from app.models.employee import Employee
-from app.models.store import Store
-from app.models.role import Role
-from app.models.enums import RoleEnum
 from app.core.security import get_password_hash
+from app.models.employee import Employee
+from app.models.enums import RoleEnum
+from app.models.role import Role
+from app.models.store import Store
 
 
 def _seed_role(session: Session, role_name: RoleEnum = RoleEnum.Staff) -> Role:

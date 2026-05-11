@@ -5,19 +5,19 @@ Los datos cubren los escenarios más habituales del CRUD:
     - Tiendas activas en distintas ciudades para probar listado y búsqueda.
     - Una tienda inactiva para probar filtrado por estado en la UI.
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from sqlmodel import Session
 
 from .. import models
 from ._base import SeedReport, upsert_by_field
 
-
 # ── Datos de prueba ───────────────────────────────────────────────────────────
 
-STORES_SEED: List[Dict[str, Any]] = [
+STORES_SEED: list[dict[str, Any]] = [
     {
         "store_name": "Almacén Central Madrid",
         "address": "Calle Gobelas 41, Planta 2, 28023 Madrid",
@@ -52,6 +52,7 @@ STORES_SEED: List[Dict[str, Any]] = [
 
 
 # ── Lógica de seed ────────────────────────────────────────────────────────────
+
 
 def seed_stores(session: Session, report: SeedReport) -> dict[str, models.Store]:
     """Inserta o actualiza las tiendas (sucursales) semilla.

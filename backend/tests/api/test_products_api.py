@@ -2,27 +2,29 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from app.models.category import Category
-from app.models.product import ProductTemplate
 from app.models.enums import StatusEnum
-
+from app.models.product import ProductTemplate
 
 # ── Helpers ──────────────────────────────────────────────────────────
+
 
 def _seed_category(session: Session, name: str = "Electrónica") -> Category:
     category = Category(category_name=name, description="Desc")
     session.add(category)
     session.commit()
     session.refresh(category)
+    assert category.id_category is not None
     return category
 
 
 def _seed_product(
     session: Session,
-    category_id: int,
+    category_id: int | None,
     sku: str = "SKU-001",
     name: str = "Producto Test",
     price: float = 100.0,
 ) -> ProductTemplate:
+    assert category_id is not None
     product = ProductTemplate(
         sku=sku,
         product_name=name,
@@ -36,6 +38,7 @@ def _seed_product(
 
 
 # ── GET /api/products/ ───────────────────────────────────────────────
+
 
 def test_read_products_returns_list(client: TestClient, session: Session):
     cat = _seed_category(session)
@@ -61,6 +64,7 @@ def test_read_products_empty(client: TestClient):
 
 # ── GET /api/products/{id} ───────────────────────────────────────────
 
+
 def test_read_product_by_id(client: TestClient, session: Session):
     cat = _seed_category(session)
     product = _seed_product(session, cat.id_category, sku="SKU-ID", name="Tablet Z")
@@ -81,6 +85,7 @@ def test_read_product_by_id_not_found(client: TestClient):
 
 
 # ── GET /api/products/by-sku/{sku} ───────────────────────────────────
+
 
 def test_read_product_by_sku(client: TestClient, session: Session):
     cat = _seed_category(session)
@@ -103,6 +108,7 @@ def test_read_product_by_sku_not_found(client: TestClient):
 
 # ── GET /api/products/by-name/{product_name} ────────────────────────
 
+
 def test_read_product_by_name(client: TestClient, session: Session):
     cat = _seed_category(session)
     _seed_product(session, cat.id_category, sku="SKU-NM", name="AuricularesP")
@@ -121,6 +127,7 @@ def test_read_product_by_name_not_found(client: TestClient):
 
 
 # ── POST /api/products/ ──────────────────────────────────────────────
+
 
 def test_create_product_returns_201(client: TestClient, session: Session):
     cat = _seed_category(session)
@@ -211,6 +218,7 @@ def test_create_product_negative_price_rejected(client: TestClient, session: Ses
 
 # ── PATCH /api/products/{id} ─────────────────────────────────────────
 
+
 def test_update_product_name(client: TestClient, session: Session):
     # Los campos no enviados permanecen sin cambios (comportamiento PATCH parcial).
     cat = _seed_category(session)
@@ -264,6 +272,7 @@ def test_update_product_not_found(client: TestClient):
 
 
 # ── DELETE /api/products/{id} ────────────────────────────────────────
+
 
 def test_delete_product_returns_deleted_record(client: TestClient, session: Session):
     # El DELETE devuelve el objeto completo del producto eliminado, no un 204 vacío.

@@ -1,13 +1,12 @@
-from typing import Optional
 from datetime import datetime
 
 from pydantic import ConfigDict
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from .enums import StatusEnum
+from .mixins import TimestampMixin
 from .role import Role, RoleBase
 from .store import Store, StoreBase
-from .mixins import TimestampMixin
 
 
 # ── EmployeeBase ─────────────────────────────────────────────────────
@@ -38,7 +37,7 @@ class EmployeeBase(SQLModel):
                 "status": "Active",
                 "role_id": 1,
                 "store_id": 1,
-                "password": "MiContraseña123"
+                "password": "MiContraseña123",
             }
         }
     )
@@ -57,47 +56,24 @@ class EmployeeCreate(EmployeeBase):
 # Schema de entrada para PATCH /employees/{id}.
 # Todos los campos son opcionales para permitir actualizaciones parciales.
 class EmployeeUpdate(SQLModel):
-    first_name: Optional[str] = Field(
-        default=None,
-        min_length=1,
-        description="Nombre del empleado."
+    first_name: str | None = Field(default=None, min_length=1, description="Nombre del empleado.")
+    last_name: str | None = Field(default=None, min_length=1, description="Apellidos del empleado.")
+    username: str | None = Field(
+        default=None, min_length=1, description="Nombre de usuario único del empleado."
     )
-    last_name: Optional[str] = Field(
-        default=None,
-        min_length=1,
-        description="Apellidos del empleado."
+    status: StatusEnum | None = Field(
+        default=None, description="Estado del empleado (Active / Inactive)."
     )
-    username: Optional[str] = Field(
-        default=None,
-        min_length=1,
-        description="Nombre de usuario único del empleado."
-    )
-    status: Optional[StatusEnum] = Field(
-        default=None,
-        description="Estado del empleado (Active / Inactive)."
-    )
-    role_id: Optional[int] = Field(
-        default=None,
-        description="ID del rol del empleado."
-    )
-    store_id: Optional[int] = Field(
-        default=None,
-        description="ID de la tienda asignada."
-    )
-    password: Optional[str] = Field(
+    role_id: int | None = Field(default=None, description="ID del rol del empleado.")
+    store_id: int | None = Field(default=None, description="ID de la tienda asignada.")
+    password: str | None = Field(
         default=None,
         min_length=1,
         description="Nueva contraseña en texto plano. El backend aplica el hash.",
     )
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "first_name": "María",
-                "status": "Inactive",
-                "role_id": 2
-            }
-        }
+        json_schema_extra={"example": {"first_name": "María", "status": "Inactive", "role_id": 2}}
     )
 
 
@@ -106,13 +82,13 @@ class EmployeeUpdate(SQLModel):
 # No se usa directamente en request/response de la API.
 class Employee(TimestampMixin, EmployeeBase, table=True):
     # None antes de persistir; PostgreSQL asigna el ID vía secuencia SERIAL.
-    id_employee: Optional[int] = Field(default=None, primary_key=True)
+    id_employee: int | None = Field(default=None, primary_key=True)
     hashed_password: str
 
     # Relaciones lazy: FastAPI las serializa en EmployeeResponse como RoleBase / StoreBase
     # (solo los campos de negocio, sin recursión).
-    role: Optional[Role] = Relationship(back_populates="employees")
-    store: Optional[Store] = Relationship(back_populates="employees")
+    role: Role | None = Relationship(back_populates="employees")
+    store: Store | None = Relationship(back_populates="employees")
 
 
 # ── EmployeeResponse ─────────────────────────────────────────────────
@@ -120,11 +96,7 @@ class Employee(TimestampMixin, EmployeeBase, table=True):
 # No expone hashed_password.
 class EmployeeResponse(EmployeeBase):
     id_employee: int = Field(description="ID único del empleado.")
-    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    updated_at: Optional[datetime] = Field(
-        default=None, description="Fecha de última actualización."
-    )
-    role: Optional[RoleBase] = Field(default=None, description="Información detallada del rol.")
-    store: Optional[StoreBase] = Field(
-        default=None, description="Información detallada de la tienda."
-    )
+    created_at: datetime | None = Field(default=None, description="Fecha de registro.")
+    updated_at: datetime | None = Field(default=None, description="Fecha de última actualización.")
+    role: RoleBase | None = Field(default=None, description="Información detallada del rol.")
+    store: StoreBase | None = Field(default=None, description="Información detallada de la tienda.")

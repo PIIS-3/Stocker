@@ -1,20 +1,20 @@
 from sqlmodel import Session
 
-from app.models.employee import Employee, EmployeeCreate, EmployeeUpdate
-from app.models.store import Store
-from app.models.role import Role
-from app.models.enums import StatusEnum, RoleEnum
 from app.crud.employees import (
-    get_employees,
+    create_employee,
+    delete_employee,
     get_employee_by_id,
     get_employee_by_username,
-    create_employee,
+    get_employees,
     update_employee,
-    delete_employee,
 )
-
+from app.models.employee import Employee, EmployeeCreate, EmployeeUpdate
+from app.models.enums import RoleEnum, StatusEnum
+from app.models.role import Role
+from app.models.store import Store
 
 # ── Helpers ──────────────────────────────────────────────────────────
+
 
 def _seed_role(session: Session, role_name: RoleEnum = RoleEnum.Staff) -> Role:
     role = Role(role_name=role_name)
@@ -58,6 +58,7 @@ def _seed(
 
 
 # ── Create ───────────────────────────────────────────────────────────
+
 
 def test_create_employee_assigns_id(session: Session):
     role = _seed_role(session)
@@ -135,6 +136,7 @@ def test_create_employee_inactive_status(session: Session):
 
 
 # ── Read ─────────────────────────────────────────────────────────────
+
 
 def test_get_employees_returns_all(session: Session):
     role = _seed_role(session)
@@ -228,6 +230,7 @@ def test_get_employee_by_username_case_sensitive(session: Session):
 
 # ── Update ───────────────────────────────────────────────────────────
 
+
 def test_update_employee_changes_first_name(session: Session):
     role = _seed_role(session)
     store = _seed_store(session)
@@ -269,18 +272,23 @@ def test_update_employee_exclude_unset_leaves_other_fields(session: Session):
     role = _seed_role(session)
     store = _seed_store(session)
     seeded = _seed(
-        session, "completo", role.id_role, store.id_store,
-        first_name="Ana", last_name="López", status=StatusEnum.Active,
+        session,
+        "completo",
+        role.id_role,
+        store.id_store,
+        first_name="Ana",
+        last_name="López",
+        status=StatusEnum.Active,
     )
     update_in = EmployeeUpdate(first_name="Anita")
 
     result = update_employee(session, employee_id=seeded.id_employee, employee_in=update_in)
 
     assert result is not None
-    assert result.first_name == "Anita"          # actualizado
-    assert result.last_name == "López"            # intacto
-    assert result.username == "completo"          # intacto
-    assert result.status == StatusEnum.Active     # intacto
+    assert result.first_name == "Anita"  # actualizado
+    assert result.last_name == "López"  # intacto
+    assert result.username == "completo"  # intacto
+    assert result.status == StatusEnum.Active  # intacto
 
 
 def test_update_employee_not_found_returns_none(session: Session):
@@ -292,6 +300,7 @@ def test_update_employee_not_found_returns_none(session: Session):
 
 
 # ── Delete ───────────────────────────────────────────────────────────
+
 
 def test_delete_employee_returns_deleted_record(session: Session):
     role = _seed_role(session)

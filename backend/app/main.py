@@ -1,13 +1,15 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
 from sqlmodel import SQLModel
-from .core.config import settings
-from .api.router import api_router
-from .database import engine, ensure_db_objects
+
 import app.models  # Required so SQLModel knows about the tables
+
+from .api.router import api_router
+from .core.config import settings
+from .database import engine, ensure_db_objects
 
 
 @asynccontextmanager
@@ -43,7 +45,7 @@ tags_metadata = [
     },
 ]
 
-app = FastAPI(
+app = FastAPI(  # type: ignore
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description=settings.DESCRIPTION,

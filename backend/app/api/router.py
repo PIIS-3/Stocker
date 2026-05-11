@@ -1,10 +1,6 @@
 from fastapi import APIRouter
 
-from .endpoints import auth
-from .endpoints import products
-from .endpoints import stores
-from .endpoints import categories
-from .endpoints import employees
+from .endpoints import auth, categories, employees, products, stores
 
 # ── Router Centralizado ──────────────────────────────────────────────
 # Cada módulo de endpoints registra su propio router internamente.
@@ -13,8 +9,8 @@ from .endpoints import employees
 
 api_router = APIRouter(prefix="/api")
 
-api_router.include_router(auth.router,       prefix="/auth",       tags=["Autenticación"])
-api_router.include_router(products.router,   prefix="/products",   tags=["Productos"])
-api_router.include_router(stores.router,     prefix="/stores",     tags=["Tiendas"])
+api_router.include_router(auth.router, prefix="/auth", tags=["Autenticación"])
+api_router.include_router(products.router, prefix="/products", tags=["Productos"])
+api_router.include_router(stores.router, prefix="/stores", tags=["Tiendas"])
 api_router.include_router(categories.router, prefix="/categories", tags=["Categorías"])
-api_router.include_router(employees.router,  prefix="/employees",  tags=["Empleados"])
+api_router.include_router(employees.router, prefix="/employees", tags=["Empleados"])

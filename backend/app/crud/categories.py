@@ -1,7 +1,8 @@
-from sqlmodel import Session, select
+from collections.abc import Sequence
+
+from sqlmodel import Session, col, select
 
 from .. import models
-
 
 # El CRUD siempre devuelve el modelo ORM `Category`, nunca `CategoryResponse`.
 # La conversión ORM → schema de respuesta la hace FastAPI automáticamente
@@ -11,7 +12,8 @@ from .. import models
 
 # ── Read ─────────────────────────────────────────────────────────────
 
-def get_categories(db: Session, skip: int = 0, limit: int = 100) -> list[models.Category]:
+
+def get_categories(db: Session, skip: int = 0, limit: int = 100) -> Sequence[models.Category]:
     """Devuelve la lista de categorías con paginación.
 
     Args:
@@ -19,7 +21,7 @@ def get_categories(db: Session, skip: int = 0, limit: int = 100) -> list[models.
         limit: Máximo de registros a devolver.
     """
     return db.exec(
-        select(models.Category).order_by(models.Category.id_category).offset(skip).limit(limit)
+        select(models.Category).order_by(col(models.Category.id_category)).offset(skip).limit(limit)
     ).all()
 
 
@@ -44,6 +46,7 @@ def get_category_by_name(db: Session, category_name: str) -> models.Category | N
 
 # ── Create ───────────────────────────────────────────────────────────
 
+
 def create_category(db: Session, category_in: models.CategoryCreate) -> models.Category:
     """Inserta una nueva categoría y devuelve el registro creado con todos sus campos."""
     # model_validate convierte el schema CategoryCreate al modelo ORM Category.
@@ -60,6 +63,7 @@ def create_category(db: Session, category_in: models.CategoryCreate) -> models.C
 
 
 # ── Update ───────────────────────────────────────────────────────────
+
 
 def update_category(
     db: Session,
@@ -96,6 +100,7 @@ def update_category(
 
 # ── Delete ───────────────────────────────────────────────────────────
 
+
 def delete_category(db: Session, category_id: int) -> models.Category | None:
     """Elimina una categoría y devuelve el registro tal como era antes de borrarse.
 
@@ -111,5 +116,3 @@ def delete_category(db: Session, category_id: int) -> models.Category | None:
     db.expunge(db_category)
     db.commit()
     return db_category
-
-

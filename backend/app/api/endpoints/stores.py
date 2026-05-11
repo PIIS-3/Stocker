@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
-from typing import List
 
 from ... import models
 from ...crud import stores as crud_stores
 from ...database import get_db
-from ..deps import get_current_employee, get_current_admin
+from ..deps import get_current_admin, get_current_employee
 
 router = APIRouter(tags=["Tiendas"], dependencies=[Depends(get_current_employee)])
 
@@ -18,9 +17,10 @@ _409_DELETE = {409: {"description": "No se puede eliminar una tienda con registr
 
 # ── GET /stores/ ─────────────────────────────────────────────────────
 
+
 @router.get(
     "/",
-    response_model=List[models.StoreResponse],
+    response_model=list[models.StoreResponse],
     summary="Listar todas las tiendas",
     description=(
         "Devuelve una lista paginada de todas las tiendas físicas registradas en el sistema."
@@ -36,6 +36,7 @@ def read_stores(
 
 # ── GET /stores/by-name/{store_name} ────────────────────────────────
 
+
 @router.get(
     "/by-name/{store_name}",
     response_model=models.StoreResponse,
@@ -49,13 +50,12 @@ def read_stores(
 def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
     db_store = crud_stores.get_store_by_name(db, store_name=store_name)
     if db_store is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return db_store
 
 
 # ── GET /stores/{store_id} ───────────────────────────────────────────
+
 
 @router.get(
     "/{store_id}",
@@ -63,20 +63,18 @@ def read_store_by_name(store_name: str, db: Session = Depends(get_db)):
     responses=_404,
     summary="Obtener tienda por ID",
     description=(
-        "Recupera el detalle completo de una tienda utilizando su "
-        "identificador único numérico."
+        "Recupera el detalle completo de una tienda utilizando su identificador único numérico."
     ),
 )
 def read_store(store_id: int, db: Session = Depends(get_db)):
     db_store = crud_stores.get_store_by_id(db, store_id=store_id)
     if db_store is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return db_store
 
 
 # ── POST /stores/ ────────────────────────────────────────────────────
+
 
 @router.post(
     "/",
@@ -90,13 +88,13 @@ def read_store(store_id: int, db: Session = Depends(get_db)):
 def create_store(store_in: models.StoreCreate, db: Session = Depends(get_db)):
     if crud_stores.get_store_by_name(db, store_name=store_in.store_name):
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Ya existe una tienda con ese nombre."
+            status_code=status.HTTP_409_CONFLICT, detail="Ya existe una tienda con ese nombre."
         )
     return crud_stores.create_store(db, store_in=store_in)
 
 
 # ── PATCH /stores/{store_id} ─────────────────────────────────────────
+
 
 @router.patch(
     "/{store_id}",
@@ -119,19 +117,17 @@ def update_store(
         existing = crud_stores.get_store_by_name(db, store_name=store_in.store_name)
         if existing is not None and existing.id_store != store_id:
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Ya existe una tienda con ese nombre."
+                status_code=status.HTTP_409_CONFLICT, detail="Ya existe una tienda con ese nombre."
             )
 
     updated = crud_stores.update_store(db, store_id=store_id, store_in=store_in)
     if updated is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return updated
 
 
 # ── DELETE /stores/{store_id} ────────────────────────────────────────
+
 
 @router.delete(
     "/{store_id}",
@@ -152,10 +148,5 @@ def delete_store(store_id: int, db: Session = Depends(get_db)):
         )
 
     if deleted is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tienda no encontrada.")
     return deleted
-
-
-

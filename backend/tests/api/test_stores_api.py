@@ -1,11 +1,11 @@
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from app.models.store import Store
 from app.models.enums import StatusEnum
-
+from app.models.store import Store
 
 # ── Helpers ──────────────────────────────────────────────────────────
+
 
 def _seed(
     session: Session,
@@ -21,6 +21,7 @@ def _seed(
 
 
 # ── GET /api/stores/ ─────────────────────────────────────────────────
+
 
 def test_read_stores_returns_list(client: TestClient, session: Session):
     _seed(session, "TiendaNorte")
@@ -66,6 +67,7 @@ def test_read_stores_pagination_skip(client: TestClient, session: Session):
 
 # ── GET /api/stores/{id} ─────────────────────────────────────────────
 
+
 def test_read_store_by_id(client: TestClient, session: Session):
     seeded = _seed(session, "TiendaCentral", address="Gran Vía 28")
 
@@ -87,6 +89,7 @@ def test_read_store_by_id_not_found(client: TestClient):
 
 # ── GET /api/stores/by-name/{name} ───────────────────────────────────
 
+
 def test_read_store_by_name(client: TestClient, session: Session):
     _seed(session, "TiendaExpress")
 
@@ -104,6 +107,7 @@ def test_read_store_by_name_not_found(client: TestClient):
 
 
 # ── POST /api/stores/ ────────────────────────────────────────────────
+
 
 def test_create_store_returns_201(client: TestClient):
     payload = {"store_name": "TiendaNueva", "address": "Calle de la Paz 5"}
@@ -168,6 +172,7 @@ def test_create_store_missing_address_returns_422(client: TestClient):
 
 # ── PATCH /api/stores/{id} ───────────────────────────────────────────
 
+
 def test_update_store_address(client: TestClient, session: Session):
     seeded = _seed(session, "TiendaCentral", address="Calle Original 1")
 
@@ -227,6 +232,7 @@ def test_update_store_not_found(client: TestClient):
 
 
 # ── DELETE /api/stores/{id} ──────────────────────────────────────────
+
 
 def test_delete_store_returns_deleted_record(client: TestClient, session: Session):
     seeded = _seed(session, "Efimera", address="Calle Sin Futuro 0")

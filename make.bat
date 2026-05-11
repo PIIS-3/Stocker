@@ -51,6 +51,7 @@ goto end
 call .\make.bat lint-editorconfig
 call .\make.bat lint-frontend
 call .\make.bat format-check
+call .\make.bat lint-backend
 goto end
 
 :lint-editorconfig
@@ -73,6 +74,12 @@ goto end
 docker exec %WEB% npx prettier --write .
 goto end
 
+:lint-backend
+docker exec %API% ruff check .
+docker exec %API% ruff format --check .
+docker exec %API% mypy .
+goto end
+
 :migration
 docker exec %API% alembic revision --autogenerate -m "%~2"
 goto end
@@ -88,6 +95,8 @@ echo ⚛️ Ejecutando ESLint...
 call .\make.bat lint-frontend
 echo 🎨 Verificando formato Prettier...
 call .\make.bat format-check
+echo 🐍 Validando Backend (Ruff + MyPy)...
+call .\make.bat lint-backend
 echo 🧪 Tests Frontend...
 call .\make.bat test-frontend
 echo 🐍 Tests Backend...
@@ -112,6 +121,7 @@ echo   lint                  Todos los checks de calidad
 echo   lint-editorconfig     EditorConfig (en contenedor)
 echo   lint-editorconfig-local  EditorConfig (local, todo el repo)
 echo   lint-frontend         ESLint
+echo   lint-backend          Ruff + MyPy (backend)
 echo   format-check          Prettier (verificar)
 echo   format-frontend       Prettier (aplicar)
 echo   migration             Nueva migración (.\make migration "nombre")

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import SQLModel, Session, Field
+from sqlmodel import Field, Session, SQLModel
 
+from ... import models
 from ...core import security
 from ...crud import employees as crud_employees
 from ...database import get_db
-from ... import models
 
 router = APIRouter(tags=["Autenticación"])
 
@@ -18,6 +18,7 @@ class LoginRequest(SQLModel):
 
 # ── POST /auth/login ─────────────────────────────────────────────────
 
+
 @router.post(
     "/login",
     response_model=models.Token,
@@ -30,8 +31,9 @@ class LoginRequest(SQLModel):
 )
 def login(login_in: LoginRequest, db: Session = Depends(get_db)):
     employee = crud_employees.get_employee_by_username(db, username=login_in.username)
-    is_valid = employee and security.verify_password(login_in.password, employee.hashed_password)
-    if not is_valid:
+    if employee is None or not security.verify_password(
+        login_in.password, employee.hashed_password
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos.",
