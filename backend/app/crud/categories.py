@@ -1,8 +1,6 @@
-from typing import Sequence
+from collections.abc import Sequence
 
-from sqlmodel import Session, select, col
-
-
+from sqlmodel import Session, col, select
 
 from .. import models
 
@@ -25,7 +23,6 @@ def get_categories(db: Session, skip: int = 0, limit: int = 100) -> Sequence[mod
     return db.exec(
         select(models.Category).order_by(col(models.Category.id_category)).offset(skip).limit(limit)
     ).all()
-
 
 
 def get_category_by_id(db: Session, category_id: int) -> models.Category | None:

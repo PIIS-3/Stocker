@@ -1,16 +1,18 @@
 from sqlmodel import Session
+
 from app.crud.products import (
+    create_product,
+    delete_product,
+    get_product_by_id,
+    get_product_by_name,
+    get_product_by_sku,
     get_product_templates,
     get_products,
-    get_product_by_id,
-    get_product_by_sku,
-    get_product_by_name,
-    create_product,
     update_product,
-    delete_product,
 )
 from app.models.category import Category
 from app.models.product import ProductTemplate, ProductTemplateCreate, ProductTemplateUpdate
+
 
 def test_get_product_templates(session: Session):
     # 1. Crear una categoría necesaria para el ProductTemplate

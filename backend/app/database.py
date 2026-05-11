@@ -30,7 +30,7 @@ def ensure_db_objects() -> None:
 
     with Session(engine) as session:
         # Función PL/pgSQL compartida — SET updated_at = NOW() en cada UPDATE.
-        session.exec(
+        session.execute(
             text("""
             CREATE OR REPLACE FUNCTION set_updated_at()
             RETURNS TRIGGER AS $$
@@ -45,7 +45,7 @@ def ensure_db_objects() -> None:
         # Postgres no soporta CREATE TRIGGER IF NOT EXISTS,
         # se comprueba en pg_trigger antes de crear.
         for table in _TABLES:
-            session.exec(
+            session.execute(
                 text(f"""
                 DO $$
                 BEGIN

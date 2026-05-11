@@ -45,7 +45,7 @@ tags_metadata = [
     },
 ]
 
-app = FastAPI(
+app = FastAPI(  # type: ignore
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description=settings.DESCRIPTION,

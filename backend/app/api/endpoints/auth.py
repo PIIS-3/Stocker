@@ -31,8 +31,9 @@ class LoginRequest(SQLModel):
 )
 def login(login_in: LoginRequest, db: Session = Depends(get_db)):
     employee = crud_employees.get_employee_by_username(db, username=login_in.username)
-    is_valid = employee and security.verify_password(login_in.password, employee.hashed_password)
-    if not is_valid:
+    if employee is None or not security.verify_password(
+        login_in.password, employee.hashed_password
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos.",

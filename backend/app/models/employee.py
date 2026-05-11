@@ -37,7 +37,7 @@ class EmployeeBase(SQLModel):
                 "status": "Active",
                 "role_id": 1,
                 "store_id": 1,
-                "password": "MiContraseña123"
+                "password": "MiContraseña123",
             }
         }
     )

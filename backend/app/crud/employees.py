@@ -1,8 +1,6 @@
-from typing import Sequence
+from collections.abc import Sequence
 
-from sqlmodel import Session, select, col
-
-
+from sqlmodel import Session, col, select
 
 from .. import models
 
@@ -25,7 +23,6 @@ def get_employees(db: Session, skip: int = 0, limit: int = 100) -> Sequence[mode
     return db.exec(
         select(models.Employee).order_by(col(models.Employee.id_employee)).offset(skip).limit(limit)
     ).all()
-
 
 
 def get_employee_by_id(db: Session, employee_id: int) -> models.Employee | None:

@@ -69,6 +69,7 @@ def read_employee_by_name(name: str, db: Session = Depends(get_db)):
 
 # ── GET /employees/me ────────────────────────────────────────────────
 
+
 @router.get(
     "/me",
     response_model=models.EmployeeResponse,

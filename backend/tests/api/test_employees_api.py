@@ -158,6 +158,7 @@ def test_read_employee_by_username_not_found(client: TestClient):
 
 # ── GET /api/employees/me ────────────────────────────────────────────
 
+
 def test_read_me_returns_authenticated_employee(client: TestClient):
     response = client.get("/api/employees/me")
 

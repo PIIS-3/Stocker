@@ -1,8 +1,6 @@
-from typing import Sequence
+from collections.abc import Sequence
 
-from sqlmodel import Session, select, col
-
-
+from sqlmodel import Session, col, select
 
 from .. import models
 
@@ -28,7 +26,6 @@ def get_products(db: Session, skip: int = 0, limit: int = 100) -> Sequence[model
         .offset(skip)
         .limit(limit)
     ).all()
-
 
 
 def get_product_by_id(db: Session, product_id: int) -> models.ProductTemplate | None:
