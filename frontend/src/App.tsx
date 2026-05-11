@@ -15,6 +15,7 @@ import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
 
 import ProductsList from './pages/admin/ProductsList';
+import Settings from './pages/admin/Settings';
 import { ProtectedRoute } from './components/atoms';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
               <Route path="categories" element={<CategoriesList />} />
               <Route path="stores" element={<StoresList />} />
               <Route path="users" element={<UsersList />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
           </Route>
 
