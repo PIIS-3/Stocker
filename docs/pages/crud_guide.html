@@ -254,7 +254,7 @@ _409 = {409: {<span class="str">"description"</span>: <span class="str">"Ya exis
     <span class="kw">return</span> updated
 
 <span class="dec">@router.delete</span>(<span class="str">"/{store_id}"</span>, response_model=models.StoreResponse,
-               responses=_404, dependencies=[Depends(get_current_admin)])
+              responses=_404, dependencies=[Depends(get_current_admin)])
 <span class="kw">def</span> <span class="fn">delete_store</span>(store_id: int, db: Session = Depends(get_db)):
     deleted = crud_stores.delete_store(db, store_id=store_id)
     <span class="kw">if not</span> deleted:
