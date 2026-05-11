@@ -66,12 +66,12 @@ def test_create_employee_assigns_id(session: Session):
         first_name="Ana",
         last_name="López",
         username="alopez",
-        hashed_password="hash_seguro",
+        password="contraseña_segura",
         role_id=role.id_role,
         store_id=store.id_store,
     )
 
-    result = create_employee(session, employee_in=employee_in)
+    result = create_employee(session, employee_in=employee_in, hashed_password="hash_seguro")
 
     assert result.id_employee is not None
     assert result.username == "alopez"
@@ -87,12 +87,12 @@ def test_create_employee_default_status_is_active(session: Session):
         first_name="Luis",
         last_name="Martín",
         username="lmartin",
-        hashed_password="hash_seguro",
+        password="contraseña_segura",
         role_id=role.id_role,
         store_id=store.id_store,
     )
 
-    result = create_employee(session, employee_in=employee_in)
+    result = create_employee(session, employee_in=employee_in, hashed_password="hash_seguro")
 
     assert result.status == StatusEnum.Active
 
@@ -104,14 +104,14 @@ def test_create_employee_hashed_password_stored(session: Session):
         first_name="Carlos",
         last_name="Ruiz",
         username="cruiz",
-        hashed_password="mi_hash_secreto",
+        password="contraseña_plana",
         role_id=role.id_role,
         store_id=store.id_store,
     )
 
-    result = create_employee(session, employee_in=employee_in)
+    result = create_employee(session, employee_in=employee_in, hashed_password="mi_hash_ya_calculado")
 
-    assert result.hashed_password == "mi_hash_secreto"
+    assert result.hashed_password == "mi_hash_ya_calculado"
 
 
 def test_create_employee_inactive_status(session: Session):
@@ -121,13 +121,13 @@ def test_create_employee_inactive_status(session: Session):
         first_name="Baja",
         last_name="Temporal",
         username="btemp",
-        hashed_password="hash_seguro",
+        password="contraseña_segura",
         status=StatusEnum.Inactive,
         role_id=role.id_role,
         store_id=store.id_store,
     )
 
-    result = create_employee(session, employee_in=employee_in)
+    result = create_employee(session, employee_in=employee_in, hashed_password="hash_seguro")
 
     assert result.status == StatusEnum.Inactive
 

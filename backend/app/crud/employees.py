@@ -44,17 +44,13 @@ def get_employee_by_username(db: Session, username: str) -> models.Employee | No
 
 # ── Create ───────────────────────────────────────────────────────────
 
-def create_employee(db: Session, employee_in: models.EmployeeCreate) -> models.Employee:
+def create_employee(db: Session, employee_in: models.EmployeeCreate, hashed_password: str) -> models.Employee:
     """Inserta un nuevo empleado y devuelve el registro creado con todos sus campos."""
-    # model_validate convierte el schema EmployeeCreate al modelo ORM Employee.
-    db_employee = models.Employee.model_validate(employee_in)
+    data = employee_in.model_dump(exclude={"password"})
+    data["hashed_password"] = hashed_password
+    db_employee = models.Employee.model_validate(data)
     db.add(db_employee)
     db.commit()
-    # db.refresh sincroniza el objeto Python con la fila en BD:
-    # recoge el id_employee (SERIAL), created_at y updated_at (DEFAULT CURRENT_TIMESTAMP)
-    # que PostgreSQL/SQLite asignó durante el INSERT. Employee hereda estos campos
-    # de TimestampMixin — existen en el modelo, pero su valor es None
-    # hasta que la BD los rellena y el refresh los trae de vuelta.
     db.refresh(db_employee)
     return db_employee
 
@@ -65,6 +61,7 @@ def update_employee(
     db: Session,
     employee_id: int,
     employee_in: models.EmployeeUpdate,
+    hashed_password: str | None = None,
 ) -> models.Employee | None:
     """Actualiza parcialmente un empleado (PATCH) y devuelve el registro actualizado.
 
@@ -82,7 +79,9 @@ def update_employee(
     # exclude_unset=True garantiza que solo se modifican los campos que el
     # cliente envió en el JSON. Si manda {"status": "Inactive"}, el resto de
     # campos (first_name, role_id, etc.) quedan intactos.
-    update_data = employee_in.model_dump(exclude_unset=True)
+    update_data = employee_in.model_dump(exclude_unset=True, exclude={"password"})
+    if hashed_password is not None:
+        update_data["hashed_password"] = hashed_password
     for field, value in update_data.items():
         setattr(db_employee, field, value)
 

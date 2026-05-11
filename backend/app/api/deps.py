@@ -45,16 +45,9 @@ def get_current_employee(
 
 
 def get_current_admin(
-    token: str = Depends(oauth2_scheme),
     current_employee: models.Employee = Depends(get_current_employee),
 ) -> models.Employee:
     """403 si el empleado autenticado no tiene rol de administrador (SuperAdmin o Manager)."""
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        role = RoleEnum(payload.get("role", ""))
-    except (JWTError, ValueError):
-        raise _forbidden_exception
-
-    if role not in _ADMIN_ROLES:
+    if current_employee.role is None or current_employee.role.role_name not in _ADMIN_ROLES:
         raise _forbidden_exception
     return current_employee

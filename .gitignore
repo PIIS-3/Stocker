@@ -33,3 +33,5 @@ Thumbs.db
 logs/
 *.log
 *.sqlite3
+
+.claude/
