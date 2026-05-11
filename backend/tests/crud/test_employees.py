@@ -109,7 +109,9 @@ def test_create_employee_hashed_password_stored(session: Session):
         store_id=store.id_store,
     )
 
-    result = create_employee(session, employee_in=employee_in, hashed_password="mi_hash_ya_calculado")
+    result = create_employee(
+        session, employee_in=employee_in, hashed_password="mi_hash_ya_calculado"
+    )
 
     assert result.hashed_password == "mi_hash_ya_calculado"
 

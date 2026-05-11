@@ -145,7 +145,9 @@ def update_employee(
             )
 
     hashed = security.get_password_hash(employee_in.password) if employee_in.password else None
-    updated = crud_employees.update_employee(db, employee_id=employee_id, employee_in=employee_in, hashed_password=hashed)
+    updated = crud_employees.update_employee(
+        db, employee_id=employee_id, employee_in=employee_in, hashed_password=hashed
+    )
     if updated is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Empleado no encontrado.")
     return updated
