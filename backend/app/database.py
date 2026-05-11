@@ -1,8 +1,9 @@
 import os
-from sqlmodel import create_engine, Session
-from sqlalchemy import text
-from .core.config import settings
 
+from sqlalchemy import text
+from sqlmodel import Session, create_engine
+
+from .core.config import settings
 
 engine = create_engine(
     settings.DATABASE_URL,
@@ -29,7 +30,8 @@ def ensure_db_objects() -> None:
 
     with Session(engine) as session:
         # Función PL/pgSQL compartida — SET updated_at = NOW() en cada UPDATE.
-        session.exec(text("""
+        session.exec(
+            text("""
             CREATE OR REPLACE FUNCTION set_updated_at()
             RETURNS TRIGGER AS $$
             BEGIN
@@ -37,12 +39,14 @@ def ensure_db_objects() -> None:
                 RETURN NEW;
             END;
             $$ LANGUAGE plpgsql;
-        """))
+        """)
+        )
 
         # Postgres no soporta CREATE TRIGGER IF NOT EXISTS,
         # se comprueba en pg_trigger antes de crear.
         for table in _TABLES:
-            session.exec(text(f"""
+            session.exec(
+                text(f"""
                 DO $$
                 BEGIN
                     IF NOT EXISTS (
@@ -56,6 +60,7 @@ def ensure_db_objects() -> None:
                     END IF;
                 END;
                 $$;
-            """))
+            """)
+            )
 
         session.commit()

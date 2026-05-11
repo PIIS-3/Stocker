@@ -1,0 +1,34 @@
+[tool.ruff]
+# Configuración de Ruff (Linter y Formateador)
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+# Reglas seleccionadas:
+# E: Error de estilo (Pycodestyle)
+# F: Errores lógicos (Pyflakes)
+# B: Errores comunes (Bugbear)
+# I: Orden de imports (Isort)
+# UP: Sugerencias de sintaxis moderna (Pyupgrade)
+# S: Seguridad (Bandit)
+select = ["E", "F", "B", "I", "UP", "S"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+# Configuración de MyPy (Type Checking)
+python_version = "3.13"
+strict = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+# Configuración de Pytest
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "--cov=app --cov-report=term-missing"

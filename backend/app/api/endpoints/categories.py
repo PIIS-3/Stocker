@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
-from typing import List
 
 from ... import models
 from ...crud import categories as crud_categories
 from ...database import get_db
-from ..deps import get_current_employee, get_current_admin
+from ..deps import get_current_admin, get_current_employee
 
 router = APIRouter(tags=["Categorías"], dependencies=[Depends(get_current_employee)])
 
@@ -18,9 +17,10 @@ _409_DELETE = {409: {"description": "No se puede eliminar una categoría con reg
 
 # ── GET /categories/ ─────────────────────────────────────────────────
 
+
 @router.get(
     "/",
-    response_model=List[models.CategoryResponse],
+    response_model=list[models.CategoryResponse],
     summary="Listar categorías",
     description=(
         "Devuelve una lista de todas las categorías de productos disponibles, "
@@ -36,6 +36,7 @@ def read_categories(
 
 
 # ── GET /categories/by-name/{category_name} ──────────────────────────
+
 
 @router.get(
     "/by-name/{category_name}",
@@ -58,6 +59,7 @@ def read_category_by_name(category_name: str, db: Session = Depends(get_db)):
 
 # ── GET /categories/{category_id} ────────────────────────────────────
 
+
 @router.get(
     "/{category_id}",
     response_model=models.CategoryResponse,
@@ -79,6 +81,7 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
 
 # ── POST /categories/ ────────────────────────────────────────────────
 
+
 @router.post(
     "/",
     response_model=models.CategoryResponse,
@@ -91,13 +94,13 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
 def create_category(category_in: models.CategoryCreate, db: Session = Depends(get_db)):
     if crud_categories.get_category_by_name(db, category_name=category_in.category_name):
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Ya existe una categoría con ese nombre."
+            status_code=status.HTTP_409_CONFLICT, detail="Ya existe una categoría con ese nombre."
         )
     return crud_categories.create_category(db, category_in=category_in)
 
 
 # ── PATCH /categories/{category_id} ──────────────────────────────────
+
 
 @router.patch(
     "/{category_id}",
@@ -121,7 +124,7 @@ def update_category(
         if existing is not None and existing.id_category != category_id:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Ya existe una categoría con ese nombre."
+                detail="Ya existe una categoría con ese nombre.",
             )
 
     updated = crud_categories.update_category(db, category_id=category_id, category_in=category_in)
@@ -133,6 +136,7 @@ def update_category(
 
 
 # ── DELETE /categories/{category_id} ─────────────────────────────────
+
 
 @router.delete(
     "/{category_id}",
@@ -160,4 +164,3 @@ def delete_category(category_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Categoría no encontrada."
         )
     return deleted
-

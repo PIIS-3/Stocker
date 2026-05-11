@@ -7,7 +7,7 @@ WEB   := stocker_web
 DB    := stocker_db
 DC    := cd docker && docker compose
 
-.PHONY: up down restart logs seed seed-sql test test-backend test-frontend lint lint-editorconfig lint-editorconfig-local lint-frontend format-check format-frontend migration migrate pr-check
+.PHONY: up down restart logs seed seed-sql test test-backend test-frontend lint lint-editorconfig lint-editorconfig-local lint-frontend lint-backend format-check format-frontend migration migrate pr-check
 
 # ── Docker y Servicios ────────────────────────────────────────────────
 
@@ -45,7 +45,7 @@ test-frontend:
 
 # ── LINTING & FORMATTING ─────────────────────────────────────────────
 # Ejecuta todos los checks de calidad en contenedores
-lint: lint-editorconfig lint-frontend format-check
+lint: lint-editorconfig lint-frontend format-check lint-backend
 
 # EditorConfig — ejecutado dentro del contenedor frontend (solo /app)
 lint-editorconfig:
@@ -63,6 +63,12 @@ lint-frontend:
 format-check:
 	docker exec $(WEB) npm run format:check
 
+# Ruff + MyPy (backend) dentro del contenedor
+lint-backend:
+	docker exec $(API) ruff check .
+	docker exec $(API) ruff format --check .
+	docker exec $(API) mypy .
+
 # Prettier write (frontend) dentro del contenedor
 format-frontend:
 	docker exec $(WEB) npx prettier --write .
@@ -78,5 +84,5 @@ migrate:
 
 # ── Calidad y Workflow (Pre-PR Check) ─────────────────────────────────
 
-pr-check: lint-editorconfig lint-frontend format-check test-frontend test-backend
+pr-check: lint-editorconfig lint-frontend format-check lint-backend test-frontend test-backend
 	@echo "✅ ¡Todo listo para el Pull Request!"

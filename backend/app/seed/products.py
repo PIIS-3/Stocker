@@ -1,19 +1,19 @@
 """
 products.py — Datos de prueba y lógica de seed para Productos.
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from sqlmodel import Session
 
 from .. import models
 from ._base import SeedReport, upsert_by_field
 
-
 # ── Datos de prueba ───────────────────────────────────────────────────────────
 
-PRODUCTS_SEED: List[Dict[str, Any]] = [
+PRODUCTS_SEED: list[dict[str, Any]] = [
     {
         "product_name": "Monitor 24 Pulgadas LED",
         "sku": "ELEC-MON-001",
@@ -66,6 +66,7 @@ PRODUCTS_SEED: List[Dict[str, Any]] = [
 
 
 # ── Lógica de seed ────────────────────────────────────────────────────────────
+
 
 def seed_products(
     session: Session,

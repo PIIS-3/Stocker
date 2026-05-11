@@ -1,6 +1,5 @@
 from fastapi.testclient import TestClient
 from sqlmodel import Session
-
 from app.models.category import Category
 from app.models.product import ProductTemplate
 from app.models.enums import StatusEnum
@@ -13,16 +12,18 @@ def _seed_category(session: Session, name: str = "Electrónica") -> Category:
     session.add(category)
     session.commit()
     session.refresh(category)
+    assert category.id_category is not None
     return category
 
 
 def _seed_product(
     session: Session,
-    category_id: int,
+    category_id: int | None,
     sku: str = "SKU-001",
     name: str = "Producto Test",
     price: float = 100.0,
 ) -> ProductTemplate:
+    assert category_id is not None
     product = ProductTemplate(
         sku=sku,
         product_name=name,

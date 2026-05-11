@@ -1,7 +1,7 @@
-from typing import Optional
 from datetime import datetime
+
 import sqlalchemy as sa
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, SQLModel
 
 
 # ── TimestampMixin ────────────────────────────────────────────────────
@@ -25,15 +25,11 @@ from sqlmodel import SQLModel, Field
 #       La columna acepta NULL en la BD. El objeto Python tendrá None
 #       hasta que el db.refresh() traiga el valor asignado por PostgreSQL.
 class TimestampMixin(SQLModel):
-    created_at: Optional[datetime] = Field(
+    created_at: datetime | None = Field(
         default=None,
         sa_column_kwargs={"server_default": sa.text("CURRENT_TIMESTAMP"), "nullable": True},
     )
-    updated_at: Optional[datetime] = Field(
+    updated_at: datetime | None = Field(
         default=None,
         sa_column_kwargs={"server_default": sa.text("CURRENT_TIMESTAMP"), "nullable": True},
     )
-
-
-
-

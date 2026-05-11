@@ -1,10 +1,10 @@
-from typing import Optional
 from datetime import datetime
-from pydantic import ConfigDict
-from sqlmodel import SQLModel, Field, Relationship
 
-from .enums import StatusEnum
+from pydantic import ConfigDict
+from sqlmodel import Field, Relationship, SQLModel
+
 from .category import Category, CategoryBase
+from .enums import StatusEnum
 from .mixins import TimestampMixin
 
 
@@ -22,7 +22,7 @@ class ProductTemplateBase(SQLModel):
         min_length=1,
         description="Nombre descriptivo del producto.",
     )
-    brand: Optional[str] = Field(
+    brand: str | None = Field(
         default=None,
         description="Marca del producto (opcional).",
     )
@@ -65,30 +65,30 @@ class ProductTemplateCreate(ProductTemplateBase):
 # Todos los campos son opcionales para permitir actualizaciones parciales.
 # No hereda ProductTemplateBase para no forzar campos obligatorios en un PATCH.
 class ProductTemplateUpdate(SQLModel):
-    sku: Optional[str] = Field(
+    sku: str | None = Field(
         default=None,
         min_length=1,
         description="Nuevo código SKU (debe ser único).",
     )
-    product_name: Optional[str] = Field(
+    product_name: str | None = Field(
         default=None,
         min_length=1,
         description="Nuevo nombre del producto.",
     )
-    brand: Optional[str] = Field(
+    brand: str | None = Field(
         default=None,
         description="Nueva marca del producto.",
     )
-    fixed_selling_price: Optional[float] = Field(
+    fixed_selling_price: float | None = Field(
         default=None,
         ge=0,
         description="Nuevo precio de venta fijo (≥ 0).",
     )
-    status: Optional[StatusEnum] = Field(
+    status: StatusEnum | None = Field(
         default=None,
         description="Nuevo estado operativo (Active / Inactive).",
     )
-    category_id: Optional[int] = Field(
+    category_id: int | None = Field(
         default=None,
         description="ID de la nueva categoría asociada.",
     )
@@ -110,11 +110,11 @@ class ProductTemplateUpdate(SQLModel):
 class ProductTemplate(TimestampMixin, ProductTemplateBase, table=True):
     __tablename__ = "product_template"
     # None antes de persistir; PostgreSQL asigna el ID vía secuencia SERIAL.
-    id_product: Optional[int] = Field(default=None, primary_key=True)
+    id_product: int | None = Field(default=None, primary_key=True)
 
     # Relación lazy muchos-a-uno. Se serializa en ProductTemplateResponse
     # como CategoryBase (sin la lista de productos anidados).
-    category: Optional[Category] = Relationship(back_populates="products")
+    category: Category | None = Relationship(back_populates="products")
 
 
 # ── ProductTemplateResponse ──────────────────────────────────────────
@@ -122,10 +122,8 @@ class ProductTemplate(TimestampMixin, ProductTemplateBase, table=True):
 # Extiende ProductTemplateBase añadiendo id, timestamps y categoría anidada.
 class ProductTemplateResponse(ProductTemplateBase):
     id_product: int = Field(description="ID único de la plantilla de producto.")
-    created_at: Optional[datetime] = Field(default=None, description="Fecha de registro.")
-    updated_at: Optional[datetime] = Field(
-        default=None, description="Fecha de última actualización."
-    )
-    category: Optional[CategoryBase] = Field(
+    created_at: datetime | None = Field(default=None, description="Fecha de registro.")
+    updated_at: datetime | None = Field(default=None, description="Fecha de última actualización.")
+    category: CategoryBase | None = Field(
         default=None, description="Información de la categoría asociada."
     )

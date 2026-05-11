@@ -2,18 +2,20 @@
 Paquete de seed para la base de datos.
 Permite inicializar la base de datos con datos de prueba organizados por entidad.
 """
+
 from __future__ import annotations
 
-from sqlmodel import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session
 
 from ..database import engine
 from ._base import SeedReport
-from .roles import seed_roles
 from .categories import seed_categories
-from .stores import seed_stores
-from .products import seed_products
 from .employees import seed_employees
+from .products import seed_products
+from .roles import seed_roles
+from .stores import seed_stores
+
 
 def run_seed() -> None:
     """Ejecuta todos los seeders en una única transacción global.

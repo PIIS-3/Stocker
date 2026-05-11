@@ -2,12 +2,12 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from app.models.employee import Employee
-from app.models.store import Store
+from app.models.enums import RoleEnum, StatusEnum
 from app.models.role import Role
-from app.models.enums import StatusEnum, RoleEnum
-
+from app.models.store import Store
 
 # ── Helpers ──────────────────────────────────────────────────────────
+
 
 def _seed_role(session: Session, role_name: RoleEnum = RoleEnum.Staff) -> Role:
     role = Role(role_name=role_name)
@@ -51,6 +51,7 @@ def _seed(
 
 
 # ── GET /api/employees/ ──────────────────────────────────────────────
+
 
 def test_read_employees_returns_list(client: TestClient, session: Session):
     role = _seed_role(session)
@@ -102,12 +103,17 @@ def test_read_employees_pagination_skip(client: TestClient, session: Session):
 
 # ── GET /api/employees/{id} ──────────────────────────────────────────
 
+
 def test_read_employee_by_id(client: TestClient, session: Session):
     role = _seed_role(session)
     store = _seed_store(session)
     seeded = _seed(
-        session, "jgarcia", role.id_role, store.id_store,
-        first_name="Juan", last_name="García",
+        session,
+        "jgarcia",
+        role.id_role,
+        store.id_store,
+        first_name="Juan",
+        last_name="García",
     )
 
     response = client.get(f"/api/employees/{seeded.id_employee}")
@@ -128,6 +134,7 @@ def test_read_employee_by_id_not_found(client: TestClient):
 
 
 # ── GET /api/employees/by-name/{name} ────────────────────────────────
+
 
 def test_read_employee_by_username(client: TestClient, session: Session):
     role = _seed_role(session)
@@ -161,6 +168,7 @@ def test_read_me_returns_authenticated_employee(client: TestClient):
 
 
 # ── POST /api/employees/ ─────────────────────────────────────────────
+
 
 def test_create_employee_returns_201(client: TestClient, session: Session):
     role = _seed_role(session)
@@ -292,6 +300,7 @@ def test_create_employee_missing_password_returns_422(client: TestClient, sessio
 
 # ── PATCH /api/employees/{id} ────────────────────────────────────────
 
+
 def test_update_employee_first_name(client: TestClient, session: Session):
     role = _seed_role(session)
     store = _seed_store(session)
@@ -359,6 +368,7 @@ def test_update_employee_not_found(client: TestClient):
 
 
 # ── DELETE /api/employees/{id} ───────────────────────────────────────
+
 
 def test_delete_employee_returns_deleted_record(client: TestClient, session: Session):
     role = _seed_role(session)

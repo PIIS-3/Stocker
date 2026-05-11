@@ -1,18 +1,19 @@
 # ── Alembic Environment ──────────────────────────────────────────────
 # Este script configura el contexto de ejecución de las migraciones.
 
-from logging.config import fileConfig
 import os
 import sys
+from logging.config import fileConfig
+
 from sqlalchemy import engine_from_config, pool
-from alembic import context
 from sqlmodel import SQLModel
 
+from alembic import context
+
 # Añadir el directorio raíz al path de Python para importar 'app'
-sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.core.config import settings
-import app.models  # Importar modelos para registrarlos en SQLModel.metadata
 
 # Configuración de Alembic
 config = context.config

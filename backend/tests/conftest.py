@@ -3,14 +3,14 @@ from fastapi import Depends, HTTPException, status
 from fastapi.testclient import TestClient
 from jose import JWTError, jwt
 from sqlalchemy import event
-from sqlmodel import SQLModel, create_engine, Session, StaticPool
+from sqlmodel import Session, SQLModel, StaticPool, create_engine
 
-from app.api.deps import get_current_employee, get_current_admin, oauth2_scheme
+from app import models
+from app.api.deps import get_current_admin, get_current_employee, oauth2_scheme
 from app.core.config import settings
 from app.core.security import get_password_hash
 from app.database import get_db
 from app.main import app
-from app import models
 from app.models.enums import RoleEnum
 
 # ── Base de Datos de Prueba (In-Memory SQLite) ──────────────────────
@@ -89,6 +89,7 @@ def client_fixture(session: Session):
         sin consultar la BD (el empleado ya no existe en ella).
     6. Devuelve un TestClient que envía el token Bearer en cada petición.
     """
+
     def get_db_override():
         yield session
 

@@ -1,24 +1,21 @@
 from sqlmodel import Session
 
-from app.models.category import Category, CategoryCreate, CategoryUpdate
-from app.models.enums import StatusEnum
 from app.crud.categories import (
+    create_category,
+    delete_category,
     get_categories,
     get_category_by_id,
     get_category_by_name,
-    create_category,
     update_category,
-    delete_category,
 )
-
+from app.models.category import Category, CategoryCreate, CategoryUpdate
+from app.models.enums import StatusEnum
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
+
 def _seed(
-    session: Session,
-    name: str,
-    description: str = "Desc",
-    status: StatusEnum = StatusEnum.Active
+    session: Session, name: str, description: str = "Desc", status: StatusEnum = StatusEnum.Active
 ) -> Category:
     category = Category(category_name=name, description=description, status=status)
     session.add(category)
@@ -28,6 +25,7 @@ def _seed(
 
 
 # ── Create ───────────────────────────────────────────────────────────
+
 
 def test_create_category_assigns_id(session: Session):
     category_in = CategoryCreate(category_name="Electrónica", description="Gadgets y más")
@@ -57,6 +55,7 @@ def test_create_category_inactive_status(session: Session):
 
 
 # ── Read ─────────────────────────────────────────────────────────────
+
 
 def test_get_categories_returns_all(session: Session):
     _seed(session, "Electrónica")
@@ -137,6 +136,7 @@ def test_get_category_by_name_case_sensitive(session: Session):
 
 # ── Update ───────────────────────────────────────────────────────────
 
+
 def test_update_category_changes_description(session: Session):
     seeded = _seed(session, "Electrónica", description="Original")
     update_in = CategoryUpdate(description="Actualizada")
@@ -175,9 +175,9 @@ def test_update_category_exclude_unset_leaves_other_fields(session: Session):
     result = update_category(session, category_id=seeded.id_category, category_in=update_in)
 
     assert result is not None
-    assert result.category_name == "Música"         # intacto
-    assert result.status == StatusEnum.Active        # intacto
-    assert result.description == "Solo música"       # actualizado
+    assert result.category_name == "Música"  # intacto
+    assert result.status == StatusEnum.Active  # intacto
+    assert result.description == "Solo música"  # actualizado
 
 
 def test_update_category_not_found_returns_none(session: Session):
@@ -189,6 +189,7 @@ def test_update_category_not_found_returns_none(session: Session):
 
 
 # ── Delete ───────────────────────────────────────────────────────────
+
 
 def test_delete_category_returns_deleted_record(session: Session):
     seeded = _seed(session, "Efímera")

@@ -1,0 +1,48 @@
+# QA_backend.yml — Control de Calidad del Backend (Ruff, MyPy, Pytest)
+#
+# Se ejecuta en:
+#   1. Push a 'main'.
+#   2. Pull Requests (cualquier rama).
+#
+# Este workflow actúa como un control de calidad estricto antes de permitir merges.
+
+name: QA — Backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  quality-assurance:
+    name: Lint & Type Check & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip' # Caché de dependencias para acelerar el workflow
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔍 Linter (Ruff)
+        run: ruff check .
+
+      - name: 🎨 Formato (Ruff)
+        run: ruff format --check .
+
+      - name: 🟦 Type Checking (MyPy)
+        run: mypy .
+

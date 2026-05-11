@@ -4,14 +4,11 @@ from sqlmodel import Session
 from app.models.category import Category
 from app.models.enums import StatusEnum
 
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
+
 def _seed(
-    session: Session,
-    name: str,
-    description: str = "Desc",
-    status: StatusEnum = StatusEnum.Active
+    session: Session, name: str, description: str = "Desc", status: StatusEnum = StatusEnum.Active
 ) -> Category:
     category = Category(category_name=name, description=description, status=status)
     session.add(category)
@@ -21,6 +18,7 @@ def _seed(
 
 
 # ── GET /api/categories/ ─────────────────────────────────────────────
+
 
 def test_read_categories_returns_list(client: TestClient, session: Session):
     _seed(session, "Electrónica")
@@ -66,6 +64,7 @@ def test_read_categories_pagination_skip(client: TestClient, session: Session):
 
 # ── GET /api/categories/{id} ─────────────────────────────────────────
 
+
 def test_read_category_by_id(client: TestClient, session: Session):
     seeded = _seed(session, "Deportes", description="Artículos deportivos")
 
@@ -87,6 +86,7 @@ def test_read_category_by_id_not_found(client: TestClient):
 
 # ── GET /api/categories/by-name/{name} ───────────────────────────────
 
+
 def test_read_category_by_name(client: TestClient, session: Session):
     _seed(session, "Libros")
 
@@ -105,6 +105,7 @@ def test_read_category_by_name_not_found(client: TestClient):
 
 
 # ── POST /api/categories/ ────────────────────────────────────────────
+
 
 def test_create_category_returns_201(client: TestClient):
     payload = {"category_name": "Tecnología", "description": "Todo tech"}
@@ -148,6 +149,7 @@ def test_create_category_duplicate_name_returns_409(client: TestClient, session:
 
 
 # ── PATCH /api/categories/{id} ───────────────────────────────────────
+
 
 def test_update_category_description(client: TestClient, session: Session):
     seeded = _seed(session, "Hogar", description="Original")
@@ -209,6 +211,7 @@ def test_update_category_not_found(client: TestClient):
 
 
 # ── DELETE /api/categories/{id} ──────────────────────────────────────
+
 
 def test_delete_category_returns_deleted_record(client: TestClient, session: Session):
     seeded = _seed(session, "Efímera", description="Será borrada")

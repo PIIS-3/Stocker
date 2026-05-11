@@ -1,7 +1,10 @@
-from sqlmodel import Session, select
+from typing import Sequence
+
+from sqlmodel import Session, select, col
+
+
 
 from .. import models
-
 
 # El CRUD siempre devuelve el modelo ORM `Store`, nunca `StoreResponse`.
 # La conversión ORM → schema de respuesta la hace FastAPI automáticamente
@@ -11,7 +14,8 @@ from .. import models
 
 # ── Read ─────────────────────────────────────────────────────────────
 
-def get_stores(db: Session, skip: int = 0, limit: int = 100) -> list[models.Store]:
+
+def get_stores(db: Session, skip: int = 0, limit: int = 100) -> Sequence[models.Store]:
     """Devuelve la lista de tiendas con paginación.
 
     Args:
@@ -19,15 +23,14 @@ def get_stores(db: Session, skip: int = 0, limit: int = 100) -> list[models.Stor
         limit: Máximo de registros a devolver.
     """
     return db.exec(
-        select(models.Store).order_by(models.Store.id_store).offset(skip).limit(limit)
+        select(models.Store).order_by(col(models.Store.id_store)).offset(skip).limit(limit)
     ).all()
+
 
 
 def get_store_by_id(db: Session, store_id: int) -> models.Store | None:
     """Devuelve una tienda por su ID, o None si no existe."""
-    return db.exec(
-        select(models.Store).where(models.Store.id_store == store_id)
-    ).first()
+    return db.exec(select(models.Store).where(models.Store.id_store == store_id)).first()
 
 
 def get_store_by_name(db: Session, store_name: str) -> models.Store | None:
@@ -37,12 +40,11 @@ def get_store_by_name(db: Session, store_name: str) -> models.Store | None:
     - Validar unicidad de nombre antes de crear o actualizar.
     - Búsqueda directa desde GET /stores/by-name/{store_name}.
     """
-    return db.exec(
-        select(models.Store).where(models.Store.store_name == store_name)
-    ).first()
+    return db.exec(select(models.Store).where(models.Store.store_name == store_name)).first()
 
 
 # ── Create ───────────────────────────────────────────────────────────
+
 
 def create_store(db: Session, store_in: models.StoreCreate) -> models.Store:
     """Inserta una nueva tienda y devuelve el registro creado con todos sus campos."""
@@ -60,6 +62,7 @@ def create_store(db: Session, store_in: models.StoreCreate) -> models.Store:
 
 
 # ── Update ───────────────────────────────────────────────────────────
+
 
 def update_store(
     db: Session,
@@ -96,6 +99,7 @@ def update_store(
 
 # ── Delete ───────────────────────────────────────────────────────────
 
+
 def delete_store(db: Session, store_id: int) -> models.Store | None:
     """Elimina una tienda y devuelve el registro tal como era antes de borrarse.
 
@@ -111,6 +115,3 @@ def delete_store(db: Session, store_id: int) -> models.Store | None:
     db.expunge(db_store)
     db.commit()
     return db_store
-
-
-
