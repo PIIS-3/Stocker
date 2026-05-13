@@ -85,4 +85,44 @@ export const authService = {
       return null;
     }
   },
+
+  /**
+   * Verifica si el usuario tiene permiso para realizar una acción en un módulo.
+   * Centraliza las reglas de negocio de RBAC (Role-Based Access Control).
+   */
+  can(
+    action: 'create' | 'edit' | 'delete' | 'view',
+    module: 'products' | 'categories' | 'stores' | 'users' | 'dashboard' | 'settings'
+  ): boolean {
+    const user = this.getUser();
+    if (!user) return false;
+    const role = user.role;
+
+    // SuperAdmin tiene acceso total a todo
+    if (role === 'SuperAdmin') return true;
+
+    // Manager: Acceso casi total excepto gestión de tiendas y eliminación de usuarios
+    if (role === 'Manager') {
+      if (module === 'stores' && (action === 'create' || action === 'edit' || action === 'delete')) {
+        return false;
+      }
+      if (module === 'users' && action === 'delete') {
+        return false;
+      }
+      return true;
+    }
+
+    // Staff: Solo productos, categorías, dashboard y ajustes. No puede borrar.
+    if (role === 'Staff') {
+      if (module === 'products' || module === 'categories') {
+        return action !== 'delete';
+      }
+      if (module === 'dashboard' || module === 'settings') {
+        return action === 'view';
+      }
+      return false;
+    }
+
+    return false;
+  },
 };

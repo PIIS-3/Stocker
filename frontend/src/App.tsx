@@ -16,7 +16,7 @@ import CategoriesList from './pages/admin/CategoriesList';
 
 import ProductsList from './pages/admin/ProductsList';
 import Settings from './pages/admin/Settings';
-import { ProtectedRoute } from './components/atoms';
+import { ProtectedRoute, RoleProtectedRoute } from './components/atoms';
 
 function App() {
   return (
@@ -40,8 +40,13 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="categories" element={<CategoriesList />} />
-              <Route path="stores" element={<StoresList />} />
-              <Route path="users" element={<UsersList />} />
+
+              {/* Rutas restringidas: No accesibles para Staff */}
+              <Route element={<RoleProtectedRoute allowedRoles={['SuperAdmin', 'Manager']} />}>
+                <Route path="stores" element={<StoresList />} />
+                <Route path="users" element={<UsersList />} />
+              </Route>
+
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>

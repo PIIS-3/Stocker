@@ -1,6 +1,8 @@
 import { Package, Store, Users, AlertCircle } from 'lucide-react';
 import { PageHeader } from '../../components/molecules/PageHeader';
 import { StatCard } from '../../components/molecules/StatCard';
+import { authService } from '../../services/auth.service';
+import StaffDashboard from './StaffDashboard';
 
 /**
  * Componente: Dashboard
@@ -8,6 +10,12 @@ import { StatCard } from '../../components/molecules/StatCard';
  * y permite gestionar preferencias del sistema como el sonido.
  */
 export default function Dashboard() {
+  const user = authService.getUser();
+
+  if (user?.role === 'Staff') {
+    return <StaffDashboard />;
+  }
+
   // TODO: Implementar llamadas a API para obtener estadísticas reales del servidor.
   // Los valores actuales son marcadores de posición (placeholders) para la maqueta.
   const stats = [

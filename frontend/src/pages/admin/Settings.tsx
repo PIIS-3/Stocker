@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Bell,
   Moon,
@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { authService } from '../../services/auth.service';
 import {
   isSoundEnabled,
   setSoundEnabled,
@@ -26,8 +25,6 @@ const Settings = () => {
     document.title = 'Ajustes de Usuario | Stocker';
   }, []);
 
-  const user = authService.getUser();
-  const username = user?.username || 'Usuario';
   const [notificationsEnabled, setNotificationsEnabledInternal] = useState<boolean>(() =>
     isNotificationsEnabled()
   );

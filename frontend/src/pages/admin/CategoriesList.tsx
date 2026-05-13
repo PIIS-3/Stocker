@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react';
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -24,6 +24,7 @@ import { CrudPageTemplate } from '../../components/templates';
 import { categoriesListOptions, useDeleteCategory } from '../../queries/categories.queries';
 import { useCrud } from '../../hooks/useCrud';
 import type { CategoryApi } from '../../services/categories.service';
+import { authService } from '../../services/auth.service';
 
 const columnHelper = createColumnHelper<CategoryApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
@@ -33,6 +34,9 @@ const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
  * Refactorizada con useCrud hook.
  */
 export default function CategoriesList() {
+  const canEdit = authService.can('edit', 'categories');
+  const canDelete = authService.can('delete', 'categories');
+
   // ── Lógica de Datos ──────────────────────────────────────────────────────
   const { data: allCategories = [], isLoading, error } = useQuery(categoriesListOptions());
 
@@ -70,10 +74,12 @@ export default function CategoriesList() {
   const { totalPages, totalItems } = paginationData;
 
   // ── Columnas ─────────────────────────────────────────────────────────────
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const baseColumns: ColumnDef<CategoryApi, any>[] = [
       columnHelper.accessor('category_name', {
         header: 'Nombre de Categoría',
+        size: 200,
         cell: (info) => (
           <span className="font-medium text-gray-900" title={info.getValue()}>
             {info.getValue()}
@@ -82,37 +88,42 @@ export default function CategoriesList() {
       }),
       columnHelper.accessor('description', {
         header: 'Descripción',
-        size: 350,
+        size: 500,
         cell: (info) => (
-          <span
-            className="text-gray-600 truncate max-w-[300px] block"
-            title={info.getValue() || ''}
-          >
+          <span className="text-gray-600 truncate block" title={info.getValue() || ''}>
             {info.getValue() || '-'}
           </span>
         ),
       }),
       columnHelper.accessor('status', {
         header: 'Estado',
-        size: 130,
+        size: 120,
         cell: (info) => (
           <StatusBadge status={info.getValue()} activeLabel="Activa" inactiveLabel="Inactiva" />
         ),
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 100,
-        header: 'Acciones',
-        cell: (info) => (
-          <ActionButtons
-            onEdit={() => openEdit(info.row.original)}
-            onDelete={() => openDelete(info.row.original)}
-          />
-        ),
-      }),
-    ],
-    [openEdit, openDelete]
-  );
+    ];
+
+    if (canEdit || canDelete) {
+      baseColumns.push(
+        columnHelper.display({
+          id: 'actions',
+          size: 90,
+          header: 'Acciones',
+          cell: (info) => (
+            <ActionButtons
+              onEdit={() => openEdit(info.row.original)}
+              onDelete={() => openDelete(info.row.original)}
+              hideEdit={!canEdit}
+              hideDelete={!canDelete}
+            />
+          ),
+        })
+      );
+    }
+
+    return baseColumns;
+  }, [openEdit, openDelete, canEdit, canDelete]);
 
   return (
     <CrudPageTemplate
