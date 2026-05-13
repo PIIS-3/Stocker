@@ -7,7 +7,7 @@ from .. import models
 from ..core.config import settings
 from ..crud import employees as crud_employees
 from ..database import get_db
-from ..models.enums import RoleEnum
+from ..models.enums import RoleEnum, StatusEnum
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
@@ -41,23 +41,28 @@ def get_current_employee(
     employee = crud_employees.get_employee_by_id(db, employee_id=employee_id)
     if employee is None:
         raise _credentials_exception
+
+    if employee.status == StatusEnum.Inactive:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Su cuenta está desactivada.",
+        )
     return employee
 
 
 def get_current_admin(
     current_employee: models.Employee = Depends(get_current_employee),
 ) -> models.Employee:
-    """
-    Devuelve el empleado autenticado si tiene permisos de administración.
-
-    Esta dependencia reutiliza get_current_employee, evitando decodificar
-    el JWT dos veces. La autorización se decide con el rol real cargado
-    desde base de datos.
-    """
-    if current_employee.role is None:
+    """Devuelve el empleado si es SuperAdmin o Manager."""
+    if current_employee.role is None or current_employee.role.role_name not in _ADMIN_ROLES:
         raise _forbidden_exception
+    return current_employee
 
-    if current_employee.role.role_name not in _ADMIN_ROLES:
+
+def get_current_superadmin(
+    current_employee: models.Employee = Depends(get_current_employee),
+) -> models.Employee:
+    """Devuelve el empleado SOLO si es SuperAdmin."""
+    if current_employee.role is None or current_employee.role.role_name != RoleEnum.SuperAdmin:
         raise _forbidden_exception
-
     return current_employee

@@ -89,7 +89,6 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
     responses=_409,
     summary="Crear nueva categoría",
     description="Registra una nueva categoría en el catálogo. El nombre debe ser único.",
-    dependencies=[Depends(get_current_admin)],
 )
 def create_category(category_in: models.CategoryCreate, db: Session = Depends(get_db)):
     if crud_categories.get_category_by_name(db, category_name=category_in.category_name):
@@ -111,7 +110,6 @@ def create_category(category_in: models.CategoryCreate, db: Session = Depends(ge
         "Permite modificar parcialmente los datos de una categoría. "
         "Solo se actualizarán los campos que se incluyan en el cuerpo de la petición."
     ),
-    dependencies=[Depends(get_current_admin)],
 )
 def update_category(
     category_id: int,

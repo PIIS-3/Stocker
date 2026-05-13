@@ -11,6 +11,7 @@ import {
 } from '../../queries/employees.queries';
 import { storesListOptions } from '../../queries/stores.queries';
 import type { EmployeeCreate, EmployeeApi } from '../../services/employees.service';
+import { authService } from '../../services/auth.service';
 
 type UserFormAction = 'create' | 'update';
 
@@ -41,6 +42,8 @@ export function UserForm({
   const isEdit = mode === 'edit';
   const isView = mode === 'view';
   const isReadOnly = isView;
+  const currentUser = authService.getUser();
+  const isManager = currentUser?.role === 'Manager';
 
   // ── Configuración de TanStack Form ──
   const form = useForm({
@@ -50,8 +53,8 @@ export function UserForm({
       username: '',
       status: 'Active',
       role_id: 0,
-      store_id: 0,
-      hashed_password: '',
+      store_id: isManager ? currentUser?.id_store || 0 : 0,
+      password: '',
       confirm_password: '',
     },
     onSubmit: async ({ value }) => {
@@ -63,9 +66,10 @@ export function UserForm({
         let savedEmployee: EmployeeApi;
 
         const payload = { ...value } as Record<string, unknown>;
+        delete payload.confirm_password;
+
         if (isEdit) {
-          delete payload.hashed_password;
-          delete payload.confirm_password;
+          delete payload.password;
         }
 
         if (isEdit && initialData) {
@@ -119,7 +123,7 @@ export function UserForm({
           status: initialData.status,
           role_id: initialData.role_id,
           store_id: initialData.store_id,
-          hashed_password: '',
+          password: '',
           confirm_password: '',
         });
       } else {
@@ -129,14 +133,14 @@ export function UserForm({
           username: '',
           status: 'Active',
           role_id: 0,
-          store_id: 0,
-          hashed_password: '',
+          store_id: isManager ? currentUser?.id_store || 0 : 0,
+          password: '',
           confirm_password: '',
         });
       }
       setError(null);
     }
-  }, [isOpen, initialData, isEdit, isView, form]);
+  }, [isOpen, initialData, isEdit, isView, form, isManager, currentUser?.id_store]);
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
@@ -333,11 +337,11 @@ export function UserForm({
         {!isEdit && !isView && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-700" htmlFor="user-hashed_password">
+              <label className="text-sm font-medium text-gray-700" htmlFor="user-password">
                 Contraseña <span className="text-rose-500">*</span>
               </label>
               <form.Field
-                name="hashed_password"
+                name="password"
                 validators={{
                   onChange: ({ value }) =>
                     !value
@@ -377,7 +381,7 @@ export function UserForm({
                 validators={{
                   onChange: ({ value, fieldApi }) => {
                     if (!value) return 'Debes confirmar la contraseña';
-                    if (value !== fieldApi.form.getFieldValue('hashed_password')) {
+                    if (value !== fieldApi.form.getFieldValue('password')) {
                       return 'Las contraseñas no coinciden';
                     }
                     return undefined;
@@ -476,12 +480,12 @@ export function UserForm({
                     id={field.name}
                     name={field.name}
                     required
-                    disabled={isReadOnly}
+                    disabled={isReadOnly || isManager}
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(Number(e.target.value))}
                     className={`pl-10 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:outline-none text-sm bg-white ${
-                      isReadOnly
+                      isReadOnly || isManager
                         ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
                         : 'focus:ring-2 focus:ring-brand'
                     }`}
