@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import type { ToastVariant } from '../components/molecules/ToastNotification';
+import { isNotificationsEnabled } from '../utils/notifications';
 
 interface NotificationState {
   id: number;
@@ -17,6 +18,8 @@ export function useNotification() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const show = useCallback((variant: ToastVariant, title: string, message: string) => {
+    if (!isNotificationsEnabled()) return;
+
     // Limpiar timeout previo si existe para evitar solapamientos
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);

@@ -1,7 +1,7 @@
-import { Plus, Users as UsersIcon } from 'lucide-react';
+import { Plus, Users as UsersIcon, Copy, Check } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge, RoleBadge } from '../../components/atoms';
@@ -28,6 +28,7 @@ import {
 } from '../../queries/employees.queries';
 import { useCrud } from '../../hooks/useCrud';
 import type { EmployeeApi } from '../../services/employees.service';
+import { authService } from '../../services/auth.service';
 
 const columnHelper = createColumnHelper<EmployeeApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
@@ -38,6 +39,16 @@ const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
  */
 export default function UsersList() {
   const [roleFilter, setRoleFilter] = useState<number>(0);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const canEdit = authService.can('edit', 'users');
+  const canDelete = authService.can('delete', 'users');
+
+  const handleCopy = (e: React.MouseEvent, text: string, id: number) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   // ── Lógica de Datos ──────────────────────────────────────────────────────
   const { data: allEmployees = [], isLoading, error } = useQuery(employeesListOptions());
@@ -85,16 +96,36 @@ export default function UsersList() {
   const { totalPages, totalItems } = paginationData;
 
   // ── Columnas ─────────────────────────────────────────────────────────────
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const baseColumns: ColumnDef<EmployeeApi, any>[] = [
       columnHelper.accessor('username', {
         header: 'Usuario',
         size: 150,
-        cell: (info) => (
-          <span className="font-medium text-brand" title={info.getValue()}>
-            @{info.getValue()}
-          </span>
-        ),
+        cell: (info) => {
+          const username = info.getValue();
+          const id = info.row.original.id_employee;
+          const isCopied = copiedId === id;
+
+          return (
+            <div className="flex items-center gap-2 group/copy">
+              <span className="font-medium text-brand" title={username}>
+                @{username}
+              </span>
+              <button
+                onClick={(e) => handleCopy(e, username, id)}
+                className={`p-1.5 rounded-md transition-all ${
+                  isCopied
+                    ? 'text-emerald-500 bg-emerald-50'
+                    : 'text-gray-400 hover:text-brand hover:bg-brand/5 opacity-0 group-hover/copy:opacity-100'
+                }`}
+                title="Copiar usuario"
+              >
+                {isCopied ? <Check size={14} /> : <Copy size={14} />}
+              </button>
+            </div>
+          );
+        },
       }),
       columnHelper.accessor((row) => `${row.first_name} ${row.last_name}`, {
         id: 'full_name',
@@ -133,20 +164,28 @@ export default function UsersList() {
           <StatusBadge status={info.getValue()} activeLabel="Activo" inactiveLabel="Inactivo" />
         ),
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 100,
-        header: 'Acciones',
-        cell: (info) => (
-          <ActionButtons
-            onEdit={() => openEdit(info.row.original)}
-            onDelete={() => openDelete(info.row.original)}
-          />
-        ),
-      }),
-    ],
-    [openEdit, openDelete]
-  );
+    ];
+
+    if (canEdit || canDelete) {
+      baseColumns.push(
+        columnHelper.display({
+          id: 'actions',
+          size: 100,
+          header: 'Acciones',
+          cell: (info) => (
+            <ActionButtons
+              onEdit={() => openEdit(info.row.original)}
+              onDelete={() => openDelete(info.row.original)}
+              hideEdit={!canEdit}
+              hideDelete={!canDelete}
+            />
+          ),
+        })
+      );
+    }
+
+    return baseColumns;
+  }, [openEdit, openDelete, canEdit, canDelete, copiedId]);
 
   return (
     <CrudPageTemplate

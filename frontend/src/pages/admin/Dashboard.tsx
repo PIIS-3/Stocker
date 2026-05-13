@@ -1,7 +1,8 @@
 import { Package, Store, Users, AlertCircle } from 'lucide-react';
 import { PageHeader } from '../../components/molecules/PageHeader';
 import { StatCard } from '../../components/molecules/StatCard';
-import { SoundToggle } from '../../components/atoms/SoundToggle';
+import { authService } from '../../services/auth.service';
+import StaffDashboard from './StaffDashboard';
 
 /**
  * Componente: Dashboard
@@ -9,6 +10,12 @@ import { SoundToggle } from '../../components/atoms/SoundToggle';
  * y permite gestionar preferencias del sistema como el sonido.
  */
 export default function Dashboard() {
+  const user = authService.getUser();
+
+  if (user?.role === 'Staff') {
+    return <StaffDashboard />;
+  }
+
   // TODO: Implementar llamadas a API para obtener estadísticas reales del servidor.
   // Los valores actuales son marcadores de posición (placeholders) para la maqueta.
   const stats = [
@@ -53,15 +60,6 @@ export default function Dashboard() {
         {stats.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
-      </div>
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mt-6 flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium text-gray-700">Preferencias de Sonido</h3>
-          <p className="text-xs text-gray-500 mt-1">
-            Activa o desactiva los sonidos de las notificaciones del sistema.
-          </p>
-        </div>
-        <SoundToggle />
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 line-clamp-4">

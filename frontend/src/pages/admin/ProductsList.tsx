@@ -1,7 +1,7 @@
 import { Plus, Package, Tag as TagIcon, Filter } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -25,6 +25,7 @@ import { productsListOptions, useDeleteProduct } from '../../queries/products.qu
 import { categoriesListOptions } from '../../queries/categories.queries';
 import { useCrud } from '../../hooks/useCrud';
 import type { ProductApi } from '../../services/products.service';
+import { authService } from '../../services/auth.service';
 
 const columnHelper = createColumnHelper<ProductApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
@@ -35,6 +36,8 @@ const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
  */
 export default function ProductsList() {
   const [categoryFilter, setCategoryFilter] = useState<number>(0);
+  const canEdit = authService.can('edit', 'products');
+  const canDelete = authService.can('delete', 'products');
 
   // ── Lógica de Datos ──────────────────────────────────────────────────────
   const { data: allProducts = [], isLoading, error } = useQuery(productsListOptions());
@@ -82,8 +85,9 @@ export default function ProductsList() {
   const { totalPages, totalItems } = paginationData;
 
   // ── Columnas ─────────────────────────────────────────────────────────────
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const baseColumns: ColumnDef<ProductApi, any>[] = [
       columnHelper.accessor('sku', {
         header: 'SKU',
         size: 110,
@@ -153,20 +157,28 @@ export default function ProductsList() {
           />
         ),
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 100,
-        header: 'Acciones',
-        cell: (info) => (
-          <ActionButtons
-            onEdit={() => openEdit(info.row.original)}
-            onDelete={() => openDelete(info.row.original)}
-          />
-        ),
-      }),
-    ],
-    [openEdit, openDelete]
-  );
+    ];
+
+    if (canEdit || canDelete) {
+      baseColumns.push(
+        columnHelper.display({
+          id: 'actions',
+          size: 100,
+          header: 'Acciones',
+          cell: (info) => (
+            <ActionButtons
+              onEdit={() => openEdit(info.row.original)}
+              onDelete={() => openDelete(info.row.original)}
+              hideEdit={!canEdit}
+              hideDelete={!canDelete}
+            />
+          ),
+        })
+      );
+    }
+
+    return baseColumns;
+  }, [openEdit, openDelete, canEdit, canDelete]);
 
   return (
     <CrudPageTemplate

@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react';
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 
 // ── Átomos ──────────────────────────────────────────────────────────────────
 import { Button, StatusBadge } from '../../components/atoms';
@@ -25,6 +25,8 @@ import { storesListOptions, useDeleteStore } from '../../queries/stores.queries'
 import { useCrud } from '../../hooks/useCrud';
 import type { StoreApi } from '../../services/stores.service';
 
+import { authService } from '../../services/auth.service';
+
 const columnHelper = createColumnHelper<StoreApi>();
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
@@ -33,6 +35,10 @@ const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
  * Gestión modular de tiendas físicas refactorizada con useCrud.
  */
 export default function StoresList() {
+  const canCreate = authService.can('create', 'stores');
+  const canEdit = authService.can('edit', 'stores');
+  const canDelete = authService.can('delete', 'stores');
+
   // ── Lógica de Datos ──────────────────────────────────────────────────────
   const { data: allStores = [], isLoading, error } = useQuery(storesListOptions());
 
@@ -70,11 +76,12 @@ export default function StoresList() {
   const { totalPages, totalItems } = paginationData;
 
   // ── Columnas ─────────────────────────────────────────────────────────────
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const baseColumns: ColumnDef<StoreApi, any>[] = [
       columnHelper.accessor('store_name', {
         header: 'Nombre',
-        size: 250,
+        size: 200,
         cell: (info) => (
           <span className="font-medium text-gray-900" title={info.getValue()}>
             {info.getValue()}
@@ -83,6 +90,7 @@ export default function StoresList() {
       }),
       columnHelper.accessor('address', {
         header: 'Dirección',
+        size: 500,
         cell: (info) => (
           <span className="text-gray-600 truncate block" title={info.getValue()}>
             {info.getValue()}
@@ -91,32 +99,42 @@ export default function StoresList() {
       }),
       columnHelper.accessor('status', {
         header: 'Estado',
-        size: 130,
+        size: 110,
         cell: (info) => <StatusBadge status={info.getValue()} />,
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 100,
-        header: 'Acciones',
-        cell: (info) => (
-          <ActionButtons
-            onEdit={() => openEdit(info.row.original)}
-            onDelete={() => openDelete(info.row.original)}
-          />
-        ),
-      }),
-    ],
-    [openEdit, openDelete]
-  );
+    ];
+
+    if (canEdit || canDelete) {
+      baseColumns.push(
+        columnHelper.display({
+          id: 'actions',
+          size: 90,
+          header: 'Acciones',
+          cell: (info) => (
+            <ActionButtons
+              onEdit={() => openEdit(info.row.original)}
+              onDelete={() => openDelete(info.row.original)}
+              hideEdit={!canEdit}
+              hideDelete={!canDelete}
+            />
+          ),
+        })
+      );
+    }
+
+    return baseColumns;
+  }, [openEdit, openDelete, canEdit, canDelete]);
 
   return (
     <CrudPageTemplate
       title="Tiendas Físicas"
       subtitle="Administra las sucursales, almacenes y puntos de venta del sistema."
       headerAction={
-        <Button icon={<Plus size={20} />} onClick={openCreate}>
-          Nueva Tienda
-        </Button>
+        canCreate && (
+          <Button icon={<Plus size={20} />} onClick={openCreate}>
+            Nueva Tienda
+          </Button>
+        )
       }
       searchValue={searchTerm}
       onSearchChange={setSearchTerm}

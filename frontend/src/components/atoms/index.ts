@@ -4,3 +4,4 @@ export { StatusBadge } from './StatusBadge';
 export { RoleBadge } from './RoleBadge';
 export { SoundToggle } from './SoundToggle';
 export { ProtectedRoute } from './ProtectedRoute';
+export { RoleProtectedRoute } from './RoleProtectedRoute';
