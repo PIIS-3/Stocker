@@ -1,7 +1,6 @@
 import { Package, Store, Users, AlertCircle } from 'lucide-react';
 import { PageHeader } from '../../components/molecules/PageHeader';
 import { StatCard } from '../../components/molecules/StatCard';
-import { SoundToggle } from '../../components/atoms/SoundToggle';
 
 /**
  * Componente: Dashboard
@@ -53,15 +52,6 @@ export default function Dashboard() {
         {stats.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
-      </div>
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mt-6 flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium text-gray-700">Preferencias de Sonido</h3>
-          <p className="text-xs text-gray-500 mt-1">
-            Activa o desactiva los sonidos de las notificaciones del sistema.
-          </p>
-        </div>
-        <SoundToggle />
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 line-clamp-4">

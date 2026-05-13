@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { authService } from '../../services/auth.service';
 import { Settings as SettingsIcon, LogOut, ChevronDown } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const roleColors: Record<string, string> = {
@@ -16,6 +16,12 @@ export function AdminHeader() {
   const user = authService.getUser();
   const username = user?.username || 'Administrador';
   const role = user?.role || 'DB_Admin';
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
 
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
@@ -44,7 +50,7 @@ export function AdminHeader() {
         {/* Información del usuario (clicable) */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-3 hover:bg-gray-50 p-1.5 pr-3 rounded-full transition-all group"
+          className="flex items-center gap-3 hover:bg-gray-50 p-2 px-5 rounded-full transition-all group"
         >
           <div className="text-right hidden md:block mr-1">
             <p className="text-sm font-semibold text-gray-800 group-hover:text-brand transition-colors">
@@ -95,7 +101,10 @@ export function AdminHeader() {
                 <span className="font-medium">Ajustes</span>
               </Link>
 
-              <button className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors mx-2 rounded-xl group">
+              <button
+                onClick={handleLogout}
+                className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors mx-2 rounded-xl group"
+              >
                 <div className="p-1.5 bg-gray-50 group-hover:bg-red-100 rounded-lg transition-colors">
                   <LogOut size={18} />
                 </div>

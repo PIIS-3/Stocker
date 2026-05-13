@@ -3,7 +3,6 @@ import {
   Bell,
   Moon,
   Sun,
-  User,
   Lock,
   Globe,
   ShieldCheck,
@@ -14,6 +13,13 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { authService } from '../../services/auth.service';
+import {
+  isSoundEnabled,
+  setSoundEnabled,
+  unlockAudioWithHtmlAudio,
+  unlockAudio,
+} from '../../utils/audio';
+import { isNotificationsEnabled, setNotificationsEnabled } from '../../utils/notifications';
 
 const Settings = () => {
   useEffect(() => {
@@ -22,9 +28,26 @@ const Settings = () => {
 
   const user = authService.getUser();
   const username = user?.username || 'Usuario';
-  const [desktopEnabled, setDesktopEnabled] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabledInternal] = useState<boolean>(() =>
+    isNotificationsEnabled()
+  );
+  const [soundEnabled, setSoundEnabledInternal] = useState<boolean>(() => isSoundEnabled());
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  const handleNotificationsToggle = (enabled: boolean) => {
+    setNotificationsEnabledInternal(enabled);
+    setNotificationsEnabled(enabled);
+  };
+
+  const handleSoundToggle = async (enabled: boolean) => {
+    setSoundEnabledInternal(enabled);
+    setSoundEnabled(enabled);
+
+    if (enabled) {
+      await unlockAudioWithHtmlAudio();
+      await unlockAudio();
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -48,10 +71,6 @@ const Settings = () => {
           <p className="text-gray-500 mt-2">
             Personaliza tu experiencia y gestiona la seguridad de tu cuenta.
           </p>
-        </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-brand/5 text-brand rounded-full text-sm font-medium border border-brand/10">
-          <User size={16} />
-          Sesión iniciada como {username}
         </div>
       </header>
 
@@ -108,15 +127,15 @@ const Settings = () => {
           <div className="flex-1 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-gray-800">Notificaciones de escritorio</p>
-                <p className="text-xs text-gray-500">Alertas visuales en el navegador.</p>
+                <p className="font-semibold text-gray-800">Notificaciones</p>
+                <p className="text-xs text-gray-500">Alertas visuales en el sistema.</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
                   className="sr-only peer"
-                  checked={desktopEnabled}
-                  onChange={(e) => setDesktopEnabled(e.target.checked)}
+                  checked={notificationsEnabled}
+                  onChange={(e) => handleNotificationsToggle(e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
               </label>
@@ -124,31 +143,26 @@ const Settings = () => {
 
             <div
               className={`flex items-center justify-between pt-4 border-t border-gray-50 transition-opacity duration-300 ${
-                !desktopEnabled ? 'opacity-40 pointer-events-none' : 'opacity-100'
+                !notificationsEnabled ? 'opacity-40' : 'opacity-100'
               }`}
             >
               <div>
                 <p className="font-semibold text-gray-800 flex items-center gap-2">
                   Efectos de sonido
-                  {!desktopEnabled && (
-                    <span className="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-md uppercase font-bold tracking-tighter">
-                      Off
-                    </span>
-                  )}
                 </p>
                 <p className="text-xs text-gray-500">Sonido al recibir notificaciones.</p>
               </div>
               <label
                 className={`relative inline-flex items-center ${
-                  desktopEnabled ? 'cursor-pointer' : 'cursor-not-allowed'
+                  notificationsEnabled ? 'cursor-pointer' : 'cursor-not-allowed'
                 }`}
               >
                 <input
                   type="checkbox"
                   className="sr-only peer"
-                  checked={soundEnabled && desktopEnabled}
-                  onChange={(e) => setSoundEnabled(e.target.checked)}
-                  disabled={!desktopEnabled}
+                  checked={soundEnabled}
+                  onChange={(e) => handleSoundToggle(e.target.checked)}
+                  disabled={!notificationsEnabled}
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
               </label>
