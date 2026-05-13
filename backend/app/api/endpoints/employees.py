@@ -8,7 +8,7 @@ from ...crud import employees as crud_employees
 from ...database import get_db
 from ..deps import get_current_admin, get_current_employee
 
-router = APIRouter(tags=["Empleados"], dependencies=[Depends(get_current_employee)])
+router = APIRouter(tags=["Empleados"])
 
 # Respuestas comunes documentadas en Swagger.
 _404 = {404: {"description": "Empleado no encontrado."}}
@@ -77,11 +77,11 @@ def read_employee_by_name(name: str, db: Session = Depends(get_db)):
     "/me",
     response_model=models.EmployeeResponse,
     summary="Obtener empleado autenticado",
-    description="Devuelve los datos del empleado que realiza la petición.",
+    description="Devuelve los datos del empleado asociado al token JWT actual.",
 )
 def read_current_employee(
     current_employee: models.Employee = Depends(get_current_employee),
-):
+) -> models.Employee:
     return current_employee
 
 
