@@ -103,7 +103,10 @@ export const authService = {
 
     // Manager: Acceso casi total excepto gestión de tiendas y eliminación de usuarios
     if (role === 'Manager') {
-      if (module === 'stores' && (action === 'create' || action === 'edit' || action === 'delete')) {
+      if (
+        module === 'stores' &&
+        (action === 'create' || action === 'edit' || action === 'delete')
+      ) {
         return false;
       }
       if (module === 'users' && action === 'delete') {
