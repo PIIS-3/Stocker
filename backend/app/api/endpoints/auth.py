@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Field, Session, SQLModel
 
 from ... import models
@@ -47,5 +48,47 @@ def login(login_in: LoginRequest, db: Session = Depends(get_db)):
         "username": employee.username,
         "role": role_name,
     }
+    access_token = security.create_access_token(data=token_data)
+    return models.Token(access_token=access_token, token_type="bearer")
+
+
+# ── POST /auth/token ─────────────────────────────────────────────────
+
+
+@router.post(
+    "/token",
+    response_model=models.Token,
+    responses=_401,
+    summary="Iniciar sesión OAuth2",
+    description=(
+        "Endpoint compatible con Swagger Authorize. "
+        "Recibe credenciales mediante form-data estándar OAuth2."
+    ),
+)
+def login_oauth2(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+):
+    employee = crud_employees.get_employee_by_username(db, username=form_data.username)
+
+    if employee is None or not security.verify_password(
+        form_data.password, employee.hashed_password
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario o contraseña incorrectos.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    db.refresh(employee)
+
+    role_name = employee.role.role_name.value if employee.role else ""
+
+    token_data = {
+        "id_employee": employee.id_employee,
+        "username": employee.username,
+        "role": role_name,
+    }
+
     access_token = security.create_access_token(data=token_data)
     return models.Token(access_token=access_token, token_type="bearer")

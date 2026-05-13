@@ -9,7 +9,7 @@ from ..crud import employees as crud_employees
 from ..database import get_db
 from ..models.enums import RoleEnum
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 _credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -47,7 +47,17 @@ def get_current_employee(
 def get_current_admin(
     current_employee: models.Employee = Depends(get_current_employee),
 ) -> models.Employee:
-    """403 si el empleado autenticado no tiene rol de administrador (SuperAdmin o Manager)."""
-    if current_employee.role is None or current_employee.role.role_name not in _ADMIN_ROLES:
+    """
+    Devuelve el empleado autenticado si tiene permisos de administración.
+
+    Esta dependencia reutiliza get_current_employee, evitando decodificar
+    el JWT dos veces. La autorización se decide con el rol real cargado
+    desde base de datos.
+    """
+    if current_employee.role is None:
         raise _forbidden_exception
+
+    if current_employee.role.role_name not in _ADMIN_ROLES:
+        raise _forbidden_exception
+
     return current_employee
