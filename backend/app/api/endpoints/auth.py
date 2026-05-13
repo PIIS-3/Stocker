@@ -41,12 +41,34 @@ def login(login_in: LoginRequest, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    if employee.status == models.StatusEnum.Inactive:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Su cuenta está desactivada. Contacte con un administrador.",
+        )
+
     db.refresh(employee)
+
+    # Asegurar que el rol está cargado para el token
+    if employee.role is None and employee.role_id:
+        from ...models.role import Role
+
+        employee.role = db.get(Role, employee.role_id)
+
+    if employee.store is None and employee.store_id:
+        from ...models.store import Store
+
+        employee.store = db.get(Store, employee.store_id)
+
     role_name = employee.role.role_name.value if employee.role else ""
+    store_name = employee.store.store_name if employee.store else ""
+
     token_data = {
         "id_employee": employee.id_employee,
         "username": employee.username,
         "role": role_name,
+        "id_store": employee.store_id,
+        "store_name": store_name,
     }
     access_token = security.create_access_token(data=token_data)
     return models.Token(access_token=access_token, token_type="bearer")
@@ -80,14 +102,28 @@ def login_oauth2(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    if employee.status == models.StatusEnum.Inactive:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Su cuenta está desactivada. Contacte con un administrador.",
+        )
+
     db.refresh(employee)
 
+    if employee.store is None and employee.store_id:
+        from ...models.store import Store
+
+        employee.store = db.get(Store, employee.store_id)
+
     role_name = employee.role.role_name.value if employee.role else ""
+    store_name = employee.store.store_name if employee.store else ""
 
     token_data = {
         "id_employee": employee.id_employee,
         "username": employee.username,
         "role": role_name,
+        "id_store": employee.store_id,
+        "store_name": store_name,
     }
 
     access_token = security.create_access_token(data=token_data)

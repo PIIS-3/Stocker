@@ -41,8 +41,8 @@ function App() {
               <Route path="products" element={<ProductsList />} />
               <Route path="categories" element={<CategoriesList />} />
 
-              {/* Rutas restringidas: No accesibles para Staff */}
-              <Route element={<RoleProtectedRoute allowedRoles={['SuperAdmin', 'Manager']} />}>
+              {/* Rutas restringidas: Solo accesibles para SuperAdmin */}
+              <Route element={<RoleProtectedRoute allowedRoles={['SuperAdmin']} />}>
                 <Route path="stores" element={<StoresList />} />
                 <Route path="users" element={<UsersList />} />
               </Route>

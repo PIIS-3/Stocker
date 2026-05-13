@@ -67,7 +67,7 @@ export const authService = {
   },
 
   /** Obtiene datos del usuario decodificados del token */
-  getUser(): { username: string; role?: string } | null {
+  getUser(): { username: string; role?: string; id_store?: number; store_name?: string } | null {
     const token = localStorage.getItem('token');
     if (!token || this.isTokenExpired(token)) return null;
     try {
@@ -80,6 +80,8 @@ export const authService = {
       return {
         username,
         role: decoded.role || 'Admin',
+        id_store: decoded.id_store,
+        store_name: decoded.store_name,
       };
     } catch {
       return null;
@@ -101,15 +103,9 @@ export const authService = {
     // SuperAdmin tiene acceso total a todo
     if (role === 'SuperAdmin') return true;
 
-    // Manager: Acceso casi total excepto gestión de tiendas y eliminación de usuarios
+    // Manager: Acceso a productos y categorías, pero no a tiendas ni usuarios
     if (role === 'Manager') {
-      if (
-        module === 'stores' &&
-        (action === 'create' || action === 'edit' || action === 'delete')
-      ) {
-        return false;
-      }
-      if (module === 'users' && action === 'delete') {
+      if (module === 'stores' || module === 'users') {
         return false;
       }
       return true;

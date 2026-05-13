@@ -108,7 +108,6 @@ def read_product(product_id: int, db: Session = Depends(get_db)):
         "Crea una nueva plantilla de producto en el catálogo. "
         "El SKU debe ser único y la categoría debe existir."
     ),
-    dependencies=[Depends(get_current_admin)],
 )
 def create_product(product_in: models.ProductTemplateCreate, db: Session = Depends(get_db)):
     if crud_products.get_product_by_sku(db, sku=product_in.sku):
@@ -138,7 +137,6 @@ def create_product(product_in: models.ProductTemplateCreate, db: Session = Depen
         "Modifica parcialmente los datos de una plantilla de producto. "
         "Solo se procesan los campos incluidos en la petición."
     ),
-    dependencies=[Depends(get_current_admin)],
 )
 def update_product(
     product_id: int,

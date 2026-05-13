@@ -6,7 +6,7 @@ from ... import models
 from ...core import security
 from ...crud import employees as crud_employees
 from ...database import get_db
-from ..deps import get_current_admin, get_current_employee
+from ..deps import get_current_admin, get_current_employee, get_current_superadmin
 
 router = APIRouter(tags=["Empleados"])
 
@@ -26,10 +26,17 @@ _409_DELETE = {409: {"description": "No se puede eliminar un empleado con regist
     description="Devuelve el catálogo de roles disponibles (SuperAdmin, Manager, Staff).",
     dependencies=[Depends(get_current_admin)],
 )
-def read_roles(db: Session = Depends(get_db)):
+def read_roles(
+    db: Session = Depends(get_db),
+    current_employee: models.Employee = Depends(get_current_admin),
+):
     from sqlmodel import select
 
-    return db.exec(select(models.Role).order_by(models.Role.id_role)).all()
+    query = select(models.Role)
+    if current_employee.role and current_employee.role.role_name == models.RoleEnum.Manager:
+        query = query.where(models.Role.role_name != models.RoleEnum.SuperAdmin)
+
+    return db.exec(query.order_by(models.Role.id_role)).all()
 
 
 # ── GET /employees/ ──────────────────────────────────────────────────
@@ -48,8 +55,20 @@ def read_employees(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
+    current_employee: models.Employee = Depends(get_current_admin),
 ):
-    return crud_employees.get_employees(db, skip=skip, limit=limit)
+    if current_employee.role and current_employee.role.role_name == models.RoleEnum.SuperAdmin:
+        return crud_employees.get_employees(db, skip=skip, limit=limit)
+
+    # Manager: Solo empleados de su propia tienda
+    from sqlmodel import select
+
+    return db.exec(
+        select(models.Employee)
+        .where(models.Employee.store_id == current_employee.store_id)
+        .offset(skip)
+        .limit(limit)
+    ).all()
 
 
 # ── GET /employees/by-name/{name} ────────────────────────────────────
@@ -115,7 +134,28 @@ def read_employee(employee_id: int, db: Session = Depends(get_db)):
     description="Registra un nuevo empleado en el sistema asociado a un rol y una tienda.",
     dependencies=[Depends(get_current_admin)],
 )
-def create_employee(employee_in: models.EmployeeCreate, db: Session = Depends(get_db)):
+def create_employee(
+    employee_in: models.EmployeeCreate,
+    db: Session = Depends(get_db),
+    current_employee: models.Employee = Depends(get_current_admin),
+):
+    if current_employee.role and current_employee.role.role_name == models.RoleEnum.Manager:
+        # 1. Validar que la tienda coincida
+        if employee_in.store_id != current_employee.store_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Solo puedes crear empleados para tu propia tienda.",
+            )
+        # 2. Validar que no intente crear un SuperAdmin
+        from ...models.role import Role
+
+        target_role = db.get(Role, employee_in.role_id)
+        if target_role and target_role.role_name == models.RoleEnum.SuperAdmin:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes permisos para crear un SuperAdmin.",
+            )
+
     if crud_employees.get_employee_by_username(db, username=employee_in.username):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -169,7 +209,7 @@ def update_employee(
     responses={**_404, **_409_DELETE},
     summary="Eliminar empleado",
     description="Borra definitivamente el registro de un empleado mediante su ID.",
-    dependencies=[Depends(get_current_admin)],
+    dependencies=[Depends(get_current_superadmin)],
 )
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     try:

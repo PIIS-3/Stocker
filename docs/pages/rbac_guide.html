@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Control de Acceso (RBAC)</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .permission-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+        .permission-table th, .permission-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .permission-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+        }
+        .permission-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: #1e293b;
+        }
+        .status-icon {
+            font-size: 1.1rem;
+        }
+        .role-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--brand-color);
+        }
+        .role-name {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="doc-nav">
+    <a href="../index.html" class="back-link">← Volver al Hub Central</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>🛡️ Guía de Control de Acceso (RBAC)</h1>
+        <p>Políticas de seguridad, jerarquía de roles y restricciones de módulos en Stocker.</p>
+    </header>
+
+    <div class="section-card">
+        <h2>Jerarquía de Roles</h2>
+        <p>El sistema implementa una estructura de tres niveles para garantizar la integridad de los datos y la seguridad de la plataforma.</p>
+
+        <div class="role-card" style="border-left-color: #a855f7;">
+            <div class="role-name">👑 SuperAdmin (Administrador Global)</div>
+            <p>Acceso total y sin restricciones. Es el único rol capaz de gestionar tiendas físicas y eliminar usuarios/empleados.</p>
+        </div>
+
+        <div class="role-card" style="border-left-color: #3b82f6;">
+            <div class="role-name">👔 Manager (Director de Tienda)</div>
+            <p>Enfocado en la gestión operativa de su inventario. Puede gestionar productos y categorías, pero no tiene acceso a la configuración de tiendas ni a la gestión global de usuarios.</p>
+        </div>
+
+        <div class="role-card" style="border-left-color: #10b981;">
+            <div class="role-name">🛠️ Staff (Personal Operativo)</div>
+            <p>Rol puramente transaccional. Puede ver, crear y editar productos o categorías, pero tiene prohibido borrar cualquier recurso del sistema.</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>Matriz de Permisos</h2>
+        <table class="permission-table">
+            <thead>
+                <tr>
+                    <th>Módulo</th>
+                    <th>Acción</th>
+                    <th>SuperAdmin</th>
+                    <th>Manager</th>
+                    <th>Staff</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tiendas</td>
+                    <td>Listar / Ver</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                </tr>
+                <tr>
+                    <td>Tiendas</td>
+                    <td>Crear / Editar / Borrar</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                </tr>
+                <tr>
+                    <td>Usuarios</td>
+                    <td>Listar / Ver</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                </tr>
+                <tr>
+                    <td>Usuarios</td>
+                    <td>Crear / Editar</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                </tr>
+                <tr>
+                    <td>Usuarios</td>
+                    <td>Borrar</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                </tr>
+                <tr>
+                    <td>Productos</td>
+                    <td>Listar / Ver / Crear / Editar</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">✅</span></td>
+                </tr>
+                <tr>
+                    <td>Productos</td>
+                    <td>Borrar</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                </tr>
+                <tr>
+                    <td>Categorías</td>
+                    <td>Listar / Ver / Crear / Editar</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">✅</span></td>
+                </tr>
+                <tr>
+                    <td>Categorías</td>
+                    <td>Borrar</td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">✅</span></td>
+                    <td><span class="status-icon">❌</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-card">
+        <h2>Implementación Técnica</h2>
+        <h3>Backend (FastAPI)</h3>
+        <p>La seguridad se aplica mediante dependencias en los endpoints:</p>
+        <ul>
+            <li><code>get_current_superadmin</code>: Valida que el rol sea exactamente SuperAdmin.</li>
+            <li><code>get_current_admin</code>: Permite SuperAdmin y Manager.</li>
+            <li><code>get_current_employee</code>: Valida que el usuario esté activo en la base de datos.</li>
+        </ul>
+
+        <h3>Frontend (React)</h3>
+        <p>El sistema utiliza dos mecanismos complementarios:</p>
+        <ul>
+            <li><strong>Protección de Rutas:</strong> El componente <code>RoleProtectedRoute</code> bloquea el acceso por URL y redirige al dashboard si el rol no es válido.</li>
+            <li><strong>UI Condicional:</strong> El servicio <code>authService.can(action, module)</code> oculta dinámicamente botones de borrado o elementos del sidebar.</li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

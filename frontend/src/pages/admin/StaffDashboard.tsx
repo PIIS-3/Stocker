@@ -2,6 +2,7 @@ import { Package, Tags, Box, ExternalLink } from 'lucide-react';
 import { PageHeader } from '../../components/molecules/PageHeader';
 import { StatCard } from '../../components/molecules/StatCard';
 import { Link } from 'react-router-dom';
+import { authService } from '../../services/auth.service';
 
 /**
  * Componente: StaffDashboard
@@ -26,8 +27,16 @@ export default function StaffDashboard() {
     },
   ];
 
+  const user = authService.getUser();
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
+      {user?.store_name && (
+        <div className="mb-4 flex items-center gap-2 text-brand font-bold bg-brand/5 w-fit px-4 py-2 rounded-full border border-brand/10">
+          <Box size={18} />
+          <span>Tienda: {user.store_name}</span>
+        </div>
+      )}
       <PageHeader
         title="Panel de Operaciones"
         subtitle="Gestión directa de inventario y clasificación de productos."
