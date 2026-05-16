@@ -9,12 +9,54 @@ const sprints = [
     focus: 'Infraestructura y Arquitectura',
     points: 21,
     tasks: [
-      { id: 'P3-63', name: 'Contenerización y Orquestación del Entorno', tag: 'INFRA', color: '#0F6E56', status: 'done', subtasks: [] },
-      { id: 'P3-64', name: 'Inicialización de Arquitectura y Boilerplates', tag: 'INFRA', color: '#0F6E56', status: 'done', subtasks: [] },
-      { id: 'P3-66', name: 'Definición de Identidad Visual y Guía de Estilos', tag: 'ARQ', color: '#534AB7', status: 'done', subtasks: [] },
-      { id: 'P3-65', name: 'Prototipado de Alta Fidelidad (Mockups)', tag: 'ARQ', color: '#534AB7', status: 'done', subtasks: [] },
-      { id: 'P3-136', name: 'Configuración de Persistencia y Migraciones', tag: 'INFRA', color: '#0F6E56', status: 'done', subtasks: [] },
-      { id: 'P3-137', name: 'Configuración del Sistema de Diseño en Código', tag: 'ARQ', color: '#534AB7', status: 'done', subtasks: [] },
+      {
+        id: 'P3-63',
+        name: 'Contenerización y Orquestación del Entorno',
+        tag: 'INFRA',
+        color: '#0F6E56',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-64',
+        name: 'Inicialización de Arquitectura y Boilerplates',
+        tag: 'INFRA',
+        color: '#0F6E56',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-66',
+        name: 'Definición de Identidad Visual y Guía de Estilos',
+        tag: 'ARQ',
+        color: '#534AB7',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-65',
+        name: 'Prototipado de Alta Fidelidad (Mockups)',
+        tag: 'ARQ',
+        color: '#534AB7',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-136',
+        name: 'Configuración de Persistencia y Migraciones',
+        tag: 'INFRA',
+        color: '#0F6E56',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-137',
+        name: 'Configuración del Sistema de Diseño en Código',
+        tag: 'ARQ',
+        color: '#534AB7',
+        status: 'done',
+        subtasks: [],
+      },
     ],
   },
   {
@@ -25,13 +67,62 @@ const sprints = [
     focus: 'Modelo de Datos y Vistas Base',
     points: 27,
     tasks: [
-      { id: 'P3-227', name: 'Modelado de Datos y API de Catálogo', tag: 'BACK', color: '#185FA5', status: 'done', subtasks: [] },
-      { id: 'P3-228', name: 'Implementación de Seeder de Datos Iniciales', tag: 'BACK', color: '#185FA5', status: 'done', subtasks: [] },
-      { id: 'P3-229', name: 'Integración de API y Listado Dinámico', tag: 'FRONT', color: '#D85A30', status: 'done', subtasks: [] },
-      { id: 'P3-230', name: 'Desarrollo de Vistas Públicas e Informativas', tag: 'FRONT', color: '#D85A30', status: 'done', subtasks: [] },
-      { id: 'P3-231', name: 'Desarrollo de Vistas Administrativas', tag: 'FRONT', color: '#D85A30', status: 'done', subtasks: [] },
-      { id: 'P3-232', name: 'Documentación Técnica y Diccionario de Datos', tag: 'GESTIÓN', color: '#854F0B', status: 'done', subtasks: [] },
-      { id: 'P3-233', name: 'Testing de Navegación e Integración de Datos', tag: 'QA', color: '#993556', status: 'done', subtasks: [] },
+      {
+        id: 'P3-227',
+        name: 'Modelado de Datos y API de Catálogo',
+        tag: 'BACK',
+        color: '#185FA5',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-228',
+        name: 'Implementación de Seeder de Datos Iniciales',
+        tag: 'BACK',
+        color: '#185FA5',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-229',
+        name: 'Integración de API y Listado Dinámico',
+        tag: 'FRONT',
+        color: '#D85A30',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-230',
+        name: 'Desarrollo de Vistas Públicas e Informativas',
+        tag: 'FRONT',
+        color: '#D85A30',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-231',
+        name: 'Desarrollo de Vistas Administrativas',
+        tag: 'FRONT',
+        color: '#D85A30',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-232',
+        name: 'Documentación Técnica y Diccionario de Datos',
+        tag: 'GESTIÓN',
+        color: '#854F0B',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-233',
+        name: 'Testing de Navegación e Integración de Datos',
+        tag: 'QA',
+        color: '#993556',
+        status: 'done',
+        subtasks: [],
+      },
     ],
   },
   {
@@ -42,16 +133,86 @@ const sprints = [
     focus: 'CRUD Core, CI y Documentación',
     points: 30,
     tasks: [
-      { id: 'P3-168', name: 'Corrección de .gitignore para .env.example', tag: 'GIT', color: '#5F5E5A', status: 'done', subtasks: [] },
-      { id: 'P3-207', name: 'Sincronización de node_modules local', tag: 'TOOLING', color: '#5F5E5A', status: 'done', subtasks: [] },
-      { id: 'P3-216', name: 'Saneamiento del Backlog y Tablero Jira', tag: 'GESTIÓN', color: '#854F0B', status: 'done', subtasks: [] },
-      { id: 'P3-235', name: 'CRUDs de Gestión Core (Categorías, Tiendas, Empleados)', tag: 'BACK', color: '#185FA5', status: 'done', subtasks: [] },
-      { id: 'P3-237', name: 'Suite de Pruebas Unitarias para Backend', tag: 'QA', color: '#993556', status: 'done', subtasks: [] },
-      { id: 'P3-238', name: 'Automatización de Integración Continua (CI)', tag: 'DEVOPS', color: '#0F6E56', status: 'done', subtasks: [] },
-      { id: 'P3-241', name: 'Seguimiento de Métricas de Sprint y Velocity', tag: 'GESTIÓN', color: '#854F0B', status: 'done', subtasks: [] },
-      { id: 'P3-288', name: 'Población de Datos y Documentación Técnica', tag: 'DATA', color: '#534AB7', status: 'done', subtasks: [] },
-      { id: 'P3-289', name: 'Lógica de Integración y Servicios CRUD (Frontend)', tag: 'FRONT', color: '#D85A30', status: 'done', subtasks: [] },
-      { id: 'P3-290', name: 'Interfaz de Gestión con Atomic Design', tag: 'FRONT', color: '#D85A30', status: 'done', subtasks: [] },
+      {
+        id: 'P3-168',
+        name: 'Corrección de .gitignore para .env.example',
+        tag: 'GIT',
+        color: '#5F5E5A',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-207',
+        name: 'Sincronización de node_modules local',
+        tag: 'TOOLING',
+        color: '#5F5E5A',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-216',
+        name: 'Saneamiento del Backlog y Tablero Jira',
+        tag: 'GESTIÓN',
+        color: '#854F0B',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-235',
+        name: 'CRUDs de Gestión Core (Categorías, Tiendas, Empleados)',
+        tag: 'BACK',
+        color: '#185FA5',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-237',
+        name: 'Suite de Pruebas Unitarias para Backend',
+        tag: 'QA',
+        color: '#993556',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-238',
+        name: 'Automatización de Integración Continua (CI)',
+        tag: 'DEVOPS',
+        color: '#0F6E56',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-241',
+        name: 'Seguimiento de Métricas de Sprint y Velocity',
+        tag: 'GESTIÓN',
+        color: '#854F0B',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-288',
+        name: 'Población de Datos y Documentación Técnica',
+        tag: 'DATA',
+        color: '#534AB7',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-289',
+        name: 'Lógica de Integración y Servicios CRUD (Frontend)',
+        tag: 'FRONT',
+        color: '#D85A30',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-290',
+        name: 'Interfaz de Gestión con Atomic Design',
+        tag: 'FRONT',
+        color: '#D85A30',
+        status: 'done',
+        subtasks: [],
+      },
     ],
   },
   {
@@ -62,16 +223,86 @@ const sprints = [
     focus: 'Autenticación, Seguridad y Documentación',
     points: 35,
     tasks: [
-      { id: 'P3-243', name: 'Sistema de Autenticación con JWT y Hashing', tag: 'AUTH', color: '#993556', status: 'done', subtasks: [] },
-      { id: 'P3-245', name: 'Control de Acceso basado en Roles (RBAC)', tag: 'AUTH', color: '#993556', status: 'done', subtasks: [] },
-      { id: 'P3-244', name: 'Gestión de Sesión y Rutas Protegidas (Frontend)', tag: 'AUTH', color: '#993556', status: 'done', subtasks: [] },
-      { id: 'P3-236', name: 'CRUD de Usuarios y Gestión de Roles', tag: 'BACK', color: '#185FA5', status: 'done', subtasks: [] },
-      { id: 'P3-286', name: 'Revisión y limpieza de comentarios en CRUD', tag: 'DOCS', color: '#854F0B', status: 'done', subtasks: [] },
-      { id: 'P3-242', name: 'Formación Técnica y Estandarización de GitFlow', tag: 'ARQ', color: '#534AB7', status: 'done', subtasks: [] },
-      { id: 'P3-287', name: 'Automatización de Estándares de Código en CI', tag: 'QA', color: '#0F6E56', status: 'done', subtasks: [] },
-      { id: 'P3-310', name: 'Suite de Pruebas Frontend y Automatización CI', tag: 'QA', color: '#0F6E56', status: 'done', subtasks: [] },
-      { id: 'P3-304', name: 'Elaboración de Guías Técnicas de Desarrollo', tag: 'DOCS', color: '#854F0B', status: 'done', subtasks: [] },
-      { id: 'P3-240', name: 'Documentación de API (OpenAPI) y Contribución', tag: 'DOCS', color: '#854F0B', status: 'done', subtasks: [] },
+      {
+        id: 'P3-243',
+        name: 'Sistema de Autenticación con JWT y Hashing',
+        tag: 'AUTH',
+        color: '#993556',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-245',
+        name: 'Control de Acceso basado en Roles (RBAC)',
+        tag: 'AUTH',
+        color: '#993556',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-244',
+        name: 'Gestión de Sesión y Rutas Protegidas (Frontend)',
+        tag: 'AUTH',
+        color: '#993556',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-236',
+        name: 'CRUD de Usuarios y Gestión de Roles',
+        tag: 'BACK',
+        color: '#185FA5',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-286',
+        name: 'Revisión y limpieza de comentarios en CRUD',
+        tag: 'DOCS',
+        color: '#854F0B',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-242',
+        name: 'Formación Técnica y Estandarización de GitFlow',
+        tag: 'ARQ',
+        color: '#534AB7',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-287',
+        name: 'Automatización de Estándares de Código en CI',
+        tag: 'QA',
+        color: '#0F6E56',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-310',
+        name: 'Suite de Pruebas Frontend y Automatización CI',
+        tag: 'QA',
+        color: '#0F6E56',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-304',
+        name: 'Elaboración de Guías Técnicas de Desarrollo',
+        tag: 'DOCS',
+        color: '#854F0B',
+        status: 'done',
+        subtasks: [],
+      },
+      {
+        id: 'P3-240',
+        name: 'Documentación de API (OpenAPI) y Contribución',
+        tag: 'DOCS',
+        color: '#854F0B',
+        status: 'done',
+        subtasks: [],
+      },
     ],
   },
   {
@@ -92,7 +323,11 @@ const sprints = [
           { id: 'P3-330', name: 'Hashing de contraseña en EmployeeCreate', status: 'done' },
           { id: 'P3-331', name: 'Endpoint GET /employees/me', status: 'done' },
           { id: 'P3-332', name: 'fix: get_current_admin lee el rol desde la BD', status: 'done' },
-          { id: 'P3-333', name: 'Actualizar tests de employees tras cambios de seguridad', status: 'done' },
+          {
+            id: 'P3-333',
+            name: 'Actualizar tests de employees tras cambios de seguridad',
+            status: 'done',
+          },
         ],
       },
       {
@@ -139,7 +374,11 @@ const sprints = [
         subtasks: [
           { id: 'P3-335', name: 'Incorporación del SP5 al Roadmap', status: 'active' },
           { id: 'P3-336', name: 'Creación de métricas del SP5', status: 'active' },
-          { id: 'P3-353', name: 'Creación del sprint 5 y sus historias/tareas/issues en Jira', status: 'active' },
+          {
+            id: 'P3-353',
+            name: 'Creación del sprint 5 y sus historias/tareas/issues en Jira',
+            status: 'active',
+          },
         ],
       },
       {
@@ -149,10 +388,22 @@ const sprints = [
         color: '#D85A30',
         status: 'done',
         subtasks: [
-          { id: 'P3-338', name: 'Hook useCrud centralizado para estados, modales y paginación', status: 'done' },
-          { id: 'P3-339', name: 'Refactorizar formularios (ProductForm, UserForm, StoreForm, CategoryForm)', status: 'done' },
+          {
+            id: 'P3-338',
+            name: 'Hook useCrud centralizado para estados, modales y paginación',
+            status: 'done',
+          },
+          {
+            id: 'P3-339',
+            name: 'Refactorizar formularios (ProductForm, UserForm, StoreForm, CategoryForm)',
+            status: 'done',
+          },
           { id: 'P3-340', name: 'Migrar gestión de datos a React Query', status: 'done' },
-          { id: 'P3-341', name: 'Nuevo componente CrudTable en sustitución de DataTable', status: 'done' },
+          {
+            id: 'P3-341',
+            name: 'Nuevo componente CrudTable en sustitución de DataTable',
+            status: 'done',
+          },
           { id: 'P3-342', name: 'Añadir ProtectedRoute y ScrollToTop', status: 'done' },
         ],
       },
@@ -163,8 +414,16 @@ const sprints = [
         color: '#993556',
         status: 'done',
         subtasks: [
-          { id: 'P3-344', name: 'Resolver errores de linting en Settings.tsx y AdminHeader.tsx', status: 'done' },
-          { id: 'P3-345', name: 'Corregir formato en crud_guide.html para cumplir editorconfig', status: 'done' },
+          {
+            id: 'P3-344',
+            name: 'Resolver errores de linting en Settings.tsx y AdminHeader.tsx',
+            status: 'done',
+          },
+          {
+            id: 'P3-345',
+            name: 'Corregir formato en crud_guide.html para cumplir editorconfig',
+            status: 'done',
+          },
         ],
       },
       {
@@ -174,12 +433,36 @@ const sprints = [
         color: '#D85A30',
         status: 'done',
         subtasks: [
-          { id: 'P3-347', name: 'Implementar permisos dinámicos para SuperAdmin, Manager y Staff', status: 'done' },
-          { id: 'P3-348', name: 'Crear middleware RoleProtectedRoute para bloquear acceso por rol', status: 'done' },
-          { id: 'P3-349', name: 'Crear Staff Dashboard específico para personal de tienda', status: 'done' },
-          { id: 'P3-350', name: 'Ocultar botones de acción según permisos del usuario', status: 'done' },
-          { id: 'P3-351', name: 'Funcionalidad Copiar Usuario en lista de empleados', status: 'done' },
-          { id: 'P3-352', name: 'Centralizar notificaciones y sonidos en panel de Ajustes', status: 'done' },
+          {
+            id: 'P3-347',
+            name: 'Implementar permisos dinámicos para SuperAdmin, Manager y Staff',
+            status: 'done',
+          },
+          {
+            id: 'P3-348',
+            name: 'Crear middleware RoleProtectedRoute para bloquear acceso por rol',
+            status: 'done',
+          },
+          {
+            id: 'P3-349',
+            name: 'Crear Staff Dashboard específico para personal de tienda',
+            status: 'done',
+          },
+          {
+            id: 'P3-350',
+            name: 'Ocultar botones de acción según permisos del usuario',
+            status: 'done',
+          },
+          {
+            id: 'P3-351',
+            name: 'Funcionalidad Copiar Usuario en lista de empleados',
+            status: 'done',
+          },
+          {
+            id: 'P3-352',
+            name: 'Centralizar notificaciones y sonidos en panel de Ajustes',
+            status: 'done',
+          },
         ],
       },
     ],
@@ -206,7 +489,13 @@ const TaskStatusDone = () => (
     }}
   >
     <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-      <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#9FE1CB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M1.5 4.5L3.5 6.5L7.5 2.5"
+        stroke="#9FE1CB"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   </div>
 );
@@ -253,7 +542,13 @@ const SubtaskDot = ({ status }: { status: string }) => (
   >
     {status === 'done' ? (
       <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
-        <path d="M1 3L2.5 4.5L5 1.5" stroke="#9FE1CB" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M1 3L2.5 4.5L5 1.5"
+          stroke="#9FE1CB"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     ) : (
       <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#D4A017' }} />
@@ -306,7 +601,8 @@ export default function RoadmapSprint4() {
           </h1>
         </div>
         <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', margin: '0 0 0 16px' }}>
-          Sistema de Gestión de Almacenes · 5 Sprints · Feb – May 2026 · {totalSP} Story Points totales
+          Sistema de Gestión de Almacenes · 5 Sprints · Feb – May 2026 · {totalSP} Story Points
+          totales
         </p>
       </div>
 
