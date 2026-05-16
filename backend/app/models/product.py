@@ -1,9 +1,8 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from pydantic import ConfigDict
 from sqlmodel import Field, Relationship, SQLModel
-
-from typing import TYPE_CHECKING
 
 from .category import Category, CategoryBase
 from .enums import StatusEnum

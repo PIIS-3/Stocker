@@ -1,18 +1,18 @@
-from enum import Enum as PyEnum
+from enum import StrEnum
 
 
-class StatusEnum(str, PyEnum):
+class StatusEnum(StrEnum):
     Active = "Active"
     Inactive = "Inactive"
 
 
-class RoleEnum(str, PyEnum):
+class RoleEnum(StrEnum):
     SuperAdmin = "SuperAdmin"
     Manager = "Manager"
     Staff = "Staff"
 
 
-class SaleStatusEnum(str, PyEnum):
+class SaleStatusEnum(StrEnum):
     Completed = "Completed"
     Cancelled = "Cancelled"
     Pending = "Pending"

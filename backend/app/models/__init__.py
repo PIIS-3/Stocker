@@ -26,17 +26,17 @@ from .product import (
 # ── Rol ──────────────────────────────────────────────────────────────
 from .role import Role, RoleBase, RoleResponse
 
-# ── Tienda ───────────────────────────────────────────────────────────
-from .store import Store, StoreBase, StoreCreate, StoreResponse, StoreUpdate
-
-# ── Stock ────────────────────────────────────────────────────────────
-from .stock import Stock, StockBase, StockCreate, StockResponse, StockUpdate
-
 # ── Venta ────────────────────────────────────────────────────────────
 from .sale import Sale, SaleBase, SaleCreate, SaleResponse, SaleUpdate
 
 # ── Línea de venta ───────────────────────────────────────────────────
 from .sale_item import SaleItem, SaleItemBase, SaleItemCreate, SaleItemResponse, SaleItemUpdate
+
+# ── Stock ────────────────────────────────────────────────────────────
+from .stock import Stock, StockBase, StockCreate, StockResponse, StockUpdate
+
+# ── Tienda ───────────────────────────────────────────────────────────
+from .store import Store, StoreBase, StoreCreate, StoreResponse, StoreUpdate
 
 # ── Auth / Token ─────────────────────────────────────────────────────
 from .token import Token, TokenData

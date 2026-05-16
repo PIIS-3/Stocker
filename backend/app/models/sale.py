@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from pydantic import ConfigDict
@@ -33,7 +33,7 @@ class SaleBase(SQLModel):
         description="Estado de la venta (Completed / Cancelled / Pending).",
     )
     sale_date: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         description="Fecha y hora en que se realizó la venta.",
     )
 
