@@ -10,3 +10,9 @@ class RoleEnum(str, PyEnum):
     SuperAdmin = "SuperAdmin"
     Manager = "Manager"
     Staff = "Staff"
+
+
+class SaleStatusEnum(str, PyEnum):
+    Completed = "Completed"
+    Cancelled = "Cancelled"
+    Pending = "Pending"

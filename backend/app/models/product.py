@@ -3,9 +3,15 @@ from datetime import datetime
 from pydantic import ConfigDict
 from sqlmodel import Field, Relationship, SQLModel
 
+from typing import TYPE_CHECKING
+
 from .category import Category, CategoryBase
 from .enums import StatusEnum
 from .mixins import TimestampMixin
+
+if TYPE_CHECKING:
+    from .sale_item import SaleItem
+    from .stock import Stock
 
 
 # ── ProductTemplateBase ──────────────────────────────────────────────
@@ -115,6 +121,8 @@ class ProductTemplate(TimestampMixin, ProductTemplateBase, table=True):
     # Relación lazy muchos-a-uno. Se serializa en ProductTemplateResponse
     # como CategoryBase (sin la lista de productos anidados).
     category: Category | None = Relationship(back_populates="products")
+    stocks: list["Stock"] = Relationship(back_populates="product")
+    sale_items: list["SaleItem"] = Relationship(back_populates="product")
 
 
 # ── ProductTemplateResponse ──────────────────────────────────────────
