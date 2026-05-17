@@ -9,7 +9,7 @@ from .category import Category, CategoryBase, CategoryCreate, CategoryResponse, 
 
 # ── Empleado ─────────────────────────────────────────────────────────
 from .employee import Employee, EmployeeBase, EmployeeCreate, EmployeeResponse, EmployeeUpdate
-from .enums import RoleEnum, StatusEnum
+from .enums import RoleEnum, SaleStatusEnum, StatusEnum
 
 # ── Mixins ───────────────────────────────────────────────────────────
 from .mixins import TimestampMixin
@@ -26,6 +26,15 @@ from .product import (
 # ── Rol ──────────────────────────────────────────────────────────────
 from .role import Role, RoleBase, RoleResponse
 
+# ── Venta ────────────────────────────────────────────────────────────
+from .sale import Sale, SaleBase, SaleCreate, SaleResponse, SaleUpdate
+
+# ── Línea de venta ───────────────────────────────────────────────────
+from .sale_item import SaleItem, SaleItemBase, SaleItemCreate, SaleItemResponse, SaleItemUpdate
+
+# ── Stock ────────────────────────────────────────────────────────────
+from .stock import Stock, StockBase, StockCreate, StockResponse, StockUpdate
+
 # ── Tienda ───────────────────────────────────────────────────────────
 from .store import Store, StoreBase, StoreCreate, StoreResponse, StoreUpdate
 
@@ -36,6 +45,7 @@ __all__ = [
     # Enums
     "StatusEnum",
     "RoleEnum",
+    "SaleStatusEnum",
     # Mixins
     "TimestampMixin",
     # Categoría
@@ -66,6 +76,24 @@ __all__ = [
     "EmployeeUpdate",
     "Employee",
     "EmployeeResponse",
+    # Stock
+    "StockBase",
+    "StockCreate",
+    "StockUpdate",
+    "Stock",
+    "StockResponse",
+    # Venta
+    "SaleBase",
+    "SaleCreate",
+    "SaleUpdate",
+    "Sale",
+    "SaleResponse",
+    # Línea de venta
+    "SaleItemBase",
+    "SaleItemCreate",
+    "SaleItemUpdate",
+    "SaleItem",
+    "SaleItemResponse",
     # Token
     "Token",
     "TokenData",
