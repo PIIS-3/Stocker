@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import sqlalchemy as sa
 from pydantic import ConfigDict
@@ -89,8 +89,8 @@ class Stock(TimestampMixin, StockBase, table=True):
 
     id_stock: int | None = Field(default=None, primary_key=True)
 
-    product: "ProductTemplate | None" = Relationship(back_populates="stocks")
-    store: "Store | None" = Relationship(back_populates="stocks")
+    product: Optional["ProductTemplate"] = Relationship(back_populates="stocks")
+    store: Optional["Store"] = Relationship(back_populates="stocks")
 
 
 # ── StockResponse ────────────────────────────────────────────────────

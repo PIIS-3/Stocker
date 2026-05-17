@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import ConfigDict
 from sqlmodel import Field, Relationship, SQLModel
@@ -92,8 +92,8 @@ class SaleItem(TimestampMixin, SaleItemBase, table=True):
 
     id_sale_item: int | None = Field(default=None, primary_key=True)
 
-    sale: "Sale | None" = Relationship(back_populates="items")
-    product: "ProductTemplate | None" = Relationship(back_populates="sale_items")
+    sale: Optional["Sale"] = Relationship(back_populates="items")
+    product: Optional["ProductTemplate"] = Relationship(back_populates="sale_items")
 
 
 # ── SaleItemResponse ─────────────────────────────────────────────────
