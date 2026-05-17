@@ -83,9 +83,7 @@ class StockUpdate(SQLModel):
 # registro de stock por tienda.
 class Stock(TimestampMixin, StockBase, table=True):
     __tablename__ = "stock"
-    __table_args__ = (
-        sa.UniqueConstraint("product_id", "store_id", name="uq_stock_product_store"),
-    )
+    __table_args__ = (sa.UniqueConstraint("product_id", "store_id", name="uq_stock_product_store"),)
 
     id_stock: int | None = Field(default=None, primary_key=True)
 
@@ -98,6 +96,4 @@ class Stock(TimestampMixin, StockBase, table=True):
 class StockResponse(StockBase):
     id_stock: int = Field(description="ID único del registro de stock.")
     created_at: datetime | None = Field(default=None, description="Fecha de registro.")
-    updated_at: datetime | None = Field(
-        default=None, description="Fecha de última actualización."
-    )
+    updated_at: datetime | None = Field(default=None, description="Fecha de última actualización.")

@@ -27,8 +27,14 @@ def ensure_db_objects() -> None:
     # PostgreSQL no tiene ON UPDATE CURRENT_TIMESTAMP (eso es MySQL);
     # el trigger BEFORE UPDATE es el equivalente nativo en Postgres.
     _TABLES = (
-        "store", "product_template", "employee", "category",
-        "role", "stock", "sale", "sale_item",
+        "store",
+        "product_template",
+        "employee",
+        "category",
+        "role",
+        "stock",
+        "sale",
+        "sale_item",
     )
 
     with Session(engine) as session:

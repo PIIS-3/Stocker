@@ -101,6 +101,4 @@ class SaleItem(TimestampMixin, SaleItemBase, table=True):
 class SaleItemResponse(SaleItemBase):
     id_sale_item: int = Field(description="ID único de la línea de venta.")
     created_at: datetime | None = Field(default=None, description="Fecha de registro.")
-    updated_at: datetime | None = Field(
-        default=None, description="Fecha de última actualización."
-    )
+    updated_at: datetime | None = Field(default=None, description="Fecha de última actualización.")
