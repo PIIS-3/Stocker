@@ -26,7 +26,16 @@ def ensure_db_objects() -> None:
     # Los triggers de PostgreSQL hay que crearlos aparte.
     # PostgreSQL no tiene ON UPDATE CURRENT_TIMESTAMP (eso es MySQL);
     # el trigger BEFORE UPDATE es el equivalente nativo en Postgres.
-    _TABLES = ("store", "product_template", "employee", "category", "role")
+    _TABLES = (
+        "store",
+        "product_template",
+        "employee",
+        "category",
+        "role",
+        "stock",
+        "sale",
+        "sale_item",
+    )
 
     with Session(engine) as session:
         # Función PL/pgSQL compartida — SET updated_at = NOW() en cada UPDATE.

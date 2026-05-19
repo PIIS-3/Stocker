@@ -9,6 +9,8 @@ from .mixins import TimestampMixin
 
 if TYPE_CHECKING:
     from .employee import Employee
+    from .sale import Sale
+    from .stock import Stock
 
 
 # ── StoreBase ────────────────────────────────────────────────────────
@@ -73,6 +75,8 @@ class Store(TimestampMixin, StoreBase, table=True):
     # Relación lazy uno-a-muchos. No se incluye en StoreResponse,
     # por lo que FastAPI nunca lo devuelve en los JSON de la API.
     employees: list["Employee"] = Relationship(back_populates="store")
+    stocks: list["Stock"] = Relationship(back_populates="store")
+    sales: list["Sale"] = Relationship(back_populates="store")
 
 
 # ── StoreResponse ────────────────────────────────────────────────────

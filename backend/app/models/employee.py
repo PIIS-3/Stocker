@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from pydantic import ConfigDict
 from sqlmodel import Field, Relationship, SQLModel
@@ -7,6 +8,9 @@ from .enums import StatusEnum
 from .mixins import TimestampMixin
 from .role import Role, RoleBase
 from .store import Store, StoreBase
+
+if TYPE_CHECKING:
+    from .sale import Sale
 
 
 # ── EmployeeBase ─────────────────────────────────────────────────────
@@ -89,6 +93,7 @@ class Employee(TimestampMixin, EmployeeBase, table=True):
     # (solo los campos de negocio, sin recursión).
     role: Role | None = Relationship(back_populates="employees")
     store: Store | None = Relationship(back_populates="employees")
+    sales: list["Sale"] = Relationship(back_populates="employee")
 
 
 # ── EmployeeResponse ─────────────────────────────────────────────────
