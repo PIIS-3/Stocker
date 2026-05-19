@@ -309,7 +309,7 @@ const sprints = [
     id: 5,
     name: 'Sprint 5',
     dates: '30 abr – 16 may',
-    status: 'active',
+    status: 'done',
     focus: 'Seguridad, Calidad y Experiencia de Usuario',
     points: 24,
     tasks: [
@@ -335,7 +335,7 @@ const sprints = [
         name: 'Crear el middleware con FastAPI',
         tag: 'BACK',
         color: '#185FA5',
-        status: 'active',
+        status: 'done',
         subtasks: [],
       },
       {
@@ -343,10 +343,10 @@ const sprints = [
         name: 'Creación de nuevos Tests',
         tag: 'QA',
         color: '#993556',
-        status: 'active',
+        status: 'done',
         subtasks: [
-          { id: 'P3-319', name: 'Productos CRUD + Auth', status: 'active' },
-          { id: 'P3-320', name: 'Productos API', status: 'active' },
+          { id: 'P3-319', name: 'Productos CRUD + Auth', status: 'done' },
+          { id: 'P3-320', name: 'Productos API', status: 'done' },
         ],
       },
       {
@@ -370,14 +370,14 @@ const sprints = [
         name: 'Información del Sprint 5',
         tag: 'GESTIÓN',
         color: '#854F0B',
-        status: 'active',
+        status: 'done',
         subtasks: [
-          { id: 'P3-335', name: 'Incorporación del SP5 al Roadmap', status: 'active' },
-          { id: 'P3-336', name: 'Creación de métricas del SP5', status: 'active' },
+          { id: 'P3-335', name: 'Incorporación del SP5 al Roadmap', status: 'done' },
+          { id: 'P3-336', name: 'Creación de métricas del SP5', status: 'done' },
           {
             id: 'P3-353',
             name: 'Creación del sprint 5 y sus historias/tareas/issues en Jira',
-            status: 'active',
+            status: 'done',
           },
         ],
       },
