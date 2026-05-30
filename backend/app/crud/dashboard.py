@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from sqlalchemy import func
 from sqlmodel import Session, select
@@ -11,7 +12,14 @@ def get_summary(
     date_from: datetime | None = None,
     date_to: datetime | None = None,
 ) -> dict:
-    """KPIs globales: ventas completadas, ingresos, canceladas, pendientes y alertas de stock."""
+    """
+    Devuelve los 5 KPIs principales del dashboard en un único objeto.
+
+    Calcula por separado ventas completadas (con sus ingresos), canceladas y pendientes.
+    Los tres contadores se filtran por el mismo rango de fechas si se indica.
+    low_stock_count no aplica filtro de fecha: siempre refleja el estado actual
+    del inventario (cuántos registros de stock tienen quantity < min_stock ahora mismo).
+    """
     sale_q = select(
         func.count(models.Sale.id_sale).label("total_sales"),
         func.coalesce(func.sum(models.Sale.total_amount), 0).label("total_revenue"),
@@ -58,7 +66,13 @@ def get_sales_by_store(
     date_from: datetime | None = None,
     date_to: datetime | None = None,
 ) -> list[dict]:
-    """Ingresos y número de ventas completadas agrupados por tienda."""
+    """
+    Agrupa las ventas COMPLETADAS por tienda y calcula el total de transacciones
+    e ingresos de cada una. Resultado ordenado de mayor a menor ingreso.
+
+    Solo aparecen tiendas con al menos una venta completada en el período.
+    Útil para el gráfico comparativo de tiendas en el dashboard.
+    """
     q = (
         select(
             models.Store.id_store,
@@ -89,8 +103,33 @@ def get_sales_by_store(
     ]
 
 
-def get_top_products(db: Session, limit: int = 10) -> list[dict]:
-    """Productos más vendidos por unidades totales vendidas."""
+def get_top_products(
+    db: Session,
+    limit: int = 10,
+    sort_by: Literal["units", "revenue"] = "units",
+) -> list[dict]:
+    """
+    Ranking de los N productos más vendidos. Cada item incluye siempre tanto
+    las unidades vendidas (units_sold) como los ingresos generados (total_revenue),
+    lo que permite mostrar dos perspectivas distintas del mismo dato:
+
+      sort_by='units'   → ordena por unidades vendidas. Muestra qué productos se
+                          mueven más (volumen de ventas). Un producto barato puede
+                          liderar este ranking aunque genere pocos ingresos.
+
+      sort_by='revenue' → ordena por ingresos generados. Muestra qué productos
+                          aportan más dinero. Un producto caro con pocas unidades
+                          puede superar en este ranking a uno muy vendido pero barato.
+
+    El front puede llamar dos veces al endpoint con distinto sort_by para montar
+    dos tablas/gráficos independientes, o usar uno solo según la necesidad.
+    """
+    order_col = (
+        func.sum(models.SaleItem.quantity)
+        if sort_by == "units"
+        else func.sum(models.SaleItem.subtotal)
+    )
+
     rows = db.exec(
         select(
             models.ProductTemplate.id_product,
@@ -105,7 +144,7 @@ def get_top_products(db: Session, limit: int = 10) -> list[dict]:
             models.ProductTemplate.product_name,
             models.ProductTemplate.sku,
         )
-        .order_by(func.sum(models.SaleItem.quantity).desc())
+        .order_by(order_col.desc())
         .limit(limit)
     ).all()
 
@@ -122,7 +161,15 @@ def get_top_products(db: Session, limit: int = 10) -> list[dict]:
 
 
 def get_low_stock(db: Session) -> list[dict]:
-    """Productos cuya cantidad actual está por debajo del umbral mínimo."""
+    """
+    Lista todos los registros de stock donde quantity < min_stock.
+    Resultado ordenado de menor a mayor quantity (el más crítico primero).
+
+    Devuelve tanto quantity como min_stock para que el front pueda calcular
+    el déficit exacto: deficit = min_stock - quantity.
+    Incluye el nombre del producto, su SKU y la tienda afectada para que la
+    alerta sea directamente legible sin necesidad de cruces adicionales.
+    """
     rows = db.exec(
         select(
             models.Stock.id_stock,
