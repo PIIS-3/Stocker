@@ -13,6 +13,7 @@ from alembic import context
 # Añadir el directorio raíz al path de Python para importar 'app'
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
 
+import app.models  # noqa: F401 — registra todos los modelos en SQLModel.metadata
 from app.core.config import settings
 
 # Configuración de Alembic
