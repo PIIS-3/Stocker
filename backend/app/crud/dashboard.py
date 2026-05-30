@@ -74,7 +74,7 @@ def get_sales_by_store(
     Útil para el gráfico comparativo de tiendas en el dashboard.
     """
     q = (
-        select(
+        select(  # type: ignore[call-overload]
             models.Store.id_store,
             models.Store.store_name,
             func.count(models.Sale.id_sale).label("total_sales"),
@@ -94,12 +94,12 @@ def get_sales_by_store(
     rows = db.exec(q).all()
     return [
         {
-            "store_id": r.id_store,
-            "store_name": r.store_name,
-            "total_sales": r.total_sales,
-            "total_revenue": float(r.total_revenue),
+            "store_id": id_store,
+            "store_name": store_name,
+            "total_sales": total_sales,
+            "total_revenue": float(total_revenue),
         }
-        for r in rows
+        for id_store, store_name, total_sales, total_revenue in rows
     ]
 
 
@@ -131,7 +131,7 @@ def get_top_products(
     )
 
     rows = db.exec(
-        select(
+        select(  # type: ignore[call-overload]
             models.ProductTemplate.id_product,
             models.ProductTemplate.product_name,
             models.ProductTemplate.sku,
@@ -150,13 +150,13 @@ def get_top_products(
 
     return [
         {
-            "product_id": r.id_product,
-            "product_name": r.product_name,
-            "sku": r.sku,
-            "units_sold": r.units_sold,
-            "total_revenue": float(r.total_revenue),
+            "product_id": id_product,
+            "product_name": product_name,
+            "sku": sku,
+            "units_sold": units_sold,
+            "total_revenue": float(total_revenue),
         }
-        for r in rows
+        for id_product, product_name, sku, units_sold, total_revenue in rows
     ]
 
 
@@ -171,7 +171,7 @@ def get_low_stock(db: Session) -> list[dict]:
     alerta sea directamente legible sin necesidad de cruces adicionales.
     """
     rows = db.exec(
-        select(
+        select(  # type: ignore[call-overload]
             models.Stock.id_stock,
             models.ProductTemplate.id_product,
             models.ProductTemplate.product_name,
@@ -189,14 +189,14 @@ def get_low_stock(db: Session) -> list[dict]:
 
     return [
         {
-            "stock_id": r.id_stock,
-            "product_id": r.id_product,
-            "product_name": r.product_name,
-            "sku": r.sku,
-            "store_id": r.id_store,
-            "store_name": r.store_name,
-            "quantity": r.quantity,
-            "min_stock": r.min_stock,
+            "stock_id": id_stock,
+            "product_id": id_product,
+            "product_name": product_name,
+            "sku": sku,
+            "store_id": id_store,
+            "store_name": store_name,
+            "quantity": quantity,
+            "min_stock": min_stock,
         }
-        for r in rows
+        for id_stock, id_product, product_name, sku, id_store, store_name, quantity, min_stock in rows  # noqa: E501
     ]
