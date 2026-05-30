@@ -4,7 +4,6 @@ from sqlmodel import Session, col, select
 
 from .. import models
 
-
 # ── Read ─────────────────────────────────────────────────────────────
 
 
@@ -18,9 +17,7 @@ def get_sale_items(db: Session, skip: int = 0, limit: int = 100) -> Sequence[mod
 
 
 def get_sale_item_by_id(db: Session, item_id: int) -> models.SaleItem | None:
-    return db.exec(
-        select(models.SaleItem).where(models.SaleItem.id_sale_item == item_id)
-    ).first()
+    return db.exec(select(models.SaleItem).where(models.SaleItem.id_sale_item == item_id)).first()
 
 
 def get_items_by_sale(

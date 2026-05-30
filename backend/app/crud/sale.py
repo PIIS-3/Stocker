@@ -4,7 +4,6 @@ from sqlmodel import Session, col, select
 
 from .. import models
 
-
 # ── Read ─────────────────────────────────────────────────────────────
 
 
@@ -56,9 +55,7 @@ def create_sale(db: Session, sale_in: models.SaleCreate) -> models.Sale:
 # ── Update ───────────────────────────────────────────────────────────
 
 
-def update_sale(
-    db: Session, sale_id: int, sale_in: models.SaleUpdate
-) -> models.Sale | None:
+def update_sale(db: Session, sale_id: int, sale_in: models.SaleUpdate) -> models.Sale | None:
     db_sale = get_sale_by_id(db, sale_id)
     if db_sale is None:
         return None

@@ -53,9 +53,7 @@ def read_items_by_sale(
 def read_items_by_product(
     product_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
-    return crud_sale_item.get_items_by_product(
-        db, product_id=product_id, skip=skip, limit=limit
-    )
+    return crud_sale_item.get_items_by_product(db, product_id=product_id, skip=skip, limit=limit)
 
 
 # ── GET /sale-items/{item_id} ────────────────────────────────────────
@@ -109,9 +107,7 @@ def create_sale_item(item_in: models.SaleItemCreate, db: Session = Depends(get_d
     summary="Actualizar línea de venta",
     description="Modifica parcialmente quantity, unit_price y/o subtotal de una línea.",
 )
-def update_sale_item(
-    item_id: int, item_in: models.SaleItemUpdate, db: Session = Depends(get_db)
-):
+def update_sale_item(item_id: int, item_in: models.SaleItemUpdate, db: Session = Depends(get_db)):
     updated = crud_sale_item.update_sale_item(db, item_id=item_id, item_in=item_in)
     if updated is None:
         raise HTTPException(

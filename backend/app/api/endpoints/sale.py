@@ -54,9 +54,7 @@ def read_sales_by_store(
 def read_sales_by_employee(
     employee_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
-    return crud_sale.get_sales_by_employee(
-        db, employee_id=employee_id, skip=skip, limit=limit
-    )
+    return crud_sale.get_sales_by_employee(db, employee_id=employee_id, skip=skip, limit=limit)
 
 
 # ── GET /sales/{sale_id} ────────────────────────────────────────────

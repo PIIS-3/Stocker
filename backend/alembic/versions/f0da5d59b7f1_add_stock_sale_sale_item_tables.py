@@ -2,21 +2,18 @@
 add_stock_sale_sale_item_tables
 
 Revision ID: f0da5d59b7f1
-Revises: 
+Revises:
 Create Date: 2026-05-30 06:24:45.714855
 
 """
-from typing import Sequence, Union
-from alembic import op
-import sqlalchemy as sa
-import sqlmodel # Importante para tipos de datos personalizados de SQLModel
 
+from collections.abc import Sequence
 
 # Identificadores de revisión
-revision: str = 'f0da5d59b7f1'
-down_revision: Union[str, Sequence[str], None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision: str = "f0da5d59b7f1"
+down_revision: str | Sequence[str] | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

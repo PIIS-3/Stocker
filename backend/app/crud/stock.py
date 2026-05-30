@@ -4,7 +4,6 @@ from sqlmodel import Session, col, select
 
 from .. import models
 
-
 # ── Read ─────────────────────────────────────────────────────────────
 
 
@@ -67,9 +66,7 @@ def create_stock(db: Session, stock_in: models.StockCreate) -> models.Stock:
 # ── Update ───────────────────────────────────────────────────────────
 
 
-def update_stock(
-    db: Session, stock_id: int, stock_in: models.StockUpdate
-) -> models.Stock | None:
+def update_stock(db: Session, stock_id: int, stock_in: models.StockUpdate) -> models.Stock | None:
     db_stock = get_stock_by_id(db, stock_id)
     if db_stock is None:
         return None
