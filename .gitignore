@@ -12,6 +12,7 @@ node_modules/
 dist/
 dist-ssr/
 build/
+coverage/
 
 # Variables de entorno y secretos
 .env
