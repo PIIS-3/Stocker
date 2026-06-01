@@ -12,3 +12,6 @@ node_modules/
 
 # Source maps para depuración: binarios generados automáticamente.
 *.map
+
+# Reportes de cobertura de código
+coverage/
