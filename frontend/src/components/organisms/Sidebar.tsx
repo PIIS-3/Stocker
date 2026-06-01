@@ -1,10 +1,11 @@
-import { LayoutDashboard, Store, Users, Tags, Box } from 'lucide-react';
+import { LayoutDashboard, Store, Users, Tags, Box, ShoppingCart } from 'lucide-react';
 import { Logo } from '../atoms/Logo';
 import { NavItem } from '../molecules/NavItem';
 import { authService } from '../../services/auth.service';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard, module: 'dashboard' },
+  { name: 'Ventas', path: '/admin/sales', icon: ShoppingCart, module: 'sales' },
   { name: 'Productos', path: '/admin/products', icon: Box, module: 'products' },
   { name: 'Categorías', path: '/admin/categories', icon: Tags, module: 'categories' },
   { name: 'Tiendas Físicas', path: '/admin/stores', icon: Store, module: 'stores' },

@@ -15,6 +15,7 @@ import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
 
 import ProductsList from './pages/admin/ProductsList';
+import SalesList from './pages/admin/SalesList';
 import Settings from './pages/admin/Settings';
 import { ProtectedRoute, RoleProtectedRoute } from './components/atoms';
 
@@ -40,6 +41,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="categories" element={<CategoriesList />} />
+              <Route path="sales" element={<SalesList />} />
 
               {/* Rutas restringidas: Solo accesibles para SuperAdmin */}
               <Route element={<RoleProtectedRoute allowedRoles={['SuperAdmin']} />}>
