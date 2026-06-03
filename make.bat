@@ -6,24 +6,27 @@ REM Uso: .\make <comando>    Ejemplo: .\make test-backend
 set API=stocker_api
 set WEB=stocker_web
 set DB=stocker_db
+set DC=docker compose -f docker/docker-compose.yml --env-file docker/.env
 
 if "%1"=="" goto help
 goto %1
 
 :up
-cd docker && if not exist .env copy .env.example .env && docker compose up --build -d
+if not exist docker\.env copy docker\.env.example docker\.env
+%DC% up --build -d
 goto end
 
 :down
-cd docker && docker compose down
+%DC% down
 goto end
 
 :restart
-cd docker && docker compose down && docker compose up --build -d
+%DC% down
+%DC% up --build -d
 goto end
 
 :logs
-cd docker && docker compose logs -f
+%DC% logs -f
 goto end
 
 :seed
@@ -88,6 +91,38 @@ goto end
 docker exec %API% alembic upgrade head
 goto end
 
+:test-backend-local
+cd backend && pytest tests & cd ..
+goto end
+
+:test-frontend-local
+cd frontend && npm run test -- --run & cd ..
+goto end
+
+:test-frontend-watch
+cd frontend && npm run test & cd ..
+goto end
+
+:coverage-frontend
+cd frontend && npm run test -- --coverage & cd ..
+goto end
+
+:coverage-backend
+cd backend && pytest --cov=app tests & cd ..
+goto end
+
+:lint-backend-local
+cd backend && ruff check . && ruff format --check . && mypy . & cd ..
+goto end
+
+:lint-frontend-local
+cd frontend && npm run lint & cd ..
+goto end
+
+:format-frontend-local
+cd frontend && npx prettier --write . & cd ..
+goto end
+
 :pr-check
 echo 🔍 Ejecutando validación EditorConfig...
 call .\make.bat lint-editorconfig
@@ -108,25 +143,33 @@ goto end
 echo Uso: .\make ^<comando^>
 echo.
 echo Comandos disponibles:
-echo   up                    Arranca todos los contenedores
-echo   down                  Para todos los contenedores
-echo   restart               Reinicia todos los contenedores
-echo   logs                  Muestra los logs en tiempo real
-echo   seed                  Ejecuta el seeder de Python
-echo   seed-sql              Carga seed.sql en la base de datos
-echo   test                  Ejecuta todos los tests
-echo   test-backend          Tests del backend (pytest)
-echo   test-frontend         Tests del frontend (vitest)
-echo   lint                  Todos los checks de calidad
-echo   lint-editorconfig     EditorConfig (en contenedor)
+echo   up                      Arranca todos los contenedores
+echo   down                    Para todos los contenedores
+echo   restart                 Reinicia todos los contenedores
+echo   logs                    Muestra los logs en tiempo real
+echo   seed                    Ejecuta el seeder de Python
+echo   seed-sql                Carga seed.sql en la base de datos
+echo   test                    Ejecuta todos los tests
+echo   test-backend            Tests del backend (pytest)
+echo   test-frontend           Tests del frontend (vitest)
+echo   lint                    Todos los checks de calidad
+echo   lint-editorconfig       EditorConfig (en contenedor)
 echo   lint-editorconfig-local  EditorConfig (local, todo el repo)
-echo   lint-frontend         ESLint
-echo   lint-backend          Ruff + MyPy (backend)
-echo   format-check          Prettier (verificar)
-echo   format-frontend       Prettier (aplicar)
-echo   migration             Nueva migración (.\make migration "nombre")
-echo   migrate               Aplica migraciones pendientes
-echo   pr-check              Validación completa pre-PR
+echo   lint-frontend           ESLint
+echo   lint-backend            Ruff + MyPy (backend)
+echo   format-check            Prettier (verificar)
+echo   format-frontend         Prettier (aplicar)
+echo   migration               Nueva migración (.\make migration "nombre")
+echo   migrate                 Aplica migraciones pendientes
+echo   test-backend-local      Tests del backend (local, sin docker)
+echo   test-frontend-local     Tests del frontend (local, sin docker)
+echo   test-frontend-watch     Tests del frontend en modo interactivo (local)
+echo   coverage-frontend       Reporte de cobertura del frontend (local)
+echo   coverage-backend        Reporte de cobertura del backend (local)
+echo   lint-backend-local      Linter y formato de Python (local)
+echo   lint-frontend-local     ESLint (local)
+echo   format-frontend-local   Formatear frontend con Prettier (local)
+echo   pr-check                Validación completa pre-PR
 goto end
 
 :end

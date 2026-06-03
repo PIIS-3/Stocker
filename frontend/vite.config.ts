@@ -26,5 +26,18 @@ export default defineConfig({
     environment: 'jsdom',
     // Archivo de configuración que se ejecuta antes de cada prueba
     setupFiles: './src/vitest-setup.ts',
+    // Configuración de cobertura de código
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/vitest-setup.ts',
+        'src/main.tsx',
+        'src/App.tsx',
+        'postcss.config.js',
+        'tailwind.config.js',
+      ],
+    },
   },
 });

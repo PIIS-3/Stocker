@@ -14,8 +14,8 @@ import tseslint from 'typescript-eslint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  // Ignora la carpeta dist/ (código compilado para producción, no tiene sentido lintarlo).
-  globalIgnores(['dist']),
+  // Ignora la carpeta dist/ y coverage/ (no tiene sentido lintarlos).
+  globalIgnores(['dist', 'coverage']),
   {
     // Solo aplica a archivos TypeScript y TSX (componentes React).
     files: ['**/*.{ts,tsx}'],

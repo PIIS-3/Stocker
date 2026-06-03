@@ -5,23 +5,25 @@
 API   := stocker_api
 WEB   := stocker_web
 DB    := stocker_db
-DC    := cd docker && docker compose
+DC    := docker compose -f docker/docker-compose.yml --env-file docker/.env
 
-.PHONY: up down restart logs seed seed-sql test test-backend test-frontend lint lint-editorconfig lint-editorconfig-local lint-frontend lint-backend format-check format-frontend migration migrate pr-check
+.PHONY: up down restart logs seed seed-sql test test-backend test-frontend lint lint-editorconfig lint-editorconfig-local lint-frontend lint-backend format-check format-frontend migration migrate pr-check test-backend-local test-frontend-local test-frontend-watch coverage-frontend coverage-backend lint-backend-local lint-frontend-local format-frontend-local
 
 # ── Docker y Servicios ────────────────────────────────────────────────
 
 up:
-	cd docker && cp -n .env.example .env && docker compose up --build -d
+	@if [ ! -f docker/.env ]; then cp docker/.env.example docker/.env; fi
+	$(DC) up --build -d
 
 down:
-	cd docker && docker compose down
+	$(DC) down
 
 restart:
-	cd docker && docker compose down && docker compose up --build -d
+	$(DC) down
+	$(DC) up --build -d
 
 logs:
-	cd docker && docker compose logs -f
+	$(DC) logs -f
 
 # ── Base de Datos y Semillas ──────────────────────────────────────────
 
@@ -81,6 +83,35 @@ migration:
 # Aplica todas las migraciones pendientes a la base de datos
 migrate:
 	docker exec $(API) alembic upgrade head
+
+# ── Desarrollo Local (Sin Docker) ─────────────────────────────────────
+# Comandos para ejecutar localmente en la máquina del desarrollador
+
+test-backend-local:
+	cd backend && pytest tests
+
+test-frontend-local:
+	cd frontend && npm run test -- --run
+
+test-frontend-watch:
+	cd frontend && npm run test
+
+coverage-frontend:
+	cd frontend && npm run test -- --coverage
+
+coverage-backend:
+	cd backend && pytest --cov=app tests
+
+lint-backend-local:
+	cd backend && ruff check .
+	cd backend && ruff format --check .
+	cd backend && mypy .
+
+lint-frontend-local:
+	cd frontend && npm run lint
+
+format-frontend-local:
+	cd frontend && npx prettier --write .
 
 # ── Calidad y Workflow (Pre-PR Check) ─────────────────────────────────
 
