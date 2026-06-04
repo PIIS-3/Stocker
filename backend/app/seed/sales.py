@@ -103,9 +103,7 @@ def seed_sales(
         return []
 
     employees = session.exec(select(models.Employee)).all()
-    employees_by_username: dict[str, models.Employee] = {
-        e.username: e for e in employees
-    }
+    employees_by_username: dict[str, models.Employee] = {e.username: e for e in employees}
 
     sales: list[models.Sale] = []
 
@@ -115,15 +113,11 @@ def seed_sales(
 
         store = stores_by_name.get(store_name)
         if store is None:
-            raise ValueError(
-                f"Tienda '{store_name}' no encontrada para la venta seed."
-            )
+            raise ValueError(f"Tienda '{store_name}' no encontrada para la venta seed.")
 
         employee = employees_by_username.get(employee_username)
         if employee is None:
-            raise ValueError(
-                f"Empleado '{employee_username}' no encontrado para la venta seed."
-            )
+            raise ValueError(f"Empleado '{employee_username}' no encontrado para la venta seed.")
 
         sale = models.Sale(
             store_id=store.id_store,

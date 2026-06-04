@@ -313,9 +313,7 @@ def test_update_sale_partial_total_amount(client: TestClient, session: Session):
     employee = _seed_employee(session, "emp_partial", role.id_role, store.id_store)
     sale = _seed_sale(session, store.id_store, employee.id_employee, total_amount=100.0)
 
-    response = client.patch(
-        f"/api/sales/{sale.id_sale}", json={"total_amount": 500.75}
-    )
+    response = client.patch(f"/api/sales/{sale.id_sale}", json={"total_amount": 500.75})
     assert response.status_code == 200
     data = response.json()
     assert data["total_amount"] == 500.75

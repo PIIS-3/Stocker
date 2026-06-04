@@ -288,9 +288,7 @@ def test_update_sale_item(client: TestClient, session: Session):
     sale = _seed_sale(session, store.id_store, employee.id_employee)
     seeded = _seed_item(session, sale.id_sale, product.id_product, quantity=2, subtotal=100.0)
 
-    response = client.patch(
-        f"/api/sale-items/{seeded.id_sale_item}", json={"quantity": 5}
-    )
+    response = client.patch(f"/api/sale-items/{seeded.id_sale_item}", json={"quantity": 5})
     assert response.status_code == 200
     data = response.json()
     assert data["quantity"] == 5
@@ -313,9 +311,7 @@ def test_update_sale_item_partial(client: TestClient, session: Session):
         session, sale.id_sale, product.id_product, quantity=3, unit_price=20.0, subtotal=60.0
     )
 
-    response = client.patch(
-        f"/api/sale-items/{seeded.id_sale_item}", json={"unit_price": 30.0}
-    )
+    response = client.patch(f"/api/sale-items/{seeded.id_sale_item}", json={"unit_price": 30.0})
     assert response.status_code == 200
     data = response.json()
     assert data["unit_price"] == 30.0
