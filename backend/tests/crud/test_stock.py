@@ -10,7 +10,7 @@ from app.crud.stock import (
 )
 from app.models.category import Category
 from app.models.product import ProductTemplate
-from app.models.stock import Stock, StockCreate, StockUpdate
+from app.models.stock import StockCreate, StockUpdate
 from app.models.store import Store
 
 
@@ -86,15 +86,30 @@ def test_create_stock_multiple_different_combinations(session: Session):
 
     stock1 = create_stock(
         session,
-        StockCreate(quantity=100, min_stock=20, product_id=product1.id_product, store_id=store1.id_store),
+        StockCreate(
+            quantity=100,
+            min_stock=20,
+            product_id=product1.id_product,
+            store_id=store1.id_store,
+        ),
     )
     stock2 = create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product2.id_product, store_id=store1.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product2.id_product,
+            store_id=store1.id_store,
+        ),
     )
     stock3 = create_stock(
         session,
-        StockCreate(quantity=75, min_stock=15, product_id=product1.id_product, store_id=store2.id_store),
+        StockCreate(
+            quantity=75,
+            min_stock=15,
+            product_id=product1.id_product,
+            store_id=store2.id_store,
+        ),
     )
 
     assert stock1.quantity == 100
@@ -115,11 +130,21 @@ def test_get_stocks(session: Session):
 
     create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product1.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product1.id_product,
+            store_id=store.id_store,
+        ),
     )
     create_stock(
         session,
-        StockCreate(quantity=75, min_stock=15, product_id=product2.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=75,
+            min_stock=15,
+            product_id=product2.id_product,
+            store_id=store.id_store,
+        ),
     )
 
     stocks = get_stocks(session)
@@ -140,13 +165,18 @@ def test_get_stocks_with_pagination(session: Session):
     product = _seed_product(session, category.id_category)
 
     for i in range(5):
+        store_id = (
+            store.id_store
+            if i == 0
+            else _seed_store(session, f"Store {i}").id_store
+        )
         create_stock(
             session,
             StockCreate(
                 quantity=10 + i,
                 min_stock=2,
                 product_id=product.id_product,
-                store_id=store.id_store if i == 0 else (_seed_store(session, f"Store {i}").id_store),
+                store_id=store_id,
             ),
         )
 
@@ -167,7 +197,12 @@ def test_get_stock_by_id(session: Session):
 
     created = create_stock(
         session,
-        StockCreate(quantity=100, min_stock=20, product_id=product.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=100,
+            min_stock=20,
+            product_id=product.id_product,
+            store_id=store.id_store,
+        ),
     )
 
     found = get_stock_by_id(session, created.id_stock)
@@ -224,7 +259,12 @@ def test_update_stock_quantity(session: Session):
 
     stock = create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product.id_product,
+            store_id=store.id_store,
+        ),
     )
 
     updated = update_stock(session, stock.id_stock, StockUpdate(quantity=100))
@@ -241,7 +281,12 @@ def test_update_stock_min_stock(session: Session):
 
     stock = create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product.id_product,
+            store_id=store.id_store,
+        ),
     )
 
     updated = update_stock(session, stock.id_stock, StockUpdate(min_stock=25))
@@ -258,7 +303,12 @@ def test_update_stock_both_fields(session: Session):
 
     stock = create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product.id_product,
+            store_id=store.id_store,
+        ),
     )
 
     updated = update_stock(
@@ -285,7 +335,12 @@ def test_update_stock_partial_update(session: Session):
 
     stock = create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product.id_product,
+            store_id=store.id_store,
+        ),
     )
 
     # Update con solo quantity (min_stock no se especifica)
@@ -305,7 +360,12 @@ def test_delete_stock(session: Session):
 
     stock = create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product.id_product,
+            store_id=store.id_store,
+        ),
     )
     stock_id = stock.id_stock
 
@@ -328,7 +388,12 @@ def test_delete_stock_actual_removal(session: Session):
 
     stock = create_stock(
         session,
-        StockCreate(quantity=50, min_stock=10, product_id=product.id_product, store_id=store.id_store),
+        StockCreate(
+            quantity=50,
+            min_stock=10,
+            product_id=product.id_product,
+            store_id=store.id_stock,
+        ),
     )
 
     delete_stock(session, stock.id_stock)

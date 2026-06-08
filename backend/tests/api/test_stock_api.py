@@ -6,9 +6,6 @@ from app.models.product import ProductTemplate
 from app.models.store import Store
 
 
-# ── Helpers ──────────────────────────────────────────────────────────
-
-
 def _seed_store(session: Session, name: str = "Tienda API Test") -> Store:
     store = Store(store_name=name, address="Calle Test 123")
     session.add(store)
@@ -57,11 +54,21 @@ def test_read_stocks_returns_list(client: TestClient, session: Session):
 
     client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product1.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product1.id_product,
+            "store_id": store.id_store,
+        },
     )
     client.post(
         "/api/stock/",
-        json={"quantity": 75, "min_stock": 15, "product_id": product2.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 75,
+            "min_stock": 15,
+            "product_id": product2.id_product,
+            "store_id": store.id_store,
+        },
     )
 
     response = client.get("/api/stock/")
@@ -88,10 +95,20 @@ def test_read_stocks_pagination(client: TestClient, session: Session):
     for i in range(5):
         client.post(
             "/api/stock/",
-            json={"quantity": 10 + i, "min_stock": 2, "product_id": product.id_product, "store_id": store.id_store},
+            json={
+                "quantity": 10 + i,
+                "min_stock": 2,
+                "product_id": product.id_product,
+                "store_id": store.id_store,
+            },
         )
         if i < 4:
-            product = _seed_product(session, category.id_category, sku=f"SKU-{i}", name=f"Producto {i}")
+            product = _seed_product(
+                session,
+                category.id_category,
+                sku=f"SKU-{i}",
+                name=f"Producto {i}",
+            )
 
     response = client.get("/api/stock/?skip=0&limit=2")
     assert response.status_code == 200
@@ -112,7 +129,12 @@ def test_read_stock_by_id(client: TestClient, session: Session):
 
     response = client.post(
         "/api/stock/",
-        json={"quantity": 100, "min_stock": 20, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 100,
+            "min_stock": 20,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     assert response.status_code == 201
     stock_id = response.json()["id_stock"]
@@ -143,7 +165,12 @@ def test_create_stock(client: TestClient, session: Session):
 
     response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
 
     assert response.status_code == 201
@@ -174,7 +201,12 @@ def test_create_stock_invalid_store(client: TestClient, session: Session):
 
     response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": 999999},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": 999999,
+        },
     )
 
     assert response.status_code == 400
@@ -189,18 +221,31 @@ def test_create_stock_duplicate_combination(client: TestClient, session: Session
     # Crear primer stock
     response1 = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     assert response1.status_code == 201
 
     # Intenta crear un stock duplicado (mismo producto y tienda)
     response2 = client.post(
         "/api/stock/",
-        json={"quantity": 75, "min_stock": 15, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 75,
+            "min_stock": 15,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
 
     assert response2.status_code == 409
-    assert response2.json()["detail"] == "Ya existe un registro de stock para ese producto y tienda."
+    assert (
+        response2.json()["detail"]
+        == "Ya existe un registro de stock para ese producto y tienda."
+    )
 
 
 def test_create_stock_zero_quantity(client: TestClient, session: Session):
@@ -210,7 +255,12 @@ def test_create_stock_zero_quantity(client: TestClient, session: Session):
 
     response = client.post(
         "/api/stock/",
-        json={"quantity": 0, "min_stock": 0, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 0,
+            "min_stock": 0,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
 
     assert response.status_code == 201
@@ -229,7 +279,12 @@ def test_update_stock_quantity(client: TestClient, session: Session):
 
     create_response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     stock_id = create_response.json()["id_stock"]
 
@@ -251,7 +306,12 @@ def test_update_stock_min_stock(client: TestClient, session: Session):
 
     create_response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     stock_id = create_response.json()["id_stock"]
 
@@ -273,7 +333,12 @@ def test_update_stock_both_fields(client: TestClient, session: Session):
 
     create_response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     stock_id = create_response.json()["id_stock"]
 
@@ -305,7 +370,12 @@ def test_update_stock_to_zero(client: TestClient, session: Session):
 
     create_response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     stock_id = create_response.json()["id_stock"]
 
@@ -330,7 +400,12 @@ def test_delete_stock(client: TestClient, session: Session):
 
     create_response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     stock_id = create_response.json()["id_stock"]
 
@@ -359,7 +434,12 @@ def test_delete_stock_successful_removal(client: TestClient, session: Session):
 
     create_response = client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product.id_product, "store_id": store.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product.id_product,
+            "store_id": store.id_store,
+        },
     )
     stock_id = create_response.json()["id_stock"]
 
@@ -388,15 +468,30 @@ def test_read_stocks_by_store(client: TestClient, session: Session):
 
     client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product1.id_product, "store_id": store1.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product1.id_product,
+            "store_id": store1.id_store,
+        },
     )
     client.post(
         "/api/stock/",
-        json={"quantity": 75, "min_stock": 15, "product_id": product2.id_product, "store_id": store1.id_store},
+        json={
+            "quantity": 75,
+            "min_stock": 15,
+            "product_id": product2.id_product,
+            "store_id": store1.id_store,
+        },
     )
     client.post(
         "/api/stock/",
-        json={"quantity": 100, "min_stock": 20, "product_id": product1.id_product, "store_id": store2.id_store},
+        json={
+            "quantity": 100,
+            "min_stock": 20,
+            "product_id": product1.id_product,
+            "store_id": store2.id_store,
+        },
     )
 
     response = client.get(f"/api/stock/by-store/{store1.id_store}")
@@ -419,15 +514,30 @@ def test_read_stocks_by_product(client: TestClient, session: Session):
 
     client.post(
         "/api/stock/",
-        json={"quantity": 50, "min_stock": 10, "product_id": product1.id_product, "store_id": store1.id_store},
+        json={
+            "quantity": 50,
+            "min_stock": 10,
+            "product_id": product1.id_product,
+            "store_id": store1.id_store,
+        },
     )
     client.post(
         "/api/stock/",
-        json={"quantity": 75, "min_stock": 15, "product_id": product1.id_product, "store_id": store2.id_store},
+        json={
+            "quantity": 75,
+            "min_stock": 15,
+            "product_id": product1.id_product,
+            "store_id": store2.id_store,
+        },
     )
     client.post(
         "/api/stock/",
-        json={"quantity": 100, "min_stock": 20, "product_id": product2.id_product, "store_id": store1.id_store},
+        json={
+            "quantity": 100,
+            "min_stock": 20,
+            "product_id": product2.id_product,
+            "store_id": store1.id_store,
+        },
     )
 
     response = client.get(f"/api/stock/by-product/{product1.id_product}")
