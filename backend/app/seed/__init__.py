@@ -14,6 +14,7 @@ from .categories import seed_categories
 from .employees import seed_employees
 from .products import seed_products
 from .roles import seed_roles
+from .stocks import seed_stocks
 from .stores import seed_stores
 
 
@@ -43,7 +44,11 @@ def run_seed() -> None:
             # Plantillas de productos vinculadas a sus categorías.
             seed_products(session, report, categories_map)
 
-            # ── 4. Empleados ──────────────────────────────────────────────────
+            # ── 4. Stock ───────────────────────────────────────────────────────
+            # Registros de inventario por producto y tienda.
+            seed_stocks(session, report)
+
+            # ── 5. Empleados ──────────────────────────────────────────────────
             # Personal del sistema vinculado a roles y tiendas específicas.
             seed_employees(session, report, stores_map, roles_map)
 
