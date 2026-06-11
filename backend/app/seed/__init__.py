@@ -14,6 +14,8 @@ from .categories import seed_categories
 from .employees import seed_employees
 from .products import seed_products
 from .roles import seed_roles
+from .sale_items import seed_sale_items
+from .sales import seed_sales
 from .stores import seed_stores
 
 
@@ -46,6 +48,14 @@ def run_seed() -> None:
             # ── 4. Empleados ──────────────────────────────────────────────────
             # Personal del sistema vinculado a roles y tiendas específicas.
             seed_employees(session, report, stores_map, roles_map)
+
+            # ── 5. Ventas ────────────────────────────────────────────────────
+            # Transacciones de venta vinculadas a tiendas y empleados.
+            sales_list = seed_sales(session, report, stores_map)
+
+            # ── 6. Líneas de venta ───────────────────────────────────────────
+            # Detalle de productos vendidos en cada venta.
+            seed_sale_items(session, report, sales_list)
 
             # Confirmación de todos los cambios.
             session.commit()
