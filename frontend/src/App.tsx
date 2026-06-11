@@ -15,6 +15,8 @@ import UsersList from './pages/admin/UsersList';
 import CategoriesList from './pages/admin/CategoriesList';
 
 import ProductsList from './pages/admin/ProductsList';
+import SalesList from './pages/admin/SalesList';
+import StockList from './pages/admin/StockList';
 import Settings from './pages/admin/Settings';
 import { ProtectedRoute, RoleProtectedRoute } from './components/atoms';
 
@@ -38,6 +40,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="stock" element={<StockList />} />
+              <Route path="sales" element={<SalesList />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="categories" element={<CategoriesList />} />
 

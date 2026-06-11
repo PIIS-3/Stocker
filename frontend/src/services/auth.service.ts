@@ -94,7 +94,7 @@ export const authService = {
    */
   can(
     action: 'create' | 'edit' | 'delete' | 'view',
-    module: 'products' | 'categories' | 'stores' | 'users' | 'dashboard' | 'settings'
+    module: 'products' | 'categories' | 'stores' | 'users' | 'dashboard' | 'settings' | 'sales' | 'stock'
   ): boolean {
     const user = this.getUser();
     if (!user) return false;
@@ -113,7 +113,7 @@ export const authService = {
 
     // Staff: Solo productos, categorías, dashboard y ajustes. No puede borrar.
     if (role === 'Staff') {
-      if (module === 'products' || module === 'categories') {
+      if (module === 'products' || module === 'categories' || module === 'sales' || module === 'stock') {
         return action !== 'delete';
       }
       if (module === 'dashboard' || module === 'settings') {
